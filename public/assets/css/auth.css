@@ -1,0 +1,14 @@
+* {
+    font-family: 'Poppins', "Lexend", Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #F3F8FC;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
