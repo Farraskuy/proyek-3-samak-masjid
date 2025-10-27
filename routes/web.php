@@ -2,6 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('admin/artikel/tambah', function () {
+    return view('tambah_artikel');
 });
+
+
+
+
+
+
+
+?>
