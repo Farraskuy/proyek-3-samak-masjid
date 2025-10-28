@@ -48,7 +48,6 @@ Samak Pro adalah aplikasi manajemen masjid berbasis Laravel yang mendukung penge
 - Modul keuangan: rekening bank, konfirmasi donasi, transaksi
 - Layanan lost & found barang jamaah
 - Konsultasi publik (Q&A) antara jamaah dan ustadz
-
 ---
 
 
@@ -77,7 +76,19 @@ npm install
 ```bash
 cp .env.example .env
 ```
-Edit `.env` dan sesuaikan konfigurasi PostgreSQL Anda:
+
+
+#### Setting .env untuk Mode Development
+Pastikan beberapa variabel berikut di `.env` untuk pengembangan lokal:
+```
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost
+LOG_CHANNEL=stack
+```
+
+
+#### Setting .env untuk konfigurasi PostgreSQL:
 ```
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
