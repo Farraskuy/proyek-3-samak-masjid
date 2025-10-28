@@ -1,61 +1,44 @@
-## Samak Pro (Laravel Project)
+# Samak Pro (Aplikasi Manajemen Masjid)
 
+### Tentang Aplikasi
+Samak Pro adalah aplikasi untuk membantu pengurus DKM masjid mengelola berbagai kegiatan masjid secara digital. Aplikasi ini memudahkan DKM untuk mengatur informasi, jadwal kajian, keuangan, layanan jamaah, dan konsultasi keagamaan. Dengan Samak Pro, jamaah juga bisa dengan mudah mendapatkan informasi terkini tentang kegiatan masjid.
 
-### Deskripsi Singkat
-Samak Pro adalah aplikasi manajemen masjid berbasis Laravel yang mendukung pengelolaan konten, jadwal kegiatan, keuangan, layanan jamaah, dan konsultasi. Proyek ini bertujuan membantu DKM dalam digitalisasi layanan dan transparansi informasi untuk jamaah.
+### Apa Yang Bisa Dilakukan?
+1. **Pengaturan Pengguna**
+   - Super Admin: Pengurus utama yang mengatur seluruh sistem
+   - Admin: Pengurus yang mengelola konten dan informasi
+   - Ustadz: Pemateri kajian dan konsultan agama
+   - Jamaah: Pengguna umum yang bisa mengakses informasi
 
-### Struktur Proyek
+2. **Informasi & Konten**
+   - Menulis dan membagikan artikel keislaman
+   - Mengupload foto kegiatan masjid
+   - Membuat halaman informasi penting
+   - Mengelompokkan konten sesuai kategori
 
-```
-├── app/
-│   ├── Http/
-│   ├── Models/
-│   └── Providers/
-├── bootstrap/
-├── config/
-├── database/
-│   ├── factories/
-│   ├── migrations/
-│   └── seeders/
-├── public/
-│   ├── assets/
-│   └── index.php
-├── resources/
-│   ├── css/
-│   ├── js/
-│   └── views/
-├── routes/
-│   ├── web.php
-│   └── console.php
-├── storage/
-├── tests/
-│   ├── Feature/
-│   ├── Unit/
-│   └── TestCase.php
-├── .env.example
-├── artisan
-├── composer.json
-├── package.json
-├── phpunit.xml
-├── vite.config.js
-└── README.md
-```
+3. **Jadwal & Kegiatan**
+   - Mengatur jadwal kajian/seminar
+   - Pendaftaran online untuk jamaah
+   - Pemberitahuan kegiatan terbaru
 
-### Fitur Utama
-- Manajemen pengguna (Super Admin, Admin, Jamaah, Ustadz)
-- Modul CMS: artikel, galeri, kategori, halaman statis
-- Manajemen event/kegiatan dan pendaftaran online
-- Modul keuangan: rekening bank, konfirmasi donasi, transaksi
-- Layanan lost & found barang jamaah
-- Konsultasi publik (Q&A) antara jamaah dan ustadz
----
+4. **Keuangan Masjid**
+   - Pencatatan infaq dan donasi
+   - Konfirmasi transfer donasi
+   - Laporan keuangan transparan
+   - Informasi rekening masjid
 
+5. **Layanan Jamaah**
+   - Pencarian barang hilang/ketinggalan
+   - Tanya jawab dengan ustadz
+   - Konsultasi keagamaan online
 
+## Panduan Kolaborasi
 
-## Cara Kontribusi & Setup Lokal
-
-
-Ingin berkontribusi? Ikuti langkah berikut untuk menjalankan proyek ini secara lokal:
+### Prerequisites
+- PHP >= 8.1
+- Composer
+- PostgreSQL >= 14
+- Git
 
 
 ### 1. Clone repository
@@ -73,6 +56,9 @@ npm install
 
 
 ### 3. Salin & edit file environment
+Manual atau gunakan command berikut
+
+
 ```bash
 cp .env.example .env
 ```
@@ -87,8 +73,43 @@ APP_URL=http://localhost
 LOG_CHANNEL=stack
 ```
 
+#### Setting .env konfigurasi PostgreSQL:
 
-#### Setting .env untuk konfigurasi PostgreSQL:
+
+##### 1. Menyiapkan Database (Skip jika sudah paham)
+1. Download dan install PostgreSQL dari [postgresql.org](https://www.postgresql.org/download/)
+2. Buat database untuk menyimpan data aplikasi:
+   ```sql
+   # Masuk ke PostgreSQL (akan diminta password)
+   psql -U postgres
+
+   # Buat database baru
+   CREATE DATABASE proyek3;
+
+   # Buat pengguna baru (tidak wajib)
+   CREATE USER samakuser WITH ENCRYPTED PASSWORD 'password_anda';
+   GRANT ALL PRIVILEGES ON DATABASE proyek3 TO samakuser;
+
+   # Keluar dari PostgreSQL
+   \q
+   ```
+
+##### 2. Aktifkan ekstensi PostgreSQL di PHP (Opsional jika sudah dilakukan):
+   - Buka file `php.ini`
+   - Hapus tanda `;` pada:
+     ```ini
+     extension=pgsql
+     extension=pdo_pgsql
+     ```
+   - Restart web server/terminal
+   - Cek/Verifikasi dengan:
+     ```bash
+     php -m | findstr pgsql
+     ```
+
+##### 3. Konfigurasi .env lanjutan
+Cari pada .env 
+
 ```
 DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
@@ -115,41 +136,3 @@ php artisan migrate
 ```bash
 php artisan serve
 ```
-
-
-
-### 7. Akses aplikasi
-Buka [http://localhost:8000](http://localhost:8000) di browser Anda.
-
----
-
-## Troubleshooting: Error "could not find driver" (PostgreSQL)
-
-Jika saat migrate muncul error:
-
-```
-could not find driver (Connection: pgsql, SQL: ...)
-```
-
-Solusi:
-
-1. Buka file `php.ini` (lokasi PHP yang digunakan di terminal).
-2. Pastikan baris berikut tidak dikomentari (hilangkan tanda `;` di depannya):
-	```
-	extension=pgsql
-	extension=pdo_pgsql
-	```
-3. Simpan file dan restart web server/terminal.
-4. Cek dengan perintah:
-	```bash
-	php -m | findstr pgsql
-	```
-	Output harus memunculkan `pgsql` dan `pdo_pgsql`.
-5. Jalankan ulang:
-	```bash
-	php artisan migrate
-	```
-
-Jika masih error, pastikan database PostgreSQL berjalan dan kredensial di `.env` sudah benar.
-
----
