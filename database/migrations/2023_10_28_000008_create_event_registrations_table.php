@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('event_registrations', function (Blueprint $table) {
             $table->id('registration_id');
             $table->foreignId('event_id')->constrained('events', 'event_id');
-            $table->foreignId('user_id')->constrained('users', 'user_id');
+            $table->foreignId('user_id')->constrained('users', 'id');
             $table->timestamp('registration_time')->useCurrent();
             $table->string('phone_number_snapshot', 20);
         });

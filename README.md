@@ -1,7 +1,45 @@
 ## Samak Pro (Laravel Project)
 
+
 ### Deskripsi Singkat
 Samak Pro adalah aplikasi manajemen masjid berbasis Laravel yang mendukung pengelolaan konten, jadwal kegiatan, keuangan, layanan jamaah, dan konsultasi. Proyek ini bertujuan membantu DKM dalam digitalisasi layanan dan transparansi informasi untuk jamaah.
+
+### Struktur Proyek
+
+```
+├── app/
+│   ├── Http/
+│   ├── Models/
+│   └── Providers/
+├── bootstrap/
+├── config/
+├── database/
+│   ├── factories/
+│   ├── migrations/
+│   └── seeders/
+├── public/
+│   ├── assets/
+│   └── index.php
+├── resources/
+│   ├── css/
+│   ├── js/
+│   └── views/
+├── routes/
+│   ├── web.php
+│   └── console.php
+├── storage/
+├── tests/
+│   ├── Feature/
+│   ├── Unit/
+│   └── TestCase.php
+├── .env.example
+├── artisan
+├── composer.json
+├── package.json
+├── phpunit.xml
+├── vite.config.js
+└── README.md
+```
 
 ### Fitur Utama
 - Manajemen pengguna (Super Admin, Admin, Jamaah, Ustadz)
@@ -68,7 +106,39 @@ php artisan serve
 ```
 
 
+
 ### 7. Akses aplikasi
 Buka [http://localhost:8000](http://localhost:8000) di browser Anda.
+
+---
+
+## Troubleshooting: Error "could not find driver" (PostgreSQL)
+
+Jika saat migrate muncul error:
+
+```
+could not find driver (Connection: pgsql, SQL: ...)
+```
+
+Solusi:
+
+1. Buka file `php.ini` (lokasi PHP yang digunakan di terminal).
+2. Pastikan baris berikut tidak dikomentari (hilangkan tanda `;` di depannya):
+	```
+	extension=pgsql
+	extension=pdo_pgsql
+	```
+3. Simpan file dan restart web server/terminal.
+4. Cek dengan perintah:
+	```bash
+	php -m | findstr pgsql
+	```
+	Output harus memunculkan `pgsql` dan `pdo_pgsql`.
+5. Jalankan ulang:
+	```bash
+	php artisan migrate
+	```
+
+Jika masih error, pastikan database PostgreSQL berjalan dan kredensial di `.env` sudah benar.
 
 ---

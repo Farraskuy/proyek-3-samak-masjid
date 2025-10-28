@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('lost_and_found_items', function (Blueprint $table) {
             $table->id('item_id');
-            $table->foreignId('inputted_by_admin_id')->constrained('users', 'user_id');
+            $table->foreignId('inputted_by_admin_id')->constrained('users', 'id');
             $table->string('item_name', 100);
             $table->text('description');
             $table->string('location_found', 100);

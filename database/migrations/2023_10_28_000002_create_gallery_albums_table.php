@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('album_id');
             $table->string('album_name', 100);
             $table->string('description', 255);
-            $table->foreignId('created_by')->constrained('users', 'user_id');
+            $table->foreignId('created_by')->constrained('users', 'id');
             $table->timestamp('created_at')->useCurrent();
         });
     }

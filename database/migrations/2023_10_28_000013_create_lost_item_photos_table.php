@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('item_id')->constrained('lost_and_found_items', 'item_id');
             $table->string('image_url', 255);
             $table->string('caption', 255)->nullable();
-            $table->foreignId('uploaded_by_admin_id')->constrained('users', 'user_id');
+            $table->foreignId('uploaded_by_admin_id')->constrained('users', 'id');
             $table->timestamp('created_at')->useCurrent();
             $table->index('item_id');
         });

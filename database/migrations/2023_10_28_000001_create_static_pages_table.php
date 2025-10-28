@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('page_title', 100);
             $table->text('content');
             $table->timestamp('updated_at')->useCurrent();
-            $table->foreignId('updated_by')->constrained('users', 'user_id');
+            $table->foreignId('updated_by')->constrained('users', 'id');
         });
     }
 

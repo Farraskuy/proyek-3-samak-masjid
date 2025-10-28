@@ -18,7 +18,7 @@ return new class extends Migration
             $table->date('transaction_date');
             $table->string('category', 100);
             $table->string('type', 20);
-            $table->foreignId('recorded_by')->constrained('users', 'user_id');
+            $table->foreignId('recorded_by')->constrained('users', 'id');
             $table->foreignId('confirmation_id')->nullable()->constrained('donation_confirmations', 'confirmation_id');
             $table->timestamp('created_at')->useCurrent();
         });

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('album_id')->constrained('gallery_albums', 'album_id');
             $table->string('image_url', 255);
             $table->string('caption', 255);
-            $table->foreignId('uploaded_by')->constrained('users', 'user_id');
+            $table->foreignId('uploaded_by')->constrained('users', 'id');
             $table->timestamp('uploaded_at')->useCurrent();
         });
     }
