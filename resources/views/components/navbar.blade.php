@@ -17,7 +17,7 @@
                 <li class="nav-item"><a class="nav-link" href="/jadwal-kegiatan">Jadwal Kegiatan</a></li>
                 <li class="nav-item"><a class="nav-link" href="/donasi">Donasi</a></li>
                 <li class="nav-item"><a class="nav-link" href="/laporan-keuangan">Laporan Keuangan</a></li>
-                <li class="nav-item"><a class="nav-link" href="/layanan/lost-and-found">Lost & Found</a></li>
+                <li class="nav-item"><a class="nav-link" href="/layanan/barang-hilang">Lost & Found</a></li>
             </ul>
 
             <div class="d-flex align-items-center">
