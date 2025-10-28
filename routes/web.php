@@ -16,4 +16,6 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 
-
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+});

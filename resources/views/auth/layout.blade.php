@@ -31,6 +31,7 @@
         @yield('content')
     </div>
 
+    <script src="{{ asset("assets/js/bootstrapt/bootstrap.bundle.min.js") }}"></script>
     @stack('scripts')
 </body>
 
