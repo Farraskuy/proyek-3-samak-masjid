@@ -1,0 +1,34 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('transactions', function (Blueprint $table) {
+            $table->id('transaction_id');
+            $table->string('description', 255);
+            $table->decimal('amount', 15, 2);
+            $table->date('transaction_date');
+            $table->string('category', 100);
+            $table->string('type', 20);
+            $table->foreignId('recorded_by')->constrained('users', 'user_id');
+            $table->foreignId('confirmation_id')->nullable()->constrained('donation_confirmations', 'confirmation_id');
+            $table->timestamp('created_at')->useCurrent();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('transactions');
+    }
+};
