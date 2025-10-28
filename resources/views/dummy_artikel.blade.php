@@ -22,7 +22,7 @@
   
   
 
-  <!-- ini masih dummy belum ada sciptnya -->
+  
     <label for="keterangan">keterangan</label><br>
     <input type="text" id="keterangan" placeholder="Tulis judul di sini" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;"><br>
 
