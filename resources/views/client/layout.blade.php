@@ -20,6 +20,10 @@
     <link rel="stylesheet" href="{{ asset('assets/fonts/fonts.css') }}">
 
     <style>
+        * {
+            font-family: 'Poppins', "Lexend", Geneva, Verdana, sans-serif;
+        }
+
         .bg-pattern {
             background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
             background-size: 40px 40px;
@@ -56,7 +60,7 @@
     @include('components.footer')
 
     <!-- Bootstrap JS -->
-    <script src="{{ asset("assets/js/bootstrapt/bootstrap.bundle.min.js") }}"></script>
+    <script src="{{ asset('assets/js/bootstrapt/bootstrap.bundle.min.js') }}"></script>
 
     @stack('scripts')
 
