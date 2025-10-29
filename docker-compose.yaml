@@ -6,8 +6,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: samak-pro-app
-    container_name: samak-pro-app
+    image: samak-masjid-app
+    container_name: samak-masjid-app
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
@@ -28,7 +28,7 @@ services:
 
   db:
     image: postgres:17-alpine
-    container_name: samak-pro-db
+    container_name: samak-masjid-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: samak_pro
