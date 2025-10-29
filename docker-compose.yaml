@@ -21,8 +21,6 @@ services:
       - DB_DATABASE=samak_pro
       - DB_USERNAME=samak_user
       - DB_PASSWORD=samak123
-    ports:
-      - "8000:8000"
     depends_on:
       - db
     networks:
