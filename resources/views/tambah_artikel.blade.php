@@ -3,7 +3,8 @@
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
 <!-- Tombol Back -->
-<button id="backButton" style="margin-bottom: 15px; padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+<button id="backButton" 
+        style="margin-bottom: 15px; padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
   ← Kembali
 </button>
 
@@ -11,36 +12,46 @@
 <div style="max-width: 800px; margin: auto; border: 1px solid #ddd; border-radius: 8px; padding: 15px;">
   <h3>Tambah Artikel Baru</h3>
 
-  <!-- Upload Gambar Header -->
-  <label for="headerImage">Gambar Header:</label><br>
-  <input type="file" id="headerImage" accept="image/*" style="margin-bottom: 15px;"><br>
+  <!-- Form biasa (non-async) -->
+  <form action="/posts" method="POST" enctype="multipart/form-data">
+    @csrf
 
+    <label for="headerImage">Gambar Header:</label><br>
+    <input type="file" name="image_view" id="headerImage" accept="image/*" style="margin-bottom: 15px;"><br>
 
-  <!-- Input Judul -->
-  <label for="title">Judul Artikel:</label><br>
-  <input type="text" id="title" placeholder="Tulis judul di sini" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;"><br>
-  
-  
+    <label for="title">Judul Artikel:</label><br>
+    <input type="text" name="title_view" id="title" placeholder="Tulis judul di sini"
+           style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;"><br>
 
-  <!-- ini masih dummy belum ada sciptnya -->
-    <label for="keterangan">keterangan</label><br>
-    <input type="text" id="keterangan" placeholder="Tulis judul di sini" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;"><br>
+    <label for="keterangan">Keterangan:</label><br>
+    <input type="text" name="keterangan_view" id="keterangan" placeholder="Tuliskan keterangan di sini"
+           style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;"><br>
 
-  <!-- Elemen Editor -->
-  <div id="editorContainer" style="width: 100%; height: 30%; border: 1px solid #ccc; border-radius: 8px;">
-    <div id="editor" style="height: 95%;">
-      <p>Tulis isi artikel di sini...</p>
-    </div>
+    <label for="kategori">Kategori Konten:</label><br>
+    <select name="kategori_view" id="kategori" style="margin-bottom: 10px;">
+      <option value="artikel">Artikel dakwah</option>
+      <option value="berita">Berita</option>
+      <option value="tausiyah">Tausiyah singkat</option>
+    </select><br>
+
+<div id="editorContainer" style="width: 100%; min-height: 250px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 10px;">
+  <div id="editor" style="height: 300px;">
+    <p>Tulis isi artikel di sini...</p>
   </div>
+</div>
 
-  <!-- Tombol Submit -->
-  <button id="submitBtn" style="margin-top: 15px; padding: 8px 15px; background-color: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer;">
-    Simpan Artikel
-  </button>
+    <!-- Hidden input untuk isi Quill -->
+    <input type="hidden" name="content_view" id="content_hidden">
+
+    <button type="submit" 
+            style="margin-top: 15px; padding: 8px 15px; background-color: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer;">
+      Simpan Artikel
+    </button>
+  </form>
 </div>
 
 <script>
-  // --- Inisialisasi Quill Editor ---
+  // Inisialisasi Quill Editor
   const quill = new Quill('#editor', {
     theme: 'snow',
     modules: {
@@ -53,51 +64,16 @@
     }
   });
 
-  // --- Tombol "Kembali" ---
-  const backButton = document.getElementById('backButton');
-  backButton.addEventListener('click', function() {
-    window.location.href = '/admin/artikel';
+  // Isi hidden input sebelum submit
+  const form = document.querySelector('form');
+  form.addEventListener('submit', function () {
+    const html = quill.root.innerHTML;
+    document.getElementById('content_hidden').value = html;
   });
 
-  // --- Tombol "Simpan Artikel" ---
-  const submitBtn = document.getElementById('submitBtn');
-  submitBtn.addEventListener('click', function() {
-    // Ambil judul dari input
-    const title = document.getElementById('title').value;
-
-    // Ambil isi dari Quill editor dalam bentuk HTML
-    const content = quill.root.innerHTML;
-
-    // Ambil gambar (jika ada)
-    const headerImage = document.getElementById('headerImage').files[0];
-
-    // Cek isi
-    console.log("Judul:", title);
-    console.log("Isi artikel (HTML):", content);
-    console.log("Gambar Header:", headerImage);
-
-    // --- Kirim ke backend (contoh sederhana pakai FormData) ---
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('content', content);
-    if (headerImage) {
-      formData.append('headerImage', headerImage);
-    }
-
-    // Misalnya endpoint backend-nya adalah /admin/artikel/save
-    fetch('/admin/artikel/save', {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => {
-      if (response.ok) {
-        alert('Artikel berhasil disimpan!');
-      } else {
-        alert('Terjadi kesalahan saat menyimpan artikel.');
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+  // Tombol kembali
+  const backButton = document.getElementById('backButton');
+  backButton.addEventListener('click', function () {
+    window.location.href = '/admin/artikel';
   });
 </script>

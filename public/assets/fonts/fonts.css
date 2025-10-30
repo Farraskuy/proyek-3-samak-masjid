@@ -1,0 +1,148 @@
+/* ================================== import font  ==================================*/
+
+/* poppins */
+/* Poppins Thin (100) */
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 100;
+    font-display: swap;
+    src: url('Poppins/Poppins-Thin.ttf') format('truetype');
+}
+
+/* Poppins ExtraLight (200) */
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 200;
+    font-display: swap;
+    src: url('Poppins/Poppins-ExtraLight.ttf') format('truetype');
+}
+
+/* Poppins Light (300) */
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url('Poppins/Poppins-Light.ttf') format('truetype');
+}
+
+/* Poppins Regular (400) */
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('Poppins/Poppins-Regular.ttf') format('truetype');
+}
+
+/* Poppins Medium (500) */
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('Poppins/Poppins-Medium.ttf') format('truetype');
+}
+
+/* Poppins SemiBold (600) */
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('Poppins/Poppins-SemiBold.ttf') format('truetype');
+}
+
+/* Poppins Bold (700) */
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('Poppins/Poppins-Bold.ttf') format('truetype');
+}
+
+/* Poppins ExtraBold (800) */
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url('Poppins/Poppins-ExtraBold.ttf') format('truetype');
+}
+
+/* Lexend */
+/* Lexend Thin (100) */
+@font-face {
+    font-family: 'Lexend';
+    font-style: normal;
+    font-weight: 100;
+    font-display: swap;
+    src: url('Lexend/Lexend-Thin.ttf') format('truetype');
+}
+
+/* Lexend ExtraLight (200) */
+@font-face {
+    font-family: 'Lexend';
+    font-style: normal;
+    font-weight: 200;
+    font-display: swap;
+    src: url('Lexend/Lexend-ExtraLight.ttf') format('truetype');
+}
+
+/* Lexend Light (300) */
+@font-face {
+    font-family: 'Lexend';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url('Lexend/Lexend-Light.ttf') format('truetype');
+}
+
+/* Lexend Regular (400) */
+@font-face {
+    font-family: 'Lexend';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('Lexend/Lexend-Regular.ttf') format('truetype');
+}
+
+/* Lexend Medium (500) */
+@font-face {
+    font-family: 'Lexend';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('Lexend/Lexend-Medium.ttf') format('truetype');
+}
+
+/* Lexend SemiBold (600) */
+@font-face {
+    font-family: 'Lexend';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('Lexend/Lexend-SemiBold.ttf') format('truetype');
+}
+
+/* Lexend Bold (700) */
+@font-face {
+    font-family: 'Lexend';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('Lexend/Lexend-Bold.ttf') format('truetype');
+}
+
+/* Lexend ExtraBold (800) */
+@font-face {
+    font-family: 'Lexend';
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url('Lexend/Lexend-ExtraBold.ttf') format('truetype');
+}
+
