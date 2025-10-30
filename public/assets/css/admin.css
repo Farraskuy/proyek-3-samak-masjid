@@ -84,7 +84,6 @@
 }
 
 .sidebar .logo .logo_name {
-
     text-decoration: none;
     color: black;
     transition: 0.3s ease;
@@ -105,7 +104,7 @@
 
 .nav-button:hover,
 .nav-button.active {
-    background-color: #ffeeaf;
+    background-color: #c7e4ff;
     /* background-color: #60e74e75; */
 }
 
@@ -196,14 +195,28 @@
 .sidebar .nav-links li .sub-menu {
     background-color: #f8f9fa;
     border-radius: 5px;
-    padding: 5px 0 5px 20px;
     margin: 0 10px;
     margin-top: -5px;
-    display: none;
+
+    max-height: 0;
+    padding: 0 0 0 20px;
+    overflow: hidden;
+    transition: 0.4s;
+
     z-index: 15;
 }
 
+.sidebar .nav-links li.showMenu .sub-menu {
+    max-height: 500px;
+    padding: 5px 0 5px 20px;
+    box-shadow: none !important;
+}
+
+
 .main.active .sidebar .nav-links li .sub-menu {
+    max-height: initial;
+    padding: 10px 10px;
+
     border-top: 1px solid var(--bs-border-color-translucent);
     border-right: 1px solid var(--bs-border-color-translucent);
     border-bottom: 1px solid var(--bs-border-color-translucent);
@@ -236,10 +249,6 @@
     /* padding: 10px 20px; */
 }
 
-.sidebar .nav-links li.showMenu .sub-menu {
-    box-shadow: none !important;
-    display: block;
-}
 
 .sidebar .nav-links li .sub-menu a {
     font-size: 13px;
@@ -264,7 +273,7 @@
     left: 100%;
     top: -10px;
     margin-top: 0;
-    padding: 10px 10px;
+    /* padding: 10px 10px; <--- Padding sudah diatur di atas */
     border-radius: 0 6px 6px 0;
     opacity: 0;
     display: block;
