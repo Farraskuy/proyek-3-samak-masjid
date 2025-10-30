@@ -14,4 +14,10 @@ class ShowNews extends Controller
         return view("edit_artikel")->with('post_data',$post);
     }
 
+
+    public function deleteArtikel($id)
+    {
+        \DB::table('posts')->where('post_id', $id)->delete();
+        return redirect()->back()->with('status', 'Artikel berhasil dihapus');
+    }
 }

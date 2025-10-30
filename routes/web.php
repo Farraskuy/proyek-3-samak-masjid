@@ -19,6 +19,11 @@ Route::post('/posts', [AddNewsController::class, 'upload']);
 
 Route::get('/admin/artikel', [ShowNews::class, 'getEditArtikel']);
 
+Route::delete('/admin/artikel/{id}', [ShowNews::class, 'deleteArtikel'])
+     ->name('artikel.delete');
+
+
+
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
