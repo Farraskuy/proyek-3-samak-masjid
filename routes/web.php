@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\News\ShowNews;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
@@ -16,6 +17,7 @@ Route::get('admin/artikel/tambah', function () {
 Route::post('/posts', [AddNewsController::class, 'upload']);
 
 
+Route::get('/admin/artikel', [ShowNews::class, 'getEditArtikel']);
 
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
