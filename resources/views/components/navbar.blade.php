@@ -1,10 +1,8 @@
 <nav class="navbar navbar-expand-lg navbar-dark position-sticky" style="top: 0; z-index: 10; background-color: #175C9E">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
-            <div class="bg-amber-400 rounded-lg d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px; background-color: #fbbf24 !important;">
-                <span class="text-dark fw-bold">M</span>
-            </div>
-            <span class="d-none d-sm-inline">Digital Masjid</span>
+            <img src="{{ asset("assets/images/logo.png") }}" class="rounded-lg d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+            <span class="d-none d-sm-inline fw-semibold">SAMAK Masjid</span>
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
