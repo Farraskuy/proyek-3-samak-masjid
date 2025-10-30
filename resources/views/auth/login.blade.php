@@ -27,17 +27,17 @@
         <!-- Left informational content (hidden on small screens) -->
         <div class="d-none d-lg-block left-content px-4 h-100">
             <div class="d-flex flex-column justify-content-between h-100">
-                <div class="d-flex gap-3">
-                    <img src="{{ asset('assets/images/logo.png') }}" alt="DIMAS Logo" class="logo"
-                        style="max-width: 70px;">
+                <div class="d-flex gap-3 align-items-center">
+                    <img src="{{ asset('assets/images/logo.png') }}" alt="DIMAS Logo" class="logo bg-white rounded-4 p-1"
+                        style="max-width: 70px; max-height: 70px;">
                     <div class="fw-semibold  d-flex flex-column justify-content-center">
-                        <p class="fs-2 mb-0 text-white">DIMAS</p>
-                        <p style="margin-top: -10px; margin-bottom: 0;">Digital Masjid</p>
+                        <p class="fs-2 mb-0 text-white">SAMAK Masjid</p>
+                        <p style="margin-top: -10px; margin-bottom: 0;">Sistem Aplikasi Managemen Aktivitas dan Keuangan Masjid</p>
                     </div>
                 </div>
                 <div>
                     <h2 class="fw-semibold text-white">Menghubungkan Umat, Memakmurkan Masjid.</h2>
-                    <p class="fw-semibold">DIMAS hadir untuk mendukung transparansi dan efisiensi Dewan Kemakmuran Masjid (DKM) dalam mengelola
+                    <p class="fw-semibold">Samak Masjid hadir untuk mendukung transparansi dan efisiensi Dewan Kemakmuran Masjid (DKM) dalam mengelola
                         amanah umat dan melayani jamaah.</p>
                 </div>
             </div>
@@ -50,7 +50,7 @@
                     style="width: fit-content; background-color: #CE9138">
                     Masuk
                 </div>
-                <h4 class="fw-semibold">Selamat Datang Kembali di Digital Masjid!</h4>
+                <h4 class="fw-semibold">Selamat Datang Kembali di Samak Masjid!</h4>
 
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
@@ -78,25 +78,20 @@
 
 
                     <div class="d-flex justify-content-end mb-3">
-                        <a href="#" class="text-decoration-none">Lupa Password?</a>
+                        <a href="#" class="text-decoration-none" style="color: #175C9E">Lupa Password?</a>
                     </div>
 
                     <button type="submit" style="background-color: #175C9E"
                         class="text-white btn fw-semibold rounded-4 py-2 w-100">Masuk</button>
 
-                    <hr class="my-4">
+                    {{-- <hr class="my-4"> --}}
 
-                    <div class="text-center">
+                    {{-- <div class="text-center">
                         <span class="text-muted">Belum Punya akun? <a href="{{ route('register') }}" class="text-decoration-none">Daftar Disini</a></span>
-                    </div>
+                    </div> --}}
                 </form>
             </div>
         </div>
     </div>
 @endsection
 
-@push('scripts')
-    <script>
-        console.log('Halaman login dimuat');
-    </script>
-@endpush
