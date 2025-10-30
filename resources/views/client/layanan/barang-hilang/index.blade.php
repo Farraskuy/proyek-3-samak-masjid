@@ -19,31 +19,56 @@
             <div class="row g-4">
                 @foreach($items as $item)
                     <div class="col-md-6 col-lg-4">
-                        <div class="card h-100 shadow-sm border border-light rounded-3">
-                            @if($item->featured_image_url)
-                                <img src="{{ asset('storage/' . $item->featured_image_url) }}"
-                                     class="card-img-top"
-                                     alt="{{ $item->item_name }}"
-                                     style="height: 200px; object-fit: cover;">
-                            @else
-                                <div class="bg-light text-center py-5">
-                                    <i class="fas fa-box-open text-muted fs-1"></i>
-                                    <p class="mt-2 text-muted">Tidak ada gambar</p>
-                                </div>
-                            @endif
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title fw-bold">{{ $item->item_name }}</h5>
-                                <p class="card-text text-muted flex-grow-1">{{ Str::limit($item->description, 100) }}</p>
-                                <div class="mt-auto">
-                                    <small class="text-muted d-block">
-                                        <i class="fas fa-map-marker-alt me-1"></i> {{ $item->location_found }}
-                                    </small>
-                                    <small class="text-success d-block mt-1">
-                                        <i class="fas fa-clock me-1"></i> Ditemukan: {{ $item->created_at->format('d M Y') }}
-                                    </small>
+                        <a href="#" class="text-decoration-none text-dark card-link">
+                            <div class="card h-100 shadow-sm event-card">
+                                <div class="card-body d-flex flex-column">
+                                    <!-- Thumbnail Gambar -->
+                                    <div class="card-thumbnail-wrapper mb-3">
+                                        @if($item->featured_image_url)
+                                            <img src="{{ asset('storage/' . $item->featured_image_url) }}"
+                                                 alt="{{ $item->item_name }}"
+                                                 class="img-fluid rounded"
+                                                 style="height: 180px; object-fit: cover; width: 100%;"
+                                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                        @endif
+                                        <!-- Fallback ikon jika tidak ada gambar -->
+                                        <i class="fas fa-box-open fallback-icon text-muted fs-1" 
+                                           style="display: {{ $item->featured_image_url ? 'none' : 'block' }};"></i>
+                                    </div>
+
+                                    <!-- Detail Barang -->
+                                    <div class="d-flex">
+                                        <!-- Tanggal Ditemukan (mirip event) -->
+                                        <div class="text-center me-3" style="min-width: 60px;">
+                                            <div class="p-2 rounded-top" style="background-color: #175C9E;">
+                                                <span class="d-block fs-6 text-white fw-bold">
+                                                    {{ $item->created_at->format('M') }}
+                                                </span>
+                                            </div>
+                                            <div class="bg-white p-2 rounded-bottom border border-top-0">
+                                                <span class="d-block fs-4 fw-bold" style="color: #175C9E;">
+                                                    {{ $item->created_at->format('d') }}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Info Barang -->
+                                        <div>
+                                            <h5 class="card-title fw-bold mb-2">{{ $item->item_name }}</h5>
+                                            <p class="text-muted small mb-1">
+                                                <i class="fas fa-map-marker-alt fa-fw me-1"></i> {{ $item->location_found }}
+                                            </p>
+                                            <p class="text-muted small mb-1">
+                                                <i class="fas fa-align-left fa-fw me-1"></i> {{ Str::limit($item->description, 40) }}
+                                            </p>
+                                            <p class="fw-semibold small mb-0 text-success">
+                                                <i class="fas fa-info-circle fa-fw me-1"></i> Status: {{ $item->status }}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 @endforeach
             </div>
@@ -56,4 +81,33 @@
         </div>
     </div>
 </section>
+@endsection
+
+@section('styles')
+<style>
+.card-thumbnail-wrapper {
+    position: relative;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+.card-thumbnail-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.fallback-icon {
+    font-size: 3rem;
+    color: #6c757d;
+}
+.event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+</style>
 @endsection

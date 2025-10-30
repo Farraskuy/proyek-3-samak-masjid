@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LostAndFoundItem;
 use Illuminate\Http\Request;
 
+
 class LostFoundController extends Controller
 {
     public function index()

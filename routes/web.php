@@ -18,7 +18,6 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/layanan/barang-hilang', [LostFoundController::class, 'index'])->name('layanan.barang-hilang');
 
-
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 });
