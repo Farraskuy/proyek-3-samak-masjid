@@ -49,7 +49,7 @@ class AddNewsController extends Controller
             'kategori' => $validated['kategori_view'],
             'created_at' => now(),
             'status' => 'not publish',
-            'user_id' => 1
+            'user_id' =>  1
         ]);
 
         return response()->json(['status' => 'success']);
