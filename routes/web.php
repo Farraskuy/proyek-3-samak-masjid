@@ -20,4 +20,9 @@ Route::get('/layanan/barang-hilang', [LostFoundController::class, 'index'])->nam
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    // LOST AND FOUND MANAGEMENT
+    Route::get('/barang-hilang', [LostFoundController::class, 'adminIndex'])->name('barang-hilang');
+    Route::get('/barang-hilang/tambah', [LostFoundController::class, 'create'])->name('barang-hilang.tambah');
+    Route::post('/barang-hilang', [LostFoundController::class, 'store']);
 });
