@@ -87,8 +87,13 @@ class AddNewsController extends Controller
             }
         }
 
-        
+        $body =  $dom->getElementsByTagName('body')->item(0);
+        $elemen_dari_body ='';
+        foreach($body->childNodes as $isi_elemen_body){
+          $elemen_dari_body  = $dom->saveHTML($isi_elemen_body) ;
+        }
+
         // Return HTML kembali
-        return $dom->saveHTML();
+        return $elemen_dari_body;
     }
 }
