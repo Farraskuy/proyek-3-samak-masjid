@@ -28,7 +28,8 @@
            style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;"><br>
 
     <label for="kategori">Kategori Konten:</label><br>
-    <select name="kategori_view" id="kategori" style="margin-bottom: 10px;">
+    <select name="kategori_view" id="kategori" style="margin-bottom: 10px;" required>
+        <option value=""hidden disabled selected>Pilih kategori...</option>
       <option value="artikel">Artikel dakwah</option>
       <option value="berita">Berita</option>
       <option value="tausiyah">Tausiyah singkat</option>
