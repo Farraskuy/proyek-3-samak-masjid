@@ -25,7 +25,7 @@ Route::post('/posts', [AddNewsController::class, 'upload']);
 
 Route::get('/admin/artikel', [ShowNews::class, 'getEditArtikel']);
 
-Route::delete('/admin/artikel/{id}', [ShowNews::class, 'deleteArtikel'])
+Route::delete('/admin/artikel/delete/{id}', [ShowNews::class, 'deleteArtikel'])
      ->name('artikel.delete');
 
 

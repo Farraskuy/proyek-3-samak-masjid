@@ -81,20 +81,6 @@
   });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 const input = document.getElementById('headerImage');
 const preview = document.getElementById('preview');
 

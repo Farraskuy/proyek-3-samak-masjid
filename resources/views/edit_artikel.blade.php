@@ -51,9 +51,13 @@
               <i class="fas fa-pen text-muted"></i>
             </a>
             
-            <a href="/admin/artikel/delete/{{ $row->post_id }}" class="btn btn-danger" aria-label="Hapus" onclick="return confirm('Anda yakin ingin menghapus artikel ini?')">
-              <i class="fas fa-trash"></i>
-            </a>
+            <form action="/admin/artikel/delete/{{ $row->post_id }}" method="post">
+              @csrf
+              @method('DELETE')
+              <button type="submit"  class="btn btn-danger" aria-label="Hapus" onclick="return confirm('Anda yakin ingin menghapus artikel ini?')">
+                <i class="fas fa-trash"></i>
+                  </button>
+            </form>
           </div>
         </div>
         @endforeach

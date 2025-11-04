@@ -17,7 +17,7 @@ class ShowNews extends Controller
 
     public function deleteArtikel($id)
     {
-        \DB::table('posts')->where('post_id', $id)->delete();
+        \DB::table('posts')->where('post_id', (int)$id)->delete();
         return redirect()->back()->with('status', 'Artikel berhasil dihapus');
     }
 }
