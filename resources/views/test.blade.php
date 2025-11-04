@@ -1,1 +1,8 @@
-<h1>berita ini khusus Orang penyuka steins gate</h1><p><img src="/storage/news/quill/690a16afe3c84.jpeg"></p><p>Kita mulai dari pengertian integral. Sebelum mempelajari sesuatu, elo harus tahu apa sesuatu itu. Ibarat sebelum elo jadian ama dia, elo mesti tahu dulu seluk-beluk si dia kayak gimana, biar nggak salah pilih.</p><p>Jadi, apa itu integral?</p><p>Kalkulus sebagai cabang ilmu matematika mencakup beberapa konsep, kayak limit, turunan, dan integral.</p><p>Ketiga konsep penghitungan itu saling nyambung satu sama lain. Elo pasti tahu turunan kan? Nah, integral adalah kebalikan dari proses turunan, yang disebut anti turunan.</p><p>Kalau elo masih lupa-lupa ingat sama turunan, elo bisa belajar lagi tentang turunan <a href="https://www.zenius.net/blog/4-rumus-turunan-matematika-dan-fisika" target="_blank" style="color: rgb(0, 0, 0);">di sini</a> ya. Soalnya, dari turunan lah, kita belajar integral.</p><p>Gue kasih contoh paling dasar hubungan antara turunan dan integral.</p><p><img src="news/quill/690a16afe59cd.png"></p><p><em style="background-color: rgb(255, 255, 255); color: rgb(21, 23, 26);">So, </em><span style="background-color: rgb(255, 255, 255); color: rgb(21, 23, 26);">rumus integral nggak berdiri sendiri, tetapi bergantung sama apa yang ada di dalam turunan. Kalau elo udah tahu konsep ini, elo bisa ngerjain soal integral apa pun. Elo mulai dari konsep turunan yang berkaitan sama soal itu, cari padanannya, dan tinggal diintegralkan deh.</span></p><p><br></p>
+<head>
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+</head>
+<body>
+<div class="ql-editor">
+  <h1 class="ql-align-center">Tulis isi artikel di sini...</h1>
+</div>
+</body>

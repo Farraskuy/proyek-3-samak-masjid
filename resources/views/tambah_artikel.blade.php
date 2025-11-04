@@ -62,6 +62,7 @@
         ['bold', 'italic', 'underline'],
         [{ 'header': [1, 2, false] }],
         ['link', 'image'],
+              [{ 'align': [] }], 
         ['clean']
       ]
     }
