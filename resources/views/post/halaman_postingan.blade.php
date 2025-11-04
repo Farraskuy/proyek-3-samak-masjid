@@ -51,6 +51,15 @@
             font-size: 0.9rem;
             margin: 0;
         }
+        .card a {
+  text-decoration: none; /* hilangkan garis bawah */
+  color: inherit; /* biar warnanya ikut teks aslinya */
+}
+
+.card a:hover {
+  text-decoration: none; /* tetap tanpa garis bawah saat hover */
+}
+
     </style>
 </head>
 <body>
@@ -62,7 +71,7 @@
             <!-- Card Start -->
             <div class="col-12 col-sm-6 col-lg-4">
                 <div class="card">
-                    <a href="LINK_ARTIKEL_DISINI">
+                    <a href= "{{   url('postingan' , [$row->slug]) }}">
                         <!-- Gambar Thumbnail -->
                         <div class="news-picture" style="background-image: url('{{ asset('storage/' . $row->featured_image_url) }}');">
                         </div>
@@ -72,6 +81,12 @@
                             <h3 class="card-title">
                                 <strong>{{  $row->title }}</strong>
                             </h3>
+
+                            <!-- Keterangan / Deskripsi Singkat (ditempatkan di bawah judul) -->
+                            <p class="card-text text-muted">
+                                {{ $row->keterangan  }}
+                            </p>
+                            <!-- Akhir keterangan -->
                         </div>
 
                         <!-- Footer: Tanggal & Kategori -->
