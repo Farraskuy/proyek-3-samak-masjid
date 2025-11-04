@@ -71,7 +71,7 @@ class AddNewsController extends Controller
 
         foreach ($images as $img) {
             $src = $img->getAttribute('src');
-
+            
             // Cek apakah base64
             if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
                 $data = substr($src, strpos($src, ',') + 1);
@@ -83,7 +83,7 @@ class AddNewsController extends Controller
                 Storage::put($path, $data);
 
                 // Ganti src dengan path file Laravel
-                $img->setAttribute('src', Storage::url($path));
+                $img->setAttribute('src', $path);
             }
         }
 
