@@ -42,11 +42,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 });
 
-Route::post('/upload',[]);
-
-Route::post('/upload-image', [UploadController::class, 'store']);
-
-
 
 
 ?>
