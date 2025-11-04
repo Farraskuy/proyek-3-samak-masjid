@@ -44,7 +44,7 @@ class LostFoundController extends Controller
         }
 
         LostAndFoundItem::create([
-            'inputted_by_admin_id' => 1,
+            'inputted_by_admin_id' => 2,
             'item_name' => $request->item_name,
             'description' => $request->description,
             'location_found' => $request->location_found,
