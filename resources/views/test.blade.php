@@ -1,4 +1,7 @@
-<p>
-  <img src="/storage/news/images/6909a93e89463_abstract.jpg"
-       style="width:100%; height:auto; object-fit:cover;">
-</p>
+            <form action="/admin/artikel/delete/storage/{{ $row->post_id }}" method="post">
+              @csrf
+              @method('DELETE')
+              <button type="submit"  class="btn btn-danger" aria-label="Hapus" onclick="return confirm('Anda yakin ingin menghapus artikel ini?')">
+                <i class="fas fa-trash"></i>
+                  </button>
+            </form>

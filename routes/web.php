@@ -25,6 +25,13 @@ Route::post('/posts', [AddNewsController::class, 'upload']);
 
 Route::get('/admin/artikel', [ShowNews::class, 'getEditArtikel']);
 
+
+Route::get('/admin/artikel/delete/storage/{id}', [ShowNews::class, 'search_delete_featured_image']);
+
+
+
+
+
 Route::delete('/admin/artikel/delete/{id}', [ShowNews::class, 'deleteArtikel'])
      ->name('artikel.delete');
 
