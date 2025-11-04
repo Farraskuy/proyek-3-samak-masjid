@@ -18,6 +18,8 @@
 
     <label for="headerImage">Gambar Header:</label><br>
     <input type="file" name="image_view" id="headerImage" accept="image/*" style="margin-bottom: 15px;"><br>
+  <img id="preview" src="" alt="Preview" style="max-width: 200px; display:none;">
+
 
     <label for="title">Judul Artikel:</label><br>
     <input type="text" name="title_view" id="title" placeholder="Tulis judul di sini"
@@ -77,4 +79,40 @@
   backButton.addEventListener('click', function () {
     window.location.href = '/admin/artikel';
   });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const input = document.getElementById('headerImage');
+const preview = document.getElementById('preview');
+
+input.addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+    } else {
+        preview.src = "";
+        preview.style.display = 'none';
+    }
+});
+
+
+
 </script>
