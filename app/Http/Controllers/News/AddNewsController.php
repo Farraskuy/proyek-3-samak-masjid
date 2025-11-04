@@ -42,7 +42,7 @@ class AddNewsController extends Controller
         // Simpan ke database
         DB::table('posts')->insert([
             'title' => $validated['title_view'],
-            'slug' => $slug,
+            'slug' => $slug . '-' . 'DAKWAH'. uniqid(),
             'keterangan' => $validated['keterangan_view'],
             'featured_image_url' => $featuredImagePath, // path dari storage
             'content' => $content,
@@ -90,7 +90,7 @@ class AddNewsController extends Controller
         $body =  $dom->getElementsByTagName('body')->item(0);
         $elemen_dari_body ='';
         foreach($body->childNodes as $isi_elemen_body){
-          $elemen_dari_body  = $dom->saveHTML($isi_elemen_body) ;
+          $elemen_dari_body  .= $dom->saveHTML($isi_elemen_body) ;
         }
 
         // Return HTML kembali
