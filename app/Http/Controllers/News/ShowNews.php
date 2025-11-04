@@ -26,8 +26,8 @@ class ShowNews extends Controller
 
     public function search_delete_featured_image($id){
         $featured_image_fc= \DB::table('posts')->select('featured_image_url')->where('post_id',(int)$id)->first();
-        $path = 'public/'. $featured_image_fc->featured_image_url;
-        \Storage::delete($path);
+        $path = $featured_image_fc->featured_image_url;
+        \Storage::disk('public')->delete($path);
     }
 
 }

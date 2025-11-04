@@ -25,8 +25,8 @@ Route::post('/posts', [AddNewsController::class, 'upload']);
 
 Route::get('/admin/artikel', [ShowNews::class, 'getEditArtikel']);
 
-
-Route::get('/admin/artikel/delete/storage/{id}', [ShowNews::class, 'search_delete_featured_image']);
+// route ini hanya untuk test saja
+// Route::get('/admin/artikel/delete/storage/{id}', [ShowNews::class, 'search_delete_featured_image']);
 
 
 
