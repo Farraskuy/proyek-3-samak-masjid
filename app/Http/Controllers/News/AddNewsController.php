@@ -26,7 +26,7 @@ class AddNewsController extends Controller
         if ($request->hasFile('image_view')) {
             $image = $request->file('image_view');
             $newName = uniqid() . '_' . $image->getClientOriginalName();
-            $featuredImagePath = $image->storeAs('public/news/images', $newName);
+            $featuredImagePath = $image->storeAs('news/images', $newName);
         }
 
         // Handle Quill content
@@ -78,7 +78,7 @@ class AddNewsController extends Controller
                 $data = base64_decode($data);
                 $extension = $type[1]; // png, jpg, dll
                 $fileName = uniqid() . '.' . $extension;
-                $path = 'public/news/quill/' . $fileName;
+                $path = 'news/quill/' . $fileName;
 
                 Storage::put($path, $data);
 

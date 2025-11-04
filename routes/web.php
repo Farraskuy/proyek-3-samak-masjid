@@ -7,10 +7,16 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Layanan\LostFoundController;
 use App\Http\Controllers\News\AddNewsController;
+use App\Http\Controllers\News\DetailNewsController;
 
 Route::get('admin/artikel/tambah', function () {
-    return view('tambah_artikel');
+    return view('tambah_artikel',);
 });
+
+
+
+
+Route::get('/aku/ini/test',[DetailNewsController::class,'return_resource']);
 
 
 
