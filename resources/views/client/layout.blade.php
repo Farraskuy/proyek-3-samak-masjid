@@ -16,6 +16,9 @@
     <link rel="stylesheet" href="{{ asset('assets/css/font-awesome/duotone.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/font-awesome/fontawesome.css') }}">
 
+
+    <link rel="stylesheet" href="{{ asset('assets/css/navbar.css') }}">
+
     {{-- Fonts --}}
     <link rel="stylesheet" href="{{ asset('assets/fonts/fonts.css') }}">
 
