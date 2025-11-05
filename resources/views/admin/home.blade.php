@@ -2,7 +2,6 @@
 
 @section('title', 'Dashboard | SAMAK-Kampus')
 
-{{-- Tambahkan styling custom untuk ikon fa-duotone jika diperlukan --}}
 @push('styles')
     <style>
         /* Styling dasar untuk home-item */
