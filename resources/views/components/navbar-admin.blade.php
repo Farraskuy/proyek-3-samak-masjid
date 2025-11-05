@@ -6,19 +6,19 @@
                 <div style="height: 45px; width: 170px;" class="row g-0">
                     <div class="text-dark text-nowrap wrap-text col-9 d-flex flex-column justify-content-center">
                         <small class="p-0 m-0 fw-semibold wrap-text fs-13px">{{ Auth::user()?->username }}</small>
-                        <small class="p-0 m-0 wrap-text w-75 fs-12px">{{ Auth::user()?->role->nama }}</small>
+                        <small class="p-0 m-0 wrap-text w-75 fs-12px">{{ Auth::user()?->role }}</small>
                     </div>
                     <div class="h-100 col-3 text-center">
-                        <img style="object-fit: cover;" class="rounded-circle" height="40" width="40" src="{{ asset('storage/upload/' . Auth::user()?->foto) }}" alt="">
+                        <img style="object-fit: cover;" class="rounded-circle" height="40" width="40" src="{{ Auth::user()?->image_url ? asset('storage/upload/' . Auth::user()?->image_url) : 'https://ui-avatars.com/api/?background=random&name=' . Auth::user()?->full_name }}" alt="">
                     </div>
                 </div>
             </a>
             <div style="min-width: 300px;" class="dropdown-menu dropdown-menu-end p-3 dropdown-menu-profil" data-bs-popper="static">
                 <div class="d-flex align-items-center flex-column">
-                    <img style="object-fit: cover;" class="rounded-circle mb-3" height="70" width="70" src="{{ asset('storage/upload/' . Auth::user()?->foto) }}" alt="">
+                    <img style="object-fit: cover;" class="rounded-circle mb-3" height="70" width="70" src="{{ Auth::user()?->image_url ? asset('storage/upload/' . Auth::user()?->image_url) : 'https://ui-avatars.com/api/?background=random&name=' . Auth::user()?->full_name }}" alt="">
                     <p class="text-wrap fw-semibold fs-14px mb-0">{{ Auth::user()?->nama }}</p>
                     <p class="text-wrap text-secondary fw-semibold fs-13px mb-0">{{ Auth::user()?->username }}</p>
-                    <p class="text-wrap fs-13px mb-0">{{ Auth::user()?->role->nama }}</p>
+                    <p class="text-wrap fs-13px mb-0">{{ Auth::user()?->role }}</p>
                 </div>
                 <hr class="my-3 mb-2">
                 <button type="button" data-bs-toggle="modal" data-bs-target="#logout" class="dropdown-item small btn btn-sm rounded">

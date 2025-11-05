@@ -51,7 +51,6 @@ cd samak-pro
 ### 2. Install dependency
 ```bash
 composer install
-npm install
 ```
 
 

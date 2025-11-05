@@ -1,0 +1,50 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: samak-masjid-app
+    container_name: samak-masjid-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./storage/logs:/var/www/html/storage/logs
+    environment:
+      - APP_ENV=local
+      - DB_CONNECTION=pgsql
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=samak_pro
+      - DB_USERNAME=samak_user
+      - DB_PASSWORD=samak123
+    depends_on:
+      - db
+    networks:
+      - samak-network
+
+  db:
+    image: postgres:17-alpine
+    container_name: samak-masjid-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: samak_pro
+      POSTGRES_USER: samak_user
+      POSTGRES_PASSWORD: samak123
+    volumes:
+      - samak_db_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql  # opsional
+    ports:
+      - "4321:5432"
+    networks:
+      - samak-network
+
+volumes:
+  samak_db_data:
+
+networks:
+  samak-network:
+    driver: bridge

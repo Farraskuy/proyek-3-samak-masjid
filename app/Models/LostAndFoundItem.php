@@ -28,4 +28,9 @@ class LostAndFoundItem extends Model
         'retrieved_at' => 'datetime',
         'created_at' => 'datetime',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'inputted_by_admin_id');
+    }
 }

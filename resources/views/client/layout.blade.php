@@ -16,29 +16,78 @@
     <link rel="stylesheet" href="{{ asset('assets/css/font-awesome/duotone.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/font-awesome/fontawesome.css') }}">
 
+
+    <link rel="stylesheet" href="{{ asset('assets/css/navbar.css') }}">
+
     {{-- Fonts --}}
     <link rel="stylesheet" href="{{ asset('assets/fonts/fonts.css') }}">
 
     <style>
-        .bg-pattern {
-            background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
-            background-size: 40px 40px;
+        .footer-link {
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            transition: all 0.3s ease;
         }
 
-        .feature-card:hover {
-            border-color: #2dd4bf !important;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        .footer-link:hover {
+            color: rgba(255, 255, 255, 1);
+            padding-left: 5px;
         }
 
-        .btn-amber {
-            background-color: #f59e0b;
-            border-color: #f59e0b;
-            color: white;
+        .social-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1.1rem;
+            text-decoration: none;
+            margin-right: 10px;
+            transition: all 0.3s ease;
         }
 
-        .btn-amber:hover {
-            background-color: #d97706;
-            border-color: #d97706;
+        .social-icon:hover {
+            background-color: #ffc107;
+            color: #175C9E;
+        }
+
+
+        .article-card,
+        .event-card {
+            transition: all 0.3s ease;
+            border: 0;
+        }
+
+        .card-link:hover .article-card,
+        .card-link:hover .event-card {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, .15) !important;
+        }
+
+        .card-thumbnail-wrapper {
+            position: relative;
+            height: 200px;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: var(--bs-card-inner-border-radius);
+        }
+
+        .card-thumbnail-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-thumbnail-wrapper .fallback-icon {
+            display: none;
+            font-size: 3rem;
+            color: #adb5bd;
         }
     </style>
 
@@ -56,7 +105,7 @@
     @include('components.footer')
 
     <!-- Bootstrap JS -->
-    <script src="{{ asset("assets/js/bootstrapt/bootstrap.bundle.min.js") }}"></script>
+    <script src="{{ asset('assets/js/bootstrapt/bootstrap.bundle.min.js') }}"></script>
 
     @stack('scripts')
 

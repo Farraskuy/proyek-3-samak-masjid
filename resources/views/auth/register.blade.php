@@ -45,7 +45,7 @@
 
         <!-- Login Form -->
         <div class="form-container d-flex align-items-center justify-content-center h-100">
-            <div class="w-100 h-100 bg-white rounded-4 shadow-sm p-4 d-flex flex-column gap-2">
+            <div class="w-100 h-100 bg-white rounded-4 shadow-sm p-4 d-flex flex-column gap-2 overflow-auto">
                 <div class="mb-3 px-3 py-2 rounded-4 fw-semibold text-white"
                     style="width: fit-content; background-color: #CE9138">
                     Daftar
@@ -53,52 +53,64 @@
 
                 <h4 class="fw-semibold">Daftar Sebagai Jamaah Digital Masjid</h4>
 
-                <form method="POST" action="{{ route('login') }}">
+                <form method="POST" action="{{ route('register') }}">
                     @csrf
 
 
 
-                    <div class="d-flex gap-3">
-                        <div class="mb-3 flex-grow-1">
-                            <label for="nama_lengkap" class="form-label">Nama Lengkap</label>
+                    <div class="d-flex gap-3 mb-3 flex-wrap flex-lg-nowrap">
+                        <div class="flex-grow-1">
+                            <label for="full_name" class="form-label">Nama Lengkap</label>
                             <input type="text"
-                                class="p-4 py-3 rounded-4 form-control @error('nama_lengkap') is-invalid @enderror"
-                                id="nama_lengkap" name="nama_lengkap" placeholder="Contoh: Budiono Susanto"
-                                value="{{ old('nama_lengkap') }}" required autofocus>
-                            @error('nama_lengkap')
+                                class="p-4 py-3 rounded-4 form-control @error('full_name') is-invalid @enderror"
+                                id="full_name" name="full_name" placeholder="Contoh: Budiono Susanto"
+                                value="{{ old('full_name') }}" required autofocus>
+                            @error('full_name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
-                        <div class="mb-3 flex-grow-1">
-                            <label for="nama_unik" class="form-label">Nama Unik Pengguna</label>
+                        <div class="flex-grow-1">
+                            <label for="username" class="form-label">Nama Unik Pengguna</label>
                             <input type="text"
-                                class="p-4 py-3 rounded-4 form-control @error('nama_unik') is-invalid @enderror"
-                                id="nama_unik" name="nama_unik" placeholder="Contoh: budisusanto123"
-                                value="{{ old('nama_unik') }}" required autofocus>
-                            @error('nama_unik')
+                                class="p-4 py-3 rounded-4 form-control @error('username') is-invalid @enderror"
+                                id="username" name="username" placeholder="Contoh: budisusanto123"
+                                value="{{ old('username') }}" required autofocus>
+                            @error('username')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="nama_unik" class="form-label">Email</label>
-                        <input type="email"
-                            class="p-4 py-3 rounded-4 form-control @error('nama_unik') is-invalid @enderror" id="nama_unik"
-                            name="nama_unik" placeholder="Contoh: budisusanto123@gmail.com" value="{{ old('nama_unik') }}"
-                            required autofocus>
-                        @error('nama_unik')
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="p-4 py-3 rounded-4 form-control @error('email') is-invalid @enderror"
+                            id="email" name="email" placeholder="Contoh: budisusanto123@gmail.com"
+                            value="{{ old('email') }}" required autofocus>
+                        @error('email')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="mb-3">
-                        <label for="login" class="form-label">Password</label>
-                        <input type="password" class="p-4 py-3 rounded-4 form-control @error('login') is-invalid @enderror"
-                            id="login" name="login" placeholder="Masukan Password" value="{{ old('login') }}"
-                            required autofocus>
-                        @error('login')
+                        <label for="phone_number" class="form-label">Nomor Telepon</label>
+                        <input type="tel"
+                            class="p-4 py-3 rounded-4 form-control @error('phone_number') is-invalid @enderror"
+                            id="phone_number" name="phone_number" placeholder="Contoh: 012345678910"
+                            value="{{ old('phone_number') }}" required autofocus>
+                        @error('phone_number')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3 position-relative">
+
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password"
+                            class="p-4 py-3 rounded-4 form-control @error('password') is-invalid @enderror" id="password"
+                            name="password" placeholder="Masukan Password" value="{{ old('password') }}" required
+                            autofocus>
+                        @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -120,6 +132,28 @@
 
 @push('scripts')
     <script>
-        console.log('Halaman login dimuat');
+        document.addEventListener('DOMContentLoaded', function() {
+            const passwordInput = document.querySelectorAll('input[type="password"]');
+            const togglePassword = document.createElement('div');
+            togglePassword.innerHTML = '<i class="fa-regular fa-eye-slash"></i>';
+            togglePassword.classList.add('position-absolute', 'bottom-0', 'end-0', 'p-4', 'py-3', 'text-muted');
+            togglePassword.style.cursor = 'pointer';
+
+            togglePassword.addEventListener('click', function() {
+                passwordInput.forEach(function(input) {
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        togglePassword.innerHTML = '<i class="fa-regular fa-eye"></i>';
+                    } else {
+                        input.type = 'password';
+                        togglePassword.innerHTML = '<i class="fa-regular fa-eye-slash"></i>';
+                    }
+                });
+            });
+
+            passwordInput.forEach(function(input) {
+                input.parentElement.prepend(togglePassword);
+            });
+        });
     </script>
 @endpush
