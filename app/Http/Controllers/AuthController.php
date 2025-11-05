@@ -23,15 +23,21 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
+
+
         $field = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
         $request->merge([$field => $credentials['login']]);
 
         if (Auth::attempt($request->only($field, 'password'))) {
-            return redirect()->intended('/dashboard');
+            $request->session()->regenerate();
+            if (Auth::user()->role === 'super admin' || Auth::user()->role === 'admin') {
+                return redirect()->intended('/admin/dashboard');
+            }
+            return redirect()->intended('/');
         }
 
         return back()->withErrors([
-            'login' => 'Kredensial yang Anda masukkan tidak valid.',
+            'error' => 'Kredensial yang Anda masukkan tidak valid.',
         ])->onlyInput('login');
     }
 
@@ -45,14 +51,17 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'full_name' => ['required', 'string', 'max:255'],
+            'phone_number' => ['required', 'string', 'max:20'],
             'username' => ['required', 'string', 'max:32', 'unique:users,username'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'confirmed', 'min:8'],
+            'password' => ['required', 'min:8'],
         ]);
 
         $user = User::create([
-            'name' => $validated['name'],
+            'full_name' => $validated['full_name'],
+            'role' => 'jamaah',
+            'phone_number' => $validated['phone_number'],
             'username' => $validated['username'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
@@ -60,7 +69,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('dashboard')->with('success', 'Registrasi berhasil! Selamat datang di Digital Masjid.');
+        return redirect()->route('/')->with('success', 'Registrasi berhasil! Selamat datang di Digital Masjid.');
     }
 
     // Logout
