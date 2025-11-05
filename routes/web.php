@@ -17,6 +17,8 @@ Route::get('admin/artikel/tambah', function () {
 
 Route::get('/postingan',[HalamanPostinganController::class,'return_resource']);
 
+Route::get('/postingan/{id}',[DetailNewsController::class,'return_resource']);
+
 
 Route::get('/aku/ini/test',[DetailNewsController::class,'return_resource']);
 
