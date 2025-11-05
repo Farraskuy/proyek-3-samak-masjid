@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Keuangan\ZISController;
 use App\Http\Controllers\Layanan\LostFoundController;
 use App\Http\Controllers\News\AddNewsController;
 use App\Http\Controllers\News\DetailNewsController;
@@ -44,6 +45,8 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/donasi', [ZISController::class, 'index'])->name('Informasi Rekening');
 
 Route::get('/layanan/barang-hilang', [LostFoundController::class, 'index'])->name('layanan.barang-hilang');
 

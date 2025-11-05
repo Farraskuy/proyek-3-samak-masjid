@@ -15,6 +15,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
+        // Create Bank Information
+        $this->call([
+            BankAccountSeeder::class
+        ]);
+
         $this->call(UsersSeeder::class);
         $this->call(LostAndFound::class);
     }

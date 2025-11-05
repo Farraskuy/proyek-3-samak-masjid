@@ -21,6 +21,8 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('published_at')->nullable();
             $table->string('status', 20)->default('published');
+            $table->text('keterangan');
+            $table->string('kategori', 50);
         });
     }
 

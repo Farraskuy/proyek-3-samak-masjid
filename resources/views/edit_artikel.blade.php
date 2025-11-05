@@ -1,3 +1,54 @@
+@extends('client.layout')
+
+@section('title', 'Beranda - SAMAK-Kampus')
+
+@push('styles')
+    <style>
+        * {
+            font-family: 'Poppins', "Lexend", Geneva, Verdana, sans-serif;
+        }
+
+        .bg-pattern {
+            background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+            background-size: 100% 100%;
+        }
+
+        .feature-card:hover {
+            border-color: #2dd4bf !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-amber {
+            background-color: #f59e0b;
+            border-color: #f59e0b;
+            color: white;
+        }
+
+        .btn-amber:hover {
+            background-color: #d97706;
+            border-color: #d97706;
+        }
+
+        .feature-icon {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .feature-card {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+        }
+    </style>
+@endpush
+
+@section('content')
+    <!-- ini untuk body -->
+
+        
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -65,3 +116,7 @@
         </div> </main> </div> <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
+
+
+
+@endsection
