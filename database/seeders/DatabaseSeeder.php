@@ -44,5 +44,10 @@ class DatabaseSeeder extends Seeder
             'password' => password_hash('password123', PASSWORD_DEFAULT),
             'phone_number' => '081234567892'
         ]);
+
+        // Create Bank Information
+        $this->call([
+            BankAccountSeeder::class
+        ]);
     }
 }
