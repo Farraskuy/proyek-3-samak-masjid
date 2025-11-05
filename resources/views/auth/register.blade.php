@@ -27,17 +27,19 @@
         <!-- Left informational content (hidden on small screens) -->
         <div class="d-none d-lg-block left-content px-4 h-100">
             <div class="d-flex flex-column justify-content-between h-100">
-                <div class="d-flex gap-3">
-                    <img src="{{ asset('assets/images/logo.png') }}" alt="DIMAS Logo" class="logo" style="max-width: 70px;">
+                <div class="d-flex gap-3 align-items-center">
+                    <img src="{{ asset('assets/images/logo.png') }}" alt="DIMAS Logo" class="logo bg-white rounded-4 p-1"
+                        style="max-width: 70px; max-height: 70px;">
                     <div class="fw-semibold  d-flex flex-column justify-content-center">
-                        <p class="fs-2 mb-0 text-white">DIMAS</p>
-                        <p style="margin-top: -10px; margin-bottom: 0;">Digital Masjid</p>
+                        <p class="fs-3 mb-0 text-white">SAMAK Masjid</p>
+                        <p style="margin-top: -10px; margin-bottom: 0;">Sistem Aplikasi Managemen Aktivitas dan Keuangan
+                            Masjid</p>
                     </div>
                 </div>
                 <div>
                     <h2 class="fw-semibold text-white">Menghubungkan Umat, Memakmurkan Masjid.</h2>
-                    <p class="fw-semibold">DIMAS hadir untuk mendukung transparansi dan efisiensi Dewan Kemakmuran Masjid
-                        (DKM) dalam mengelola
+                    <p class="fw-semibold">Samak Masjid hadir untuk mendukung transparansi dan efisiensi Dewan Kemakmuran
+                        Masjid (DKM) dalam mengelola
                         amanah umat dan melayani jamaah.</p>
                 </div>
             </div>
