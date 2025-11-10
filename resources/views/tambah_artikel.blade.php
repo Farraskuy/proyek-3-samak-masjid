@@ -57,7 +57,7 @@
     </button>
 
     <!-- Bagian Header Artikel -->
-    <div style="max-width: 800px; margin: auto; border: 1px solid #ddd; border-radius: 8px; padding: 15px;">
+    <div style="max-width: 85%; margin: auto; border: 1px solid #ddd; border-radius: 8px; padding: 15px;">
       <h3>Tambah Artikel Baru</h3>
 
       <!-- Form biasa (non-async) -->
