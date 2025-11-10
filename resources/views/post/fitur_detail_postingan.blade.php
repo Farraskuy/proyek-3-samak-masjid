@@ -3,6 +3,6 @@
 </head>
 <body>
 <div class="ql-editor">
- {{!!  $data_posts->content !!}}
+ {!!    $data_posts->content !!}
 </div>
 </body>

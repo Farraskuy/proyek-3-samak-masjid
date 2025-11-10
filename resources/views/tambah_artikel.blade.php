@@ -1,3 +1,4 @@
+
 @extends('client.layout')
 
 @section('title', 'Beranda - SAMAK-Kampus')
@@ -52,12 +53,12 @@
 
     <!-- Tombol Back -->
     <button id="backButton" 
-            style="margin-bottom: 15px; padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            style="margin-bottom: 15px; padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 1%; margin-left: 2%; margin-bottom: 1%;">
       ← Kembali
     </button>
 
     <!-- Bagian Header Artikel -->
-    <div style="max-width: 85%; margin: auto; border: 1px solid #ddd; border-radius: 8px; padding: 15px;">
+    <div style="max-width: 90%; margin: auto; border: 1px solid #ddd; border-radius: 8px; padding: 15px; ">
       <h3>Tambah Artikel Baru</h3>
 
       <!-- Form biasa (non-async) -->
@@ -147,3 +148,4 @@
       });
     </script>
 @endsection
+
