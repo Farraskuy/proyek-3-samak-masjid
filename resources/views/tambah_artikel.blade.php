@@ -43,6 +43,76 @@
             transform: translateY(-5px);
             box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
         }
+
+
+
+
+
+
+
+        /* ini untuk modal  */
+        .modal-overlay {
+            /* Latar belakang gelap transparan */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            
+            /* Menengahkan konten (modal-box) */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            /* Tampil di paling depan */
+            z-index: 1000; 
+        }
+
+        .modal-box {
+            /* Kotak putihnya */
+            background: white;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px; /* Lebar maksimum */
+        }
+
+        .modal-box h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .modal-box p {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .modal-box .modal-ok-button {
+            /* Tombol OK */
+            background: #0d6efd; /* Warna biru */
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .modal-box .modal-ok-button:hover {
+            background: #0b5ed7; /* Warna biru lebih gelap */
+        }
+
+
+
+
+
+
+
+
     </style>
 @endpush
 
@@ -50,6 +120,57 @@
     <!-- Tambahkan CSS dan JS Quill -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+
+
+@if (session('success_post_disimpan_di_database'))
+
+    <style>
+        .tombol-sukses-lonjong {
+            /* 1. Membuat tombol jadi lonjong (pill shape) */
+            border-radius: 50px !important; 
+            
+            /* 2. Opsional: Beri padding agar terlihat pas */
+            padding-left: 30px !important;
+            padding-right: 30px !important;
+            width: 70% !important;
+        }
+    </style>
+
+
+    <script>
+        Swal.fire({
+            title: 'Sukses!',
+            text: '{{ session('success_post_disimpan_di_database') }}',
+            
+            // --- Kustomisasi Sesuai Permintaan Anda ---
+
+            // 1. Background Gradient (Hijau rendah ke sedang)
+            background: 'linear-gradient(to bottom, #e0f2e9, #b8e0c9)', 
+
+            // 2. Ikon Kustom dari Gambar
+            //    Hapus 'icon: 'success',' dan ganti dengan ini:
+            //
+            //    ! PENTING: Ganti 'images/icon-sukses.png' 
+            //    ! dengan path ke gambar Anda di folder 'public'.
+            //
+            imageUrl: '{{ asset('storage/icon_popup/popup_wow.jpg') }}', 
+            imageWidth: 80, // Atur ukuran lebar
+            imageHeight: 80, // Atur ukuran tinggi
+            imageAlt: 'Ikon Sukses',
+
+            // 3. Tombol Lonjong
+            confirmButtonText: 'OK',
+            customClass: {
+                // Terapkan class CSS yang kita buat di <style>
+                confirmButton: 'tombol-sukses-lonjong' 
+            }
+        });
+    </script>
+@endif
 
     <!-- Tombol Back -->
     <button id="backButton" 
@@ -62,7 +183,7 @@
       <h3>Tambah Artikel Baru</h3>
 
       <!-- Form biasa (non-async) -->
-      <form action="/posts" method="POST" enctype="multipart/form-data">
+      <form action="/posts" method="POST" id="form-postingan" enctype="multipart/form-data">
         @csrf
 
         <label for="headerImage">Gambar Header:</label><br>
@@ -146,6 +267,20 @@
               preview.style.display = 'none';
           }
       });
+
+
+
+      
+
+
+
+
+
+
+
+
+
+
     </script>
 @endsection
 

@@ -12,6 +12,11 @@ class AddNewsController extends Controller
 {
     public function upload(Request $request)
     {
+        if(!session()->has('token_tambah_artikel')){
+            return redirect()->to();
+        } 
+
+
         // Validasi form utama
         $validated = $request->validate([
             'title_view' => 'required|string|max:255',
@@ -52,7 +57,7 @@ class AddNewsController extends Controller
             'user_id' =>  1
         ]);
 
-        return response()->json(['status' => 'success']);
+        return redirect()->back()->with('success_post_disimpan_di_database', 'Data berhasil disimpan!');
     }
 
     /**
@@ -96,4 +101,11 @@ class AddNewsController extends Controller
         // Return HTML kembali
         return $elemen_dari_body;
     }
+
+
+        public function return_resource(){
+        session()->flash('token_tambah_artikel',199);
+          return view('tambah_artikel');
+    }
+
 }
