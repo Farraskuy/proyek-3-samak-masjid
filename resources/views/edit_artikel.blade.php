@@ -46,7 +46,46 @@
 @endpush
 
 @section('content')
-    <!-- ini untuk body -->
+ 
+
+<!-- untuk menampilkan status boy -->
+@if (session('success_post_disimpan_di_database'))
+
+    <style>
+        .tombol-sukses-lonjong {
+           
+            border-radius: 50px !important; 
+            
+          
+            padding-left: 30px !important;
+            padding-right: 30px !important;
+            width: 70% !important;
+        }
+    </style>
+
+
+    <script>
+        Swal.fire({
+            title: 'Sukses!',
+            text: '{{ session('success_post_disimpan_di_database') }}',
+            
+
+
+            background: 'linear-gradient(to bottom, #e0f2e9, #b8e0c9)', 
+            imageUrl: '{{ asset('storage/icon_popup/popup_wow.jpg') }}', 
+            imageWidth: 80,
+            imageHeight: 80,
+            imageAlt: 'Ikon Sukses',
+
+            
+            confirmButtonText: 'OK',
+            customClass: {
+            
+                confirmButton: 'tombol-sukses-lonjong' 
+            }
+        });
+    </script>
+@endif
 
         
 <!DOCTYPE html>
