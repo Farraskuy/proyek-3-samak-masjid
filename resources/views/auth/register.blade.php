@@ -138,7 +138,7 @@
                 </form>
 
                 {{-- Quick OTP send (uses current email or phone inputs) --}}
-                <div class="mt-3">
+                <div class="mt-3 d-none">
                     <div class="text-muted mb-2">Ingin verifikasi sekarang? Kirim kode ke:</div>
                     <div class="d-flex gap-2">
                         <button id="send-email-otp" class="btn btn-outline-primary flex-grow-1">
@@ -152,7 +152,7 @@
                     </div>
                 </div>
 
-                <form id="otp-send-form" method="POST" action="{{ route('auth.sendOtp') }}" style="display:none;">
+                <form id="otp-send-form d-none" method="POST" action="{{ route('auth.sendOtp') }}" style="display:none;">
                     @csrf
                     <input type="hidden" name="destination" id="otp-destination">
                     <input type="hidden" name="type" id="otp-type">

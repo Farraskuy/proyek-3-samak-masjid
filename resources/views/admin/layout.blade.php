@@ -84,7 +84,7 @@
                     @csrf
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-16px" id="exampleModalLabel">Konfirmasi Logout</h1>
+                            <p class="modal-title fw-semibold" id="exampleModalLabel">Konfirmasi Logout</p>
                         </div>
                         <div class="modal-body">
                             <p class="mb-0 fs-15px">Apakah anda yain ingin logout?</p>

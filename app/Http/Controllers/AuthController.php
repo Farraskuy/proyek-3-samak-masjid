@@ -122,10 +122,12 @@ class AuthController extends Controller
         ]);
 
         // Queue email OTP
-        NotificationService::sendEmailOtp($user->email, $code);
+        // NotificationService::sendEmailOtp($user->email, $code);
 
         // Redirect user to OTP entry page
-        return view('auth.otp-sent', ['destination' => $user->email, 'type' => 'email']);
+        // return view('auth.otp-sent', ['destination' => $user->email, 'type' => 'email']);
+
+        return redirect()->to('login')->with('success', 'Registrasi berhasil. Silakan login.');
     }
 
     // Logout

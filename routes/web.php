@@ -15,9 +15,6 @@ use App\Http\Controllers\News\DetailNewsController;
 
 Route::get('admin/artikel/tambah', [AddNewsController::class,'return_resource']);
 
-
-
-
 Route::get('/postingan',[HalamanPostinganController::class,'return_resource']);
 
 Route::get('/postingan/{id}',[DetailNewsController::class,'return_resource']);
@@ -34,9 +31,6 @@ Route::get('/admin/artikel', [ShowNews::class, 'getEditArtikel']);
 
 Route::delete('/admin/artikel/delete/{id}', [ShowNews::class, 'deleteArtikel'])
      ->name('artikel.delete');
-
-
-
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
