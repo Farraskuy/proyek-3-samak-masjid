@@ -177,16 +177,17 @@
 
 
         
-    <form action="/posts" method="get"></form>
-        <div class="filter-container" >
-            <label for="filter-select">filter</label>
-            <select name="filter" id="filter-select" onchange="this.form.submit()">
-                <option value="terbaru">Terbaru</option>
-                <option value="terlama">Terlama</option>
-                <option value="populer">Paling Populer</option>
-            </select>
-        </div>
-    </form>
+<form action="/postingan" method="GET">
+    <div class="filter-container">
+        <label for="filter-select">Filter</label>
+        <select name="filter" id="filter-select" onchange="this.form.submit()">
+            <option value="">All</option>
+            <option value="berita"  {{ request('filter')=='berita' ? 'selected' : '' }}>Berita</option>
+            <option value="artikel" {{ request('filter')=='artikel' ? 'selected' : '' }}>Artikel</option>
+            <option value="tausiyah"{{ request('filter')=='tausiyah'? 'selected' : '' }}>Tausiyah</option>
+        </select>
+    </div>
+</form>
 
 
 
