@@ -44,6 +44,11 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
+// OTP verification routes
+Route::post('/auth/send-otp', [AuthController::class, 'sendOtp'])->name('auth.sendOtp');
+Route::get('/auth/verify', [AuthController::class, 'showVerifyForm'])->name('auth.showVerifyForm');
+Route::post('/auth/verify', [AuthController::class, 'verifyOtp'])->name('auth.verifyOtp');
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/', [HomeController::class, 'index'])->name('home');

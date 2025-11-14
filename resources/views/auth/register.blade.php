@@ -136,6 +136,185 @@
                                 class="text-decoration-none">Masuk Disini</a></span>
                     </div>
                 </form>
+
+                {{-- Quick OTP send (uses current email or phone inputs) --}}
+                <div class="mt-3">
+                    <div class="text-muted mb-2">Ingin verifikasi sekarang? Kirim kode ke:</div>
+                    <div class="d-flex gap-2">
+                        <button id="send-email-otp" class="btn btn-outline-primary flex-grow-1">
+                            Kirim ke Email
+                            <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+                        </button>
+                        <button id="send-phone-otp" class="btn btn-outline-primary">
+                            Kirim ke HP
+                            <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <form id="otp-send-form" method="POST" action="{{ route('auth.sendOtp') }}" style="display:none;">
+                    @csrf
+                    <input type="hidden" name="destination" id="otp-destination">
+                    <input type="hidden" name="type" id="otp-type">
+                    {{-- honeypot --}}<input type="text" name="hp_field" style="display:none;" autocomplete="off">
+                </form>
+
+                @push('scripts')
+                    @php
+                        $siteKey = env('RECAPTCHA_SITE_KEY');
+                        $recaptchaType = env('RECAPTCHA_TYPE', 'v3');
+                    @endphp
+
+                    @if($siteKey && $recaptchaType === 'v3')
+                        <script src="https://www.google.com/recaptcha/api.js?render={{ $siteKey }}"></script>
+                    @elseif($siteKey && $recaptchaType === 'v2')
+                        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+                    @endif
+
+                    <script>
+                        (function(){
+                            const siteKey = '{{ $siteKey ?? '' }}';
+                            const recaptchaType = '{{ $recaptchaType }}';
+                            const form = document.getElementById('otp-send-form');
+
+                            function showSpinnerFor(button, show) {
+                                const spinner = button.querySelector('.spinner-border');
+                                if (!spinner) return;
+                                if (show) {
+                                    spinner.classList.remove('d-none');
+                                    button.setAttribute('disabled', 'disabled');
+                                } else {
+                                    spinner.classList.add('d-none');
+                                    button.removeAttribute('disabled');
+                                }
+                            }
+
+                            if (!siteKey) {
+                                // no recaptcha configured, simple submit handlers
+                                document.getElementById('send-email-otp').addEventListener('click', function(e){
+                                    e.preventDefault();
+                                    const email = document.getElementById('email').value || '';
+                                    if (!email) { alert('Silakan masukkan email terlebih dahulu.'); return; }
+                                    document.getElementById('otp-destination').value = email;
+                                    document.getElementById('otp-type').value = 'email';
+                                    showSpinnerFor(this, true);
+                                    form.submit();
+                                });
+                                document.getElementById('send-phone-otp').addEventListener('click', function(e){
+                                    e.preventDefault();
+                                    const phone = document.getElementById('phone_number').value || '';
+                                    if (!phone) { alert('Silakan masukkan nomor telepon terlebih dahulu.'); return; }
+                                    document.getElementById('otp-destination').value = phone;
+                                    document.getElementById('otp-type').value = 'phone';
+                                    showSpinnerFor(this, true);
+                                    form.submit();
+                                });
+                                return;
+                            }
+
+                            if (recaptchaType === 'v3') {
+                                async function attachV3AndSubmit(button, destination, type) {
+                                    showSpinnerFor(button, true);
+                                    try {
+                                        await grecaptcha.ready();
+                                        const token = await grecaptcha.execute(siteKey, {action: type === 'email' ? 'send_email_otp' : 'send_phone_otp'});
+                                        const existing = form.querySelector('input[name="g-recaptcha-response"]');
+                                        if (existing) existing.remove();
+                                        const input = document.createElement('input');
+                                        input.type = 'hidden';
+                                        input.name = 'g-recaptcha-response';
+                                        input.value = token;
+                                        form.appendChild(input);
+                                        form.submit();
+                                    } catch (err) {
+                                        console.warn('reCAPTCHA error', err);
+                                        showSpinnerFor(button, false);
+                                        alert('Terjadi kesalahan reCAPTCHA. Coba lagi.');
+                                    }
+                                }
+
+                                document.getElementById('send-email-otp').addEventListener('click', function(e){
+                                    e.preventDefault();
+                                    const email = document.getElementById('email').value || '';
+                                    if (!email) { alert('Silakan masukkan email terlebih dahulu.'); return; }
+                                    document.getElementById('otp-destination').value = email;
+                                    document.getElementById('otp-type').value = 'email';
+                                    attachV3AndSubmit(this, email, 'email');
+                                });
+
+                                document.getElementById('send-phone-otp').addEventListener('click', function(e){
+                                    e.preventDefault();
+                                    const phone = document.getElementById('phone_number').value || '';
+                                    if (!phone) { alert('Silakan masukkan nomor telepon terlebih dahulu.'); return; }
+                                    document.getElementById('otp-destination').value = phone;
+                                    document.getElementById('otp-type').value = 'phone';
+                                    attachV3AndSubmit(this, phone, 'phone');
+                                });
+                            } else {
+                                // Invisible reCAPTCHA v2 flow: render a widget and execute it on click
+                                let widgetId = null;
+                                const recaptchaContainer = document.createElement('div');
+                                recaptchaContainer.style.display = 'none';
+                                recaptchaContainer.id = 'recaptcha-otp-send';
+                                document.body.appendChild(recaptchaContainer);
+
+                                window.__otpFormSubmit = function(token) {
+                                    const existing = form.querySelector('input[name="g-recaptcha-response"]');
+                                    if (existing) existing.remove();
+                                    const input = document.createElement('input');
+                                    input.type = 'hidden';
+                                    input.name = 'g-recaptcha-response';
+                                    input.value = token;
+                                    form.appendChild(input);
+                                    form.submit();
+                                };
+
+                                const renderRecaptcha = function(){
+                                    if (typeof grecaptcha === 'undefined') return;
+                                    if (widgetId !== null) return;
+                                    widgetId = grecaptcha.render('recaptcha-otp-send', {
+                                        'sitekey': siteKey,
+                                        'size': 'invisible',
+                                        'callback': '__otpFormSubmit'
+                                    });
+                                };
+
+                                // attempt to render (script might not be ready instantly)
+                                setTimeout(renderRecaptcha, 500);
+                                window.addEventListener('load', renderRecaptcha);
+
+                                document.getElementById('send-email-otp').addEventListener('click', function(e){
+                                    e.preventDefault();
+                                    const email = document.getElementById('email').value || '';
+                                    if (!email) { alert('Silakan masukkan email terlebih dahulu.'); return; }
+                                    document.getElementById('otp-destination').value = email;
+                                    document.getElementById('otp-type').value = 'email';
+                                    showSpinnerFor(this, true);
+                                    if (widgetId !== null) {
+                                        grecaptcha.execute(widgetId);
+                                    } else {
+                                        // fallback: submit form (without token)
+                                        form.submit();
+                                    }
+                                });
+
+                                document.getElementById('send-phone-otp').addEventListener('click', function(e){
+                                    e.preventDefault();
+                                    const phone = document.getElementById('phone_number').value || '';
+                                    if (!phone) { alert('Silakan masukkan nomor telepon terlebih dahulu.'); return; }
+                                    document.getElementById('otp-destination').value = phone;
+                                    document.getElementById('otp-type').value = 'phone';
+                                    showSpinnerFor(this, true);
+                                    if (widgetId !== null) {
+                                        grecaptcha.execute(widgetId);
+                                    } else {
+                                        form.submit();
+                                    }
+                                });
+                            }
+                        })();
+                    </script>
+                @endpush
             </div>
         </div>
     </div>
