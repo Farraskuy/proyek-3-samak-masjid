@@ -46,7 +46,7 @@
         </div>
 
         <!-- Login Form -->
-        <div class="form-container d-flex align-items-center justify-content-center h-100">
+        <div class="form-container d-flex align-items-center justify-content-center h-100" style="max-height: 700px">
             <div class="w-100 h-100 bg-white rounded-4 shadow-sm p-4 d-flex flex-column gap-2 overflow-auto">
                 <div class="mb-3 px-3 py-2 rounded-4 fw-semibold text-white"
                     style="width: fit-content; background-color: #CE9138">
@@ -117,6 +117,17 @@
                         @enderror
                     </div>
 
+                    <div class="mb-3 position-relative">
+                        <label for="password-repeat" class="form-label">Password</label>
+                        <input type="password"
+                            class="p-4 py-3 rounded-4 form-control @error('password-repeat') is-invalid @enderror" id="password-repeat"
+                            name="password-repeat" placeholder="Masukan Password" value="{{ old('password-repeat') }}" required
+                            autofocus>
+                        @error('password-repeat')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     <button type="submit" style="background-color: #175C9E"
                         class="text-white btn fw-semibold rounded-4 py-2 w-100">Masuk</button>
 
@@ -131,31 +142,3 @@
         </div>
     </div>
 @endsection
-
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const passwordInput = document.querySelectorAll('input[type="password"]');
-            const togglePassword = document.createElement('div');
-            togglePassword.innerHTML = '<i class="fa-regular fa-eye-slash"></i>';
-            togglePassword.classList.add('position-absolute', 'bottom-0', 'end-0', 'p-4', 'py-3', 'text-muted');
-            togglePassword.style.cursor = 'pointer';
-
-            togglePassword.addEventListener('click', function() {
-                passwordInput.forEach(function(input) {
-                    if (input.type === 'password') {
-                        input.type = 'text';
-                        togglePassword.innerHTML = '<i class="fa-regular fa-eye"></i>';
-                    } else {
-                        input.type = 'password';
-                        togglePassword.innerHTML = '<i class="fa-regular fa-eye-slash"></i>';
-                    }
-                });
-            });
-
-            passwordInput.forEach(function(input) {
-                input.parentElement.prepend(togglePassword);
-            });
-        });
-    </script>
-@endpush

@@ -46,7 +46,7 @@
         </div>
 
         <!-- Login Form -->
-        <div class="form-container d-flex align-items-center justify-content-center h-100">
+        <div class="form-container d-flex align-items-center justify-content-center h-100" style="max-height: 600px">
             <div class="w-100 h-100 bg-white rounded-4 shadow-sm p-4 d-flex flex-column gap-3 overflow-auto over">
                 <div class="mb-4 px-3 py-2 rounded-4 fw-semibold text-white"
                     style="width: fit-content; background-color: #CE9138">
