@@ -23,7 +23,7 @@
 @endpush
 
 @section('content')
-    <div class="auth-wrapper p-4">
+    <div class="auth-wrapper p-0 p-md-4">
         <!-- Left informational content (hidden on small screens) -->
         <div class="d-none d-lg-block left-content px-4 h-100">
             <div class="d-flex flex-column justify-content-between h-100">
@@ -73,11 +73,11 @@
                         @enderror
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3 position-relative">
                         <label for="password" class="form-label">Password</label>
-                        <input type="password" class="p-4 py-3 rounded-4 form-control @error('password') is-invalid @enderror"
-                            id="password" name="password" placeholder="Masukan Password" value="{{ old('password') }}"
-                            autofocus>
+                        <input type="password"
+                            class="p-4 py-3 rounded-4 form-control @error('password') is-invalid @enderror" id="password"
+                            name="password" placeholder="Masukan Password" value="{{ old('password') }}" required autofocus>
                         @error('password')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

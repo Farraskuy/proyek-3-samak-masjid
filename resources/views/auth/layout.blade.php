@@ -36,6 +36,7 @@
     @stack('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Password toggle functionality
             const passwordInput = document.querySelectorAll('input[type="password"]');
             const togglePassword = document.createElement('div');
             togglePassword.innerHTML = '<i class="fa-regular fa-eye-slash"></i>';
@@ -57,6 +58,48 @@
             passwordInput.forEach(function(input) {
                 input.parentElement.prepend(togglePassword);
             });
+
+            // Scroll to bottom functionality for overflow-auto form containers
+            const scrollBtnContainer = document.body;
+            const scrollBtn = document.createElement('button');
+            scrollBtn.className = 'scroll-to-bottom-btn';
+            scrollBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+            scrollBtn.setAttribute('type', 'button');
+            scrollBtn.setAttribute('aria-label', 'Scroll ke bawah form');
+            scrollBtnContainer.appendChild(scrollBtn);
+
+            const formCard = document.querySelector('.overflow-auto');
+            if (formCard) {
+                // Check if form is scrollable
+                function updateScrollButtonVisibility() {
+                    if (formCard.scrollHeight > formCard.clientHeight) {
+                        const isAtBottom = formCard.scrollHeight - formCard.scrollTop <= formCard.clientHeight + 10;
+                        if (!isAtBottom) {
+                            scrollBtn.classList.add('show');
+                        } else {
+                            scrollBtn.classList.remove('show');
+                        }
+                    } else {
+                        scrollBtn.classList.remove('show');
+                    }
+                }
+
+                // Listen to scroll events
+                formCard.addEventListener('scroll', updateScrollButtonVisibility);
+                window.addEventListener('resize', updateScrollButtonVisibility);
+
+                // Click handler: scroll to bottom smoothly
+                scrollBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    formCard.scrollTo({
+                        top: formCard.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                });
+
+                // Initial check
+                updateScrollButtonVisibility();
+            }
         });
     </script>
 </body>

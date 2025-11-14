@@ -23,7 +23,7 @@
 @endpush
 
 @section('content')
-    <div class="auth-wrapper p-4">
+    <div class="auth-wrapper p-0 p-md-4">
         <!-- Left informational content (hidden on small screens) -->
         <div class="d-none d-lg-block left-content px-4 h-100">
             <div class="d-flex flex-column justify-content-between h-100">
@@ -46,7 +46,7 @@
         </div>
 
         <!-- Login Form -->
-        <div class="form-container d-flex align-items-center justify-content-center h-100" style="max-height: 700px">
+        <div class="form-container d-flex align-items-center justify-content-center h-100" style="max-height: 850px">
             <div class="w-100 h-100 bg-white rounded-4 shadow-sm p-4 d-flex flex-column gap-2 overflow-auto">
                 <div class="mb-3 px-3 py-2 rounded-4 fw-semibold text-white"
                     style="width: fit-content; background-color: #CE9138">
@@ -57,8 +57,6 @@
 
                 <form method="POST" action="{{ route('register') }}">
                     @csrf
-
-
 
                     <div class="d-flex gap-3 mb-3 flex-wrap flex-lg-nowrap">
                         <div class="flex-grow-1">
@@ -120,9 +118,9 @@
                     <div class="mb-3 position-relative">
                         <label for="password-repeat" class="form-label">Password</label>
                         <input type="password"
-                            class="p-4 py-3 rounded-4 form-control @error('password-repeat') is-invalid @enderror" id="password-repeat"
-                            name="password-repeat" placeholder="Masukan Password" value="{{ old('password-repeat') }}" required
-                            autofocus>
+                            class="p-4 py-3 rounded-4 form-control @error('password-repeat') is-invalid @enderror"
+                            id="password-repeat" name="password-repeat" placeholder="Masukan Password"
+                            value="{{ old('password-repeat') }}" required autofocus>
                         @error('password-repeat')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
