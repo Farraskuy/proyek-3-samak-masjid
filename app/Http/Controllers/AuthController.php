@@ -18,12 +18,22 @@ class AuthController extends Controller
     // Proses login
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $rules = [
             'login' => ['required'],
             'password' => ['required'],
-        ]);
+        ];
 
+        $messages = [
+            'login.required' => 'Email atau username wajib diisi.',
+            'password.required' => 'Kata sandi wajib diisi.',
+        ];
 
+        $attributes = [
+            'login' => 'email atau username',
+            'password' => 'kata sandi',
+        ];
+
+        $credentials = $request->validate($rules, $messages, $attributes);
 
         $field = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
         $request->merge([$field => $credentials['login']]);
@@ -50,13 +60,37 @@ class AuthController extends Controller
     // Proses registrasi
     public function register(Request $request)
     {
-        $validated = $request->validate([
+        $rules = [
             'full_name' => ['required', 'string', 'max:255'],
             'phone_number' => ['required', 'string', 'max:20'],
             'username' => ['required', 'string', 'max:32', 'unique:users,username'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'min:8'],
-        ]);
+            'password' => ['required', 'min:8', 'same:password-repeat'],
+        ];
+
+        $messages = [
+            'full_name.required' => 'Nama lengkap wajib diisi.',
+            'phone_number.required' => 'Nomor telepon wajib diisi.',
+            'username.required' => 'Username wajib diisi.',
+            'username.unique' => 'Username sudah digunakan, pilih yang lain.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah terdaftar.',
+            'password.required' => 'Kata sandi wajib diisi.',
+            'password.min' => 'Kata sandi minimal :min karakter.',
+            'password.same' => 'Konfirmasi kata sandi tidak cocok.',
+        ];
+
+        $attributes = [
+            'full_name' => 'nama lengkap',
+            'phone_number' => 'nomor telepon',
+            'username' => 'username',
+            'email' => 'email',
+            'password' => 'kata sandi',
+            'password-repeat' => 'ulangi kata sandi',
+        ];
+
+        $validated = $request->validate($rules, $messages, $attributes);
 
         $user = User::create([
             'full_name' => $validated['full_name'],
