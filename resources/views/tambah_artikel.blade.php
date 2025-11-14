@@ -1,3 +1,4 @@
+
 @extends('client.layout')
 
 @section('title', 'Beranda - SAMAK-Kampus')
@@ -42,6 +43,76 @@
             transform: translateY(-5px);
             box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
         }
+
+
+
+
+
+
+
+        /* ini untuk modal  */
+        .modal-overlay {
+            /* Latar belakang gelap transparan */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            
+            /* Menengahkan konten (modal-box) */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            /* Tampil di paling depan */
+            z-index: 1000; 
+        }
+
+        .modal-box {
+            /* Kotak putihnya */
+            background: white;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px; /* Lebar maksimum */
+        }
+
+        .modal-box h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .modal-box p {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .modal-box .modal-ok-button {
+            /* Tombol OK */
+            background: #0d6efd; /* Warna biru */
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .modal-box .modal-ok-button:hover {
+            background: #0b5ed7; /* Warna biru lebih gelap */
+        }
+
+
+
+
+
+
+
+
     </style>
 @endpush
 
@@ -49,19 +120,20 @@
     <!-- Tambahkan CSS dan JS Quill -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Tombol Back -->
     <button id="backButton" 
-            style="margin-bottom: 15px; padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            style="margin-bottom: 15px; padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 1%; margin-left: 2%; margin-bottom: 1%;">
       ← Kembali
     </button>
 
     <!-- Bagian Header Artikel -->
-    <div style="max-width: 800px; margin: auto; border: 1px solid #ddd; border-radius: 8px; padding: 15px;">
+    <div style="max-width: 90%; margin: auto; border: 1px solid #ddd; border-radius: 8px; padding: 15px; ">
       <h3>Tambah Artikel Baru</h3>
 
       <!-- Form biasa (non-async) -->
-      <form action="/posts" method="POST" enctype="multipart/form-data">
+      <form action="/posts" method="POST" id="form-postingan" enctype="multipart/form-data">
         @csrf
 
         <label for="headerImage">Gambar Header:</label><br>
@@ -145,5 +217,20 @@
               preview.style.display = 'none';
           }
       });
+
+
+
+      
+
+
+
+
+
+
+
+
+
+
     </script>
 @endsection
+

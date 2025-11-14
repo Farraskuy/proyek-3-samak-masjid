@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\News\HalamanPostinganController;
+use App\Http\Controllers\News\Postingan;
 use App\Http\Controllers\News\ShowNews;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -11,9 +12,10 @@ use App\Http\Controllers\Layanan\LostFoundController;
 use App\Http\Controllers\News\AddNewsController;
 use App\Http\Controllers\News\DetailNewsController;
 
-Route::get('admin/artikel/tambah', function () {
-    return view('tambah_artikel',);
-});
+
+Route::get('admin/artikel/tambah', [AddNewsController::class,'return_resource']);
+
+
 
 
 Route::get('/postingan',[HalamanPostinganController::class,'return_resource']);

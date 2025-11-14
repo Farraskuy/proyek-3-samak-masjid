@@ -12,16 +12,16 @@ class AddNewsController extends Controller
 {
     public function upload(Request $request)
     {
-        // Validasi form utama
+        // untuk validasi input form di tambah_artikel
         $validated = $request->validate([
             'title_view' => 'required|string|max:255',
             'keterangan_view' => 'required|string',
             'kategori_view' => 'required|string',
-            'image_view' => 'nullable|image|max:2048', // optional
+            'image_view' => 'nullable|image|max:2048', 
             'content_view' => 'nullable|string'
         ]);
 
-        // Handle featured image
+        // memberi nama ke gambar ke laravel storage dan dimasukan ke storage
         $featuredImagePath = null;
         if ($request->hasFile('image_view')) {
             $image = $request->file('image_view');
@@ -32,11 +32,10 @@ class AddNewsController extends Controller
         // Handle Quill content
         $content = $request->input('content_view');
         if ($content) {
-            // Quill mungkin mengirimkan image sebagai base64, kita bisa ekstrak dan simpan
+            // Apabila konten 
             $content = $this->processQuillImages($content);
         }
 
-        // Buat slug
         $slug = Str::slug($validated['title_view']);
 
         // Simpan ke database
@@ -44,7 +43,7 @@ class AddNewsController extends Controller
             'title' => $validated['title_view'],
             'slug' => $slug . '-' . 'DAKWAH'. uniqid(),
             'keterangan' => $validated['keterangan_view'],
-            'featured_image_url' => $featuredImagePath, // path dari storage
+            'featured_image_url' => $featuredImagePath,
             'content' => $content,
             'kategori' => $validated['kategori_view'],
             'created_at' => now(),
@@ -52,7 +51,7 @@ class AddNewsController extends Controller
             'user_id' =>  1
         ]);
 
-        return response()->json(['status' => 'success']);
+        return redirect()->to('/admin/artikel')->with('success_post_disimpan_di_database', 'Data berhasil disimpan!');
     }
 
     /**
@@ -96,4 +95,11 @@ class AddNewsController extends Controller
         // Return HTML kembali
         return $elemen_dari_body;
     }
+
+
+        public function return_resource(){
+        session()->flash('token_tambah_artikel',199);
+          return view('tambah_artikel');
+    }
+
 }
