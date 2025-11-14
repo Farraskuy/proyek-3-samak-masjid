@@ -15,8 +15,8 @@ class HalamanPostinganController extends Controller
             if (!empty($filter)) {
         $query->where('kategori', $filter);
     }
-
-        // Pagination (append biar filter tidak hilang)
+        $query->orderBy('created_at', 'desc');
+        
         $data_posts = $query->paginate(9)->appends($request->query());
 
         return view('post.halaman_postingan',['data_posts'=> $data_posts]);
