@@ -98,8 +98,7 @@ class AddNewsController extends Controller
 
 
         public function return_resource(){
-        session()->flash('token_tambah_artikel',199);
-          return view('tambah_artikel');
+          return view('post.tambah_artikel');
     }
 
 }

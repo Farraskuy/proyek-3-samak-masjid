@@ -15,7 +15,7 @@ use App\Http\Controllers\News\DetailNewsController;
 
 Route::get('admin/artikel/tambah', [AddNewsController::class,'return_resource']);
 
-
+Route::get('/admin/artikel/edit/',[])
 
 
 Route::get('/postingan',[HalamanPostinganController::class,'return_resource']);

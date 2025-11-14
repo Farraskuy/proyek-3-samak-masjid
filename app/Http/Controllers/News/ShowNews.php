@@ -12,7 +12,7 @@ class ShowNews extends Controller
     
     public function getEditArtikel(){
         $post = \DB::table('posts')->select('title','status','kategori','slug','post_id')->get();
-        return view("edit_artikel")->with('post_data',$post);
+        return view("post.admin_list_artikel")->with('post_data',$post);
     }
 
 
