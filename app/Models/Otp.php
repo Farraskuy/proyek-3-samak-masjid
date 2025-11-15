@@ -12,15 +12,15 @@ class Otp extends Model
 
     protected $table = 'otps';
 
-    protected $fillable = [
+     protected $fillable = [
         'user_id',
         'destination',
         'type',
         'code',
         'attempts',
-        'used',
         'expires_at',
     ];
+
 
     protected $casts = [
         'used' => 'boolean',

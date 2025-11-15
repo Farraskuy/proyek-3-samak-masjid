@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('destination'); // email or phone number
             $table->enum('type', ['email', 'phone']);
-            $table->string('code', 12);
+            $table->string('code');
             $table->unsignedSmallInteger('attempts')->default(0);
             $table->boolean('used')->default(false);
             $table->timestamp('expires_at')->nullable();

@@ -9,6 +9,10 @@
     {{-- Bootstrap CSS --}}
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap/bootstrap.min.css') }}">
 
+
+    {{-- icon --}}
+    <link rel="shortcut icon" href="{{ asset('assets/img') }}/logo.png" type="image/x-icon">
+
     {{-- FontAwesome CSS --}}
     <link rel="stylesheet" href="{{ asset('assets/css/font-awesome/solid.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/font-awesome/regular.css') }}">
@@ -23,6 +27,26 @@
     <link rel="stylesheet" href="{{ asset('assets/fonts/fonts.css') }}">
 
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    {{-- Sweet Alert --}}
+    <script src="{{ asset('assets/js') }}/sweetalert2.js"></script>
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 5000,
+            width: '33em',
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            },
+            customClass: {
+                htmlContainer: 'my-0',
+            }
+        });
+    </script>
 
 
     <style>
@@ -127,6 +151,44 @@
     @stack('scripts')
 
 
+    {{-- Auto Show Alerts --}}
+    <script>
+        @if (session('success'))
+            Toast.fire({
+                icon: 'success',
+                title: @json(session('success'))
+            });
+        @endif
+
+        @if (session('error'))
+            Toast.fire({
+                icon: 'error',
+                title: @json(session('error'))
+            });
+        @endif
+
+        @if (session('warning'))
+            Toast.fire({
+                icon: 'warning',
+                title: @json(session('warning'))
+            });
+        @endif
+
+        @if (session('info'))
+            Toast.fire({
+                icon: 'info',
+                title: @json(session('info'))
+            });
+        @endif
+
+        // Jika ada error validasi (multiple errors)
+        @if ($errors->any())
+            Toast.fire({
+                icon: 'error',
+                title: @json($errors->first()) // tampilkan error pertama
+            });
+        @endif
+    </script>
 
 </body>
 

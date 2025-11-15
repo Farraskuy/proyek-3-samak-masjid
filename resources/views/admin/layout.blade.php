@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="{{ asset('assets/fonts/fonts.css') }}">
 
     {{-- icon --}}
-    {{-- <link rel="shortcut icon" href="{{ asset('assets/img') }}/logo.png" type="image/x-icon"> --}}
+    <link rel="shortcut icon" href="{{ asset('assets/img') }}/logo.png" type="image/x-icon">
 
     {{-- style --}}
     <link rel="stylesheet" href="{{ asset('assets/css/admin.css') }}">
@@ -107,6 +107,46 @@
 
     {{-- development test clockwork --}}
     {{-- <script src="https://cdn.jsdelivr.net/gh/underground-works/clockwork-browser@1/dist/toolbar.js"></script> --}}
+
+
+    {{-- Auto Show Alerts --}}
+    <script>
+        @if (session('success'))
+            Toast.fire({
+                icon: 'success',
+                title: @json(session('success'))
+            });
+        @endif
+
+        @if (session('error'))
+            Toast.fire({
+                icon: 'error',
+                title: @json(session('error'))
+            });
+        @endif
+
+        @if (session('warning'))
+            Toast.fire({
+                icon: 'warning',
+                title: @json(session('warning'))
+            });
+        @endif
+
+        @if (session('info'))
+            Toast.fire({
+                icon: 'info',
+                title: @json(session('info'))
+            });
+        @endif
+
+        // Jika ada error validasi (multiple errors)
+        @if ($errors->any())
+            Toast.fire({
+                icon: 'error',
+                title: @json($errors->first()) // tampilkan error pertama
+            });
+        @endif
+    </script>
 
     {{-- custom script --}}
     <script src="{{ asset('assets/js') }}/admin.js"></script>
