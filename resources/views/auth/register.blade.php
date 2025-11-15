@@ -19,6 +19,87 @@
             display: flex;
             align-items: center;
         }
+
+        <style>.left-content {
+            width: calc(100% - 550px);
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .auth-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        /* ================================
+               PASSWORD CHECKER (DESAIN A)
+               ================================ */
+
+        .pw-box {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 14px 18px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            font-size: 14px;
+            width: 100%;
+        }
+
+        .pw-strength-label {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        #pw-strength-value {
+            font-weight: 700;
+        }
+
+        .pw-rules {
+            list-style: none;
+            padding-left: 0;
+            margin: 0;
+        }
+
+        .pw-rules li {
+            display: flex;
+            align-items: center;
+            margin: 4px 0;
+            color: #6b7280;
+            transition: 0.2s ease;
+        }
+
+        .pw-rules li.valid {
+            color: #16a34a !important;
+            font-weight: 600;
+        }
+
+        .pw-rules li.invalid {
+            color: #dc2626 !important;
+            font-weight: 600;
+        }
+
+        /* Dot */
+        .pw-rules .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            background: #9ca3af;
+            transition: 0.25s ease;
+        }
+
+        .pw-rules li.valid .dot {
+            background: #16a34a !important;
+        }
+
+        .pw-rules li.invalid .dot {
+            background: #dc2626 !important;
+        }
     </style>
 @endpush
 
@@ -71,7 +152,7 @@
                         </div>
 
                         <div class="flex-grow-1">
-                            <label for="username" class="form-label">Nama Unik Pengguna</label>
+                            <label for="username" class="form-label">Username</label>
                             <input type="text"
                                 class="p-4 py-3 rounded-4 form-control @error('username') is-invalid @enderror"
                                 id="username" name="username" placeholder="Contoh: budisusanto123"
@@ -104,7 +185,6 @@
                     </div>
 
                     <div class="mb-3 position-relative">
-
                         <label for="password" class="form-label">Password</label>
                         <input type="password"
                             class="p-4 py-3 rounded-4 form-control @error('password') is-invalid @enderror" id="password"
@@ -116,7 +196,7 @@
                     </div>
 
                     <div class="mb-3 position-relative">
-                        <label for="password-repeat" class="form-label">Password</label>
+                        <label for="password-repeat" class="form-label">Password Ulangi Password</label>
                         <input type="password"
                             class="p-4 py-3 rounded-4 form-control @error('password-repeat') is-invalid @enderror"
                             id="password-repeat" name="password-repeat" placeholder="Masukan Password"
@@ -124,6 +204,20 @@
                         @error('password-repeat')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
+                    </div>
+
+                    <div class="pw-box mt-2 mb-3">
+                        <div class="pw-strength-label">
+                            Password Strength: <span id="pw-strength-value">–</span>
+                        </div>
+
+                        <ul class="pw-rules mt-2">
+                            <li id="rule-length"><span class="dot"></span> Minimal 8 karakter</li>
+                            <li id="rule-upper"><span class="dot"></span> Ada huruf besar (A–Z)</li>
+                            <li id="rule-lower"><span class="dot"></span> Ada huruf kecil (a–z)</li>
+                            <li id="rule-number"><span class="dot"></span> Ada angka (0–9)</li>
+                            <li id="rule-symbol"><span class="dot"></span> Ada simbol (!@#$%^&*)</li>
+                        </ul>
                     </div>
 
                     <button type="submit" style="background-color: #175C9E"
@@ -143,16 +237,19 @@
                     <div class="d-flex gap-2">
                         <button id="send-email-otp" class="btn btn-outline-primary flex-grow-1">
                             Kirim ke Email
-                            <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+                            <span class="spinner-border spinner-border-sm ms-2 d-none" role="status"
+                                aria-hidden="true"></span>
                         </button>
                         <button id="send-phone-otp" class="btn btn-outline-primary">
                             Kirim ke HP
-                            <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+                            <span class="spinner-border spinner-border-sm ms-2 d-none" role="status"
+                                aria-hidden="true"></span>
                         </button>
                     </div>
                 </div>
 
-                <form id="otp-send-form d-none" method="POST" action="{{ route('auth.sendOtp') }}" style="display:none;">
+                <form id="otp-send-form d-none" method="POST" action="{{ route('auth.sendOtp') }}"
+                    style="display:none;">
                     @csrf
                     <input type="hidden" name="destination" id="otp-destination">
                     <input type="hidden" name="type" id="otp-type">
@@ -160,19 +257,86 @@
                 </form>
 
                 @push('scripts')
+                    <script>
+                        document.addEventListener("DOMContentLoaded", () => {
+                            const pass = document.getElementById("password");
+
+                            const rules = {
+                                length: document.getElementById("rule-length"),
+                                upper: document.getElementById("rule-upper"),
+                                lower: document.getElementById("rule-lower"),
+                                number: document.getElementById("rule-number"),
+                                symbol: document.getElementById("rule-symbol"),
+                            };
+
+                            const strengthValue = document.getElementById("pw-strength-value");
+
+                            function updatePasswordUI() {
+                                const v = pass.value;
+
+                                const hasLength = v.length >= 8;
+                                const hasUpper = /[A-Z]/.test(v);
+                                const hasLower = /[a-z]/.test(v);
+                                const hasNumber = /[0-9]/.test(v);
+                                const hasSymbol = /[\W_]/.test(v);
+
+                                const ruleMap = {
+                                    length: hasLength,
+                                    upper: hasUpper,
+                                    lower: hasLower,
+                                    number: hasNumber,
+                                    symbol: hasSymbol
+                                };
+
+                                let score = 0;
+
+                                for (const key in ruleMap) {
+                                    if (ruleMap[key]) {
+                                        rules[key].classList.add("valid");
+                                        rules[key].classList.remove("invalid");
+                                        score++;
+                                    } else {
+                                        rules[key].classList.add("invalid");
+                                        rules[key].classList.remove("valid");
+                                    }
+                                }
+
+                                if (v.length === 0) {
+                                    strengthValue.textContent = "–";
+                                    strengthValue.style.color = "#374151";
+                                    return;
+                                }
+
+                                if (score <= 2) {
+                                    strengthValue.textContent = "Weak";
+                                    strengthValue.style.color = "#dc2626";
+                                } else if (score === 3) {
+                                    strengthValue.textContent = "Medium";
+                                    strengthValue.style.color = "#d97706";
+                                } else if (score >= 4) {
+                                    strengthValue.textContent = "Strong";
+                                    strengthValue.style.color = "#16a34a";
+                                }
+                            }
+
+                            pass.addEventListener("input", updatePasswordUI);
+                        });
+                    </script>
+
+
                     @php
                         $siteKey = env('RECAPTCHA_SITE_KEY');
                         $recaptchaType = env('RECAPTCHA_TYPE', 'v3');
                     @endphp
 
-                    @if($siteKey && $recaptchaType === 'v3')
+                    @if ($siteKey && $recaptchaType === 'v3')
                         <script src="https://www.google.com/recaptcha/api.js?render={{ $siteKey }}"></script>
                     @elseif($siteKey && $recaptchaType === 'v2')
                         <script src="https://www.google.com/recaptcha/api.js" async defer></script>
                     @endif
 
                     <script>
-                        (function(){
+                        (function() {
                             const siteKey = '{{ $siteKey ?? '' }}';
                             const recaptchaType = '{{ $recaptchaType }}';
                             const form = document.getElementById('otp-send-form');
@@ -191,19 +355,25 @@
 
                             if (!siteKey) {
                                 // no recaptcha configured, simple submit handlers
-                                document.getElementById('send-email-otp').addEventListener('click', function(e){
+                                document.getElementById('send-email-otp').addEventListener('click', function(e) {
                                     e.preventDefault();
                                     const email = document.getElementById('email').value || '';
-                                    if (!email) { alert('Silakan masukkan email terlebih dahulu.'); return; }
+                                    if (!email) {
+                                        alert('Silakan masukkan email terlebih dahulu.');
+                                        return;
+                                    }
                                     document.getElementById('otp-destination').value = email;
                                     document.getElementById('otp-type').value = 'email';
                                     showSpinnerFor(this, true);
                                     form.submit();
                                 });
-                                document.getElementById('send-phone-otp').addEventListener('click', function(e){
+                                document.getElementById('send-phone-otp').addEventListener('click', function(e) {
                                     e.preventDefault();
                                     const phone = document.getElementById('phone_number').value || '';
-                                    if (!phone) { alert('Silakan masukkan nomor telepon terlebih dahulu.'); return; }
+                                    if (!phone) {
+                                        alert('Silakan masukkan nomor telepon terlebih dahulu.');
+                                        return;
+                                    }
                                     document.getElementById('otp-destination').value = phone;
                                     document.getElementById('otp-type').value = 'phone';
                                     showSpinnerFor(this, true);
@@ -217,7 +387,9 @@
                                     showSpinnerFor(button, true);
                                     try {
                                         await grecaptcha.ready();
-                                        const token = await grecaptcha.execute(siteKey, {action: type === 'email' ? 'send_email_otp' : 'send_phone_otp'});
+                                        const token = await grecaptcha.execute(siteKey, {
+                                            action: type === 'email' ? 'send_email_otp' : 'send_phone_otp'
+                                        });
                                         const existing = form.querySelector('input[name="g-recaptcha-response"]');
                                         if (existing) existing.remove();
                                         const input = document.createElement('input');
@@ -233,19 +405,25 @@
                                     }
                                 }
 
-                                document.getElementById('send-email-otp').addEventListener('click', function(e){
+                                document.getElementById('send-email-otp').addEventListener('click', function(e) {
                                     e.preventDefault();
                                     const email = document.getElementById('email').value || '';
-                                    if (!email) { alert('Silakan masukkan email terlebih dahulu.'); return; }
+                                    if (!email) {
+                                        alert('Silakan masukkan email terlebih dahulu.');
+                                        return;
+                                    }
                                     document.getElementById('otp-destination').value = email;
                                     document.getElementById('otp-type').value = 'email';
                                     attachV3AndSubmit(this, email, 'email');
                                 });
 
-                                document.getElementById('send-phone-otp').addEventListener('click', function(e){
+                                document.getElementById('send-phone-otp').addEventListener('click', function(e) {
                                     e.preventDefault();
                                     const phone = document.getElementById('phone_number').value || '';
-                                    if (!phone) { alert('Silakan masukkan nomor telepon terlebih dahulu.'); return; }
+                                    if (!phone) {
+                                        alert('Silakan masukkan nomor telepon terlebih dahulu.');
+                                        return;
+                                    }
                                     document.getElementById('otp-destination').value = phone;
                                     document.getElementById('otp-type').value = 'phone';
                                     attachV3AndSubmit(this, phone, 'phone');
@@ -269,7 +447,7 @@
                                     form.submit();
                                 };
 
-                                const renderRecaptcha = function(){
+                                const renderRecaptcha = function() {
                                     if (typeof grecaptcha === 'undefined') return;
                                     if (widgetId !== null) return;
                                     widgetId = grecaptcha.render('recaptcha-otp-send', {
@@ -283,10 +461,13 @@
                                 setTimeout(renderRecaptcha, 500);
                                 window.addEventListener('load', renderRecaptcha);
 
-                                document.getElementById('send-email-otp').addEventListener('click', function(e){
+                                document.getElementById('send-email-otp').addEventListener('click', function(e) {
                                     e.preventDefault();
                                     const email = document.getElementById('email').value || '';
-                                    if (!email) { alert('Silakan masukkan email terlebih dahulu.'); return; }
+                                    if (!email) {
+                                        alert('Silakan masukkan email terlebih dahulu.');
+                                        return;
+                                    }
                                     document.getElementById('otp-destination').value = email;
                                     document.getElementById('otp-type').value = 'email';
                                     showSpinnerFor(this, true);
@@ -298,10 +479,13 @@
                                     }
                                 });
 
-                                document.getElementById('send-phone-otp').addEventListener('click', function(e){
+                                document.getElementById('send-phone-otp').addEventListener('click', function(e) {
                                     e.preventDefault();
                                     const phone = document.getElementById('phone_number').value || '';
-                                    if (!phone) { alert('Silakan masukkan nomor telepon terlebih dahulu.'); return; }
+                                    if (!phone) {
+                                        alert('Silakan masukkan nomor telepon terlebih dahulu.');
+                                        return;
+                                    }
                                     document.getElementById('otp-destination').value = phone;
                                     document.getElementById('otp-type').value = 'phone';
                                     showSpinnerFor(this, true);
@@ -312,6 +496,9 @@
                                     }
                                 });
                             }
+
+
+
                         })();
                     </script>
                 @endpush

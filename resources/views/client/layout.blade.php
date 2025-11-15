@@ -22,7 +22,14 @@
     {{-- Fonts --}}
     <link rel="stylesheet" href="{{ asset('assets/fonts/fonts.css') }}">
 
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+
     <style>
+        .dropdown-menu .dropdown-item {
+            transition: 0.2s ease;
+        }
+
         .footer-link {
             color: rgba(255, 255, 255, 0.5);
             text-decoration: none;
@@ -107,9 +114,20 @@
     <!-- Bootstrap JS -->
     <script src="{{ asset('assets/js/bootstrapt/bootstrap.bundle.min.js') }}"></script>
 
-    @stack('scripts')
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 900,
+            once: true,
+            easing: 'ease-out-cubic',
+            delay: 60,
+        });
+    </script>
 
     @stack('scripts')
+
+
+
 </body>
 
 </html>

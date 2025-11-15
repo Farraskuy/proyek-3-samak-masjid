@@ -38,13 +38,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Password toggle functionality
             const passwordInput = document.querySelectorAll('input[type="password"]');
-            const togglePassword = document.createElement('div');
-            togglePassword.innerHTML = '<i class="fa-regular fa-eye-slash"></i>';
-            togglePassword.classList.add('position-absolute', 'bottom-0', 'end-0', 'p-4', 'py-3', 'text-muted');
-            togglePassword.style.cursor = 'pointer';
+            passwordInput.forEach(function(input) {
+                const togglePassword = document.createElement('div');
+                togglePassword.innerHTML = '<i class="fa-regular fa-eye-slash"></i>';
+                togglePassword.classList.add('position-absolute', 'bottom-0', 'end-0', 'p-4', 'py-3', 'text-muted');
+                togglePassword.style.cursor = 'pointer';
 
-            togglePassword.addEventListener('click', function() {
-                passwordInput.forEach(function(input) {
+                togglePassword.addEventListener('click', function(e) {
                     if (input.type === 'password') {
                         input.type = 'text';
                         togglePassword.innerHTML = '<i class="fa-regular fa-eye"></i>';
@@ -53,9 +53,7 @@
                         togglePassword.innerHTML = '<i class="fa-regular fa-eye-slash"></i>';
                     }
                 });
-            });
 
-            passwordInput.forEach(function(input) {
                 input.parentElement.prepend(togglePassword);
             });
 
