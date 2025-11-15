@@ -47,7 +47,7 @@
 @section('content')
     <div class="auth-wrapper p-0 p-md-4" style="min-height:100vh;">
         <div class="form-container d-flex align-items-center justify-content-center h-100">
-            <div class="w-100 bg-white rounded-4 shadow-sm p-4 d-flex flex-column gap-3 overflow-auto auth-card text-center">
+            <div class="w-100 bg-white rounded-4 shadow-sm p-4 d-flex flex-column gap-3 overflow-auto auth-card">
 
                 <div class="mb-3">
                     <i class="fa-regular fa-envelope icon-mail"></i>

@@ -60,7 +60,7 @@
     <div class="auth-wrapper p-0 p-md-4">
         <div class="form-container d-flex align-items-center justify-content-center h-100">
 
-            <div class="w-100 bg-white rounded-4 shadow-sm p-4 d-flex flex-column gap-3 auth-card text-center">
+            <div class="w-100 bg-white rounded-4 shadow-sm p-4 d-flex flex-column gap-3 auth-card">
 
                 <h4 class="fw-semibold mb-1">Masukkan Kode Verifikasi</h4>
                 <p class="text-muted mb-2">
