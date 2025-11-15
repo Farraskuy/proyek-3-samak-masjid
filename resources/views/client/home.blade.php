@@ -78,7 +78,7 @@
                 </div>
 
                 <div class="col-md-5 text-center">
-                    <img src="https://via.placeholder.com/430x300?text=Hero+Image" alt="Hero"
+                    <img src="{{ asset('assets/images/auth-bg.png') }}" alt="Hero"
                         class="img-fluid rounded shadow fade"
                         data-aos="zoom-in" data-aos-duration="1000" data-aos-delay="300">
                 </div>
