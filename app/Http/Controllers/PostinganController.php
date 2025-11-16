@@ -1,23 +1,24 @@
 <?php
 
-namespace App\Http\Controllers\News;
+namespace App\Http\Controllers\Postingan;
 
 use App\Http\Controllers\Controller;
+use App\Models\Postingan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
-class NewsController extends Controller
+class PostinganController extends Controller
 {
     // Show listing page (previously HalamanPostinganController::return_resource)
     public function index()
     {
-        $data_posts = DB::table('posts')->select('*')->get();
+        $data_posts = Postingan::all();
         return view('post.halaman_postingan', ['data_posts' => $data_posts]);
     }
 
-    // Show detail page by slug (previously DetailNewsController::return_resource)
+    // Show detail page by slug (previously DetailPostinganController::return_resource)
     public function showDetail($slug)
     {
         $data_posts = DB::table('posts')->select('content')->where('slug', $slug)->first();
@@ -43,14 +44,14 @@ class NewsController extends Controller
         return view('post.fitur_detail_postingan', ['data_posts' => $updated_html]);
     }
 
-    // Return add-article form (previously AddNewsController::return_resource)
+    // Return add-article form (previously AddPostinganController::return_resource)
     public function create()
     {
         session()->flash('token_tambah_artikel', 199);
         return view('tambah_artikel');
     }
 
-    // Store uploaded article (previously AddNewsController::upload)
+    // Store uploaded article (previously AddPostinganController::upload)
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -90,7 +91,7 @@ class NewsController extends Controller
         return redirect()->to('/admin/artikel')->with('success_post_disimpan_di_database', 'Data berhasil disimpan!');
     }
 
-    // Process base64 images in Quill content and store them (from AddNewsController::processQuillImages)
+    // Process base64 images in Quill content and store them (from AddPostinganController::processQuillImages)
     private function processQuillImages($content)
     {
         $dom = new \DOMDocument();
@@ -125,14 +126,14 @@ class NewsController extends Controller
         return $elemen_dari_body;
     }
 
-    // Admin: list articles for edit (previously ShowNews::getEditArtikel)
+    // Admin: list articles for edit (previously ShowPostingan::getEditArtikel)
     public function getEditArtikel()
     {
         $post = DB::table('posts')->select('title', 'status', 'kategori', 'slug', 'post_id')->get();
         return view('edit_artikel')->with('post_data', $post);
     }
 
-    // Delete article and associated images (previously ShowNews::deleteArtikel)
+    // Delete article and associated images (previously ShowPostingan::deleteArtikel)
     public function deleteArtikel($id)
     {
         $this->search_delete_featured_image($id);

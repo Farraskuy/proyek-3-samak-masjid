@@ -23,19 +23,19 @@
             <div class="nav-button {{ request()->is('admin') ? 'active' : '' }}">
                 <a href="{{ url('/admin') }}">
                     <i class="fa-regular fa-house"></i>
-                    <span class="link_name">Dashboard</span>
+                    <span class="link_name">Home</span>
                 </a>
             </div>
             <ul class="sub-menu blank">
-                <li class="fw-semibold link_name">Dashboard</li>
+                <li class="fw-semibold link_name">Home</li>
             </ul>
         </li>
 
         {{-- 2. MODUL MANAJEMEN KONTEN (CMS) --}}
-        {{-- Aktif jika path dimulai dengan admin/konten atau admin/artikel atau admin/galeri --}}
-        <li class="{{ request()->is('admin/artikel*', 'admin/halaman-statis*', 'admin/galeri*') ? 'showMenu' : '' }}">
+        {{-- Aktif jika path dimulai dengan admin/konten atau admin/postingan atau admin/galeri --}}
+        <li class="{{ request()->is('admin/postingan*', 'admin/halaman-statis*', 'admin/galeri*') ? 'showMenu' : '' }}">
             <div
-                class="nav-button {{ request()->is('admin/artikel*', 'admin/halaman-statis*', 'admin/galeri*') ? 'active' : '' }}">
+                class="nav-button {{ request()->is('admin/postingan*', 'admin/halaman-statis*', 'admin/galeri*') ? 'active' : '' }}">
                 <div class="iocn-link" onclick="expandMenu(this)">
                     <a>
                         <i class="fa-light fa-feather-pointed"></i>
@@ -47,8 +47,8 @@
             <ul class="sub-menu">
                 <li><span class="link_name fw-semibold">Manajemen Konten</span></li>
 
-                <li class="nav-button {{ request()->is('admin/artikel*') ? 'active' : '' }}">
-                    <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/artikel') }}">
+                <li class="nav-button {{ request()->is('admin/postingan*') ? 'active' : '' }}">
+                    <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/postingan') }}">
                         <span class="fa-regular fa-newspaper"></span> Artikel & Berita
                     </a>
                 </li>

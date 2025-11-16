@@ -39,10 +39,10 @@
             style="height: 200px; background-color: #175C9E; z-index: -1; top: 0; left: 0; right: 0;"></div>
 
         {{-- Informasi Sambutan --}}
-        <h1 class="fw-bold m-0 text-white">Selamat Datang di Dashboard Admin,</h1>
+        <h1 class="fw-bold m-0 text-white">Selamat Datang di Halaman Admin,</h1>
         <p class="fw-semibold text-white">SAMAK-Kampus (Sistem Aplikasi Masjid Kampus)</p>
 
-        {{-- Konten Utama Menu Dashboard --}}
+        {{-- Konten Utama Menu Halaman --}}
         <div class="rounded-3 bg-white p-4 border- shadow-sm d-flex flex-wrap" style="gap: 20px;">
 
             {{-- Bagian Kiri: Manajemen Konten & Kegiatan --}}
@@ -50,12 +50,12 @@
                 <p class="fw-bold mb-3 fs-14px text-primary">Konten & Kegiatan Masjid</p>
                 <div class="d-flex gap-3 mb-3 py-2 bg-light rounded-3 flex-wrap w-100">
 
-                    {{-- 1. Manajemen Artikel & Berita (CMS) --}}
-                    <a href="{{ url('/admin/artikel') }}" class="btn text-start home-item">
+                    {{-- 1. Manajemen Artikel & Postingan (CMS) --}}
+                    <a href="{{ url('/admin/postingan') }}" class="btn text-start home-item">
                         <i class="fa-duotone icon fa-newspaper" style="color: #007bff"></i>
                         <div>
-                            <p class="fw-semibold m-0">Manajemen Berita <i class="fa-regular fa-arrow-right"></i></p>
-                            <p class="m-0 text-secondary">CRUD Artikel/Tausiyah </p>
+                            <p class="fw-semibold m-0">Manajemen Postingan <i class="fa-regular fa-arrow-right"></i></p>
+                            <p class="m-0 text-secondary">CRUD Berita/Artikel/Tausiyah </p>
                         </div>
                     </a>
 

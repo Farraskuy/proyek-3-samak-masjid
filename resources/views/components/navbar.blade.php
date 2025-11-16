@@ -43,8 +43,8 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link nav-min {{ request()->is('berita*') ? 'active' : '' }}" href="/berita">
-                        Berita
+                    <a class="nav-link nav-min {{ request()->is('postingan*') ? 'active' : '' }}" href="/postingan">
+                        Postingan
                     </a>
                 </li>
 
