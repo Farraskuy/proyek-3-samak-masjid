@@ -5,10 +5,7 @@ namespace App\Http\Controllers\News;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class HalamanPostinganController extends Controller
+class HalamanPostinganController extends NewsController
 {
-        function return_resource(){
-        $data_posts= \DB::table('posts')->select('*')->get();
-        return view('post.halaman_postingan',['data_posts'=> $data_posts]);
-    }
+    // Wrapper for backward compatibility. Use methods in NewsController.
 }

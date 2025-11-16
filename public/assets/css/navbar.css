@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------
-   BASE NAVBAR
+    BASE NAVBAR
 ----------------------------------------------------------- */
 #navbar-samak {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -21,10 +21,12 @@
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* PERBAIKAN: Baris 'color: white !important;' dihapus dari sini
+  agar tidak menimpa style .nav-min:hover
+*/
 #navbar-samak .nav-link:hover:not(.active) {
     background-color: rgba(255, 255, 255, 0.12);
     transform: translateY(-2px);
-    color: white !important;
 }
 
 #navbar-samak .nav-link.active {
@@ -35,7 +37,7 @@
 }
 
 /* -----------------------------------------------------------
-   MINIMAL NAV STYLE
+    MINIMAL NAV STYLE
 ----------------------------------------------------------- */
 #navbar-samak .nav-min {
     padding: 6px 16px !important;
@@ -51,7 +53,7 @@
 }
 
 /* -----------------------------------------------------------
-   USER BUTTON
+    USER BUTTON
 ----------------------------------------------------------- */
 #navbar-samak .btn-user {
     color: white;
@@ -77,7 +79,7 @@
 }
 
 /* -----------------------------------------------------------
-   DROPDOWN MENU
+    DROPDOWN MENU
 ----------------------------------------------------------- */
 #navbar-samak .dropdown-menu {
     border-radius: 16px;
@@ -120,7 +122,7 @@
 }
 
 /* -----------------------------------------------------------
-   RESPONSIVE
+    RESPONSIVE
 ----------------------------------------------------------- */
 @media (max-width: 991.98px) {
     #navbar-samak .navbar-nav .nav-item {

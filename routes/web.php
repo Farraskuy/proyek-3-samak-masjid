@@ -8,11 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Keuangan\ZISController;
 use App\Http\Controllers\Layanan\LostFoundController;
-use App\Http\Controllers\News\HalamanPostinganController;
-use App\Http\Controllers\News\Postingan;
-use App\Http\Controllers\News\ShowNews;
-use App\Http\Controllers\News\AddNewsController;
-use App\Http\Controllers\News\DetailNewsController;
+use App\Http\Controllers\News\NewsController;
 use Illuminate\Support\Facades\Mail;
 
 /*
@@ -73,18 +69,21 @@ Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->middl
 // Home
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+
+
+
 // News Routes
 Route::prefix('postingan')->group(function () {
-    Route::get('/', [HalamanPostinganController::class, 'return_resource']);
-    Route::get('/{id}', [DetailNewsController::class, 'return_resource']);
+    Route::get('/', [NewsController::class, 'index']);
+    Route::get('/{id}', [NewsController::class, 'showDetail']);
 });
 
 // Admin News Management
 Route::prefix('admin/artikel')->name('artikel.')->group(function () {
-    Route::get('/', [ShowNews::class, 'getEditArtikel']);
-    Route::get('/tambah', [AddNewsController::class, 'return_resource']);
-    Route::post('/posts', [AddNewsController::class, 'upload']);
-    Route::delete('/delete/{id}', [ShowNews::class, 'deleteArtikel'])->name('delete');
+    Route::get('/', [NewsController::class, 'getEditArtikel']);
+    Route::get('/tambah', [NewsController::class, 'create']);
+    Route::post('/posts', [NewsController::class, 'store']);
+    Route::delete('/delete/{id}', [NewsController::class, 'deleteArtikel'])->name('delete');
     // Route::get('/delete/storage/{id}', [ShowNews::class, 'search_delete_featured_image']); // test only
 });
 
@@ -106,7 +105,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 // Temporary/Test route
-Route::get('/aku/ini/test', [DetailNewsController::class, 'return_resource']);
+Route::get('/aku/ini/test', [NewsController::class, 'index']);
 Route::get('/aku/ini/test-email', function () {
     // return view('emails.reset-password', ['resetUrl' => 'https://example.com/reset-password']);
     Mail::to("gensinkn@gmail.com")->queue(new \App\Mail\ResetPasswordMail("1", "gensinkn@gmail.com"));
