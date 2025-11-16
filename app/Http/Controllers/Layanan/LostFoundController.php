@@ -85,8 +85,8 @@ class LostFoundController extends Controller
             'description' => 'required|string',
             'location_found' => 'required|string|max:100',
             'status' => 'required|in:Tersedia,Diambil',
-            'featured_images' => 'nullable|array',
-            'featured_images.*' => 'image|mimes:jpeg,png,jpg|max:10240',
+            'new_featured_images' => 'nullable|array',
+            'new_featured_images.*' => 'image|mimes:jpeg,png,jpg|max:10240',
         ]);
 
         $item = LostAndFoundItem::findOrFail($item_id);
@@ -97,18 +97,25 @@ class LostFoundController extends Controller
             'status' => $request->status,
         ]);
 
-        if ($request->hasFile('featured_images')) {
-            foreach ($item->photos as $photo) {
-                Storage::disk('public')->delete($photo->image_url);
-                $photo->delete();
+        if ($request->has('remove_photos')) {
+            foreach ($request->remove_photos as $photo_id => $should_remove) {
+                if ($should_remove == 1) {
+                    $photo = $item->photos->firstWhere('photo_id', $photo_id);
+                    if ($photo) {
+                        Storage::disk('public')->delete($photo->image_url);
+                        $photo->delete();
+                    }
+                }
             }
+        }
 
-            foreach ($request->file('featured_images') as $image) {
+        if ($request->hasFile('new_featured_images')) {
+            foreach ($request->file('new_featured_images') as $image) {
                 $path = $image->store('lost-found', 'public');
                 LostItemPhoto::create([
                     'item_id' => $item->item_id,
                     'image_url' => $path,
-                    'uploaded_by_admin_id' => auth::id(),
+                    'uploaded_by_admin_id' => Auth::id(),
                 ]);
             }
         }
