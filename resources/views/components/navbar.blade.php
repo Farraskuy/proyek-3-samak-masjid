@@ -1,4 +1,4 @@
-<nav id="navbar-samak" class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-2 sticky-top border-bottom">
+<nav id="navbar-samak" class="navbar navbar-expand-xl navbar-light bg-white shadow-sm py-2 sticky-top border-bottom">
     <div class="container">
         <!-- Brand -->
         <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
@@ -15,22 +15,54 @@
         <!-- Menu -->
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mx-auto gap-lg-2">
+
                 <li class="nav-item">
-                    <a class="nav-link nav-min" href="/">Beranda</a>
+                    <a class="nav-link nav-min {{ request()->is('/') ? 'active' : '' }}" href="/">
+                        Beranda
+                    </a>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link nav-min" href="/jadwal-kegiatan">Kegiatan</a>
+                    <a class="nav-link nav-min {{ request()->is('donasi*') ? 'active' : '' }}" href="/donasi">
+                        Donasi
+                    </a>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link nav-min" href="/donasi">Donasi</a>
+                    <a class="nav-link nav-min {{ request()->is('laporan-keuangan*') ? 'active' : '' }}"
+                        href="/laporan-keuangan">
+                        Keuangan
+                    </a>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link nav-min" href="/laporan-keuangan">Keuangan</a>
+                    <a class="nav-link nav-min {{ request()->is('jadwal-kegiatan*') ? 'active' : '' }}"
+                        href="/jadwal-kegiatan">
+                        Kegiatan
+                    </a>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link nav-min" href="/layanan/barang-hilang">Lost & Found</a>
+                    <a class="nav-link nav-min {{ request()->is('berita*') ? 'active' : '' }}" href="/berita">
+                        Berita
+                    </a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link nav-min {{ request()->is('galeri*') ? 'active' : '' }}" href="/galeri">
+                        Galeri Kita
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link nav-min {{ request()->is('layanan/barang-hilang*') ? 'active' : '' }}"
+                        href="/layanan/barang-hilang">
+                        Barang Hilang
+                    </a>
+                </li>
+
             </ul>
+
 
             <!-- Authenticated User Dropdown -->
             @auth

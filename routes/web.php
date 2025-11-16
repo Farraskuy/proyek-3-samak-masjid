@@ -73,6 +73,9 @@ Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->middl
 // Home
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+
+
+
 // News Routes
 Route::prefix('postingan')->group(function () {
     Route::get('/', [HalamanPostinganController::class, 'return_resource']);
