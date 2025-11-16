@@ -4,14 +4,17 @@ namespace App\Http\Controllers\Layanan;
 
 use App\Http\Controllers\Controller;
 use App\Models\LostAndFoundItem;
-use Illuminate\Http\Request;
+use App\Models\LostItemPhoto;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class LostFoundController extends Controller
 {
     public function index()
     {
-        $query = LostAndFoundItem::where('status', 'Tersedia');
+        $query = LostAndFoundItem::with('photos')
+            ->where('status', 'Tersedia');
 
         if (request('search')) {
             $query->where(function ($q) {
@@ -28,7 +31,7 @@ class LostFoundController extends Controller
 
     public function adminIndex()
     {
-        $items = LostAndFoundItem::with('user')->latest()->get();
+        $items = LostAndFoundItem::with('user', 'photos')->latest()->get();
         return view('admin.lost-found.index', compact('items'));
     }
 
@@ -49,32 +52,83 @@ class LostFoundController extends Controller
         ]);
 
         $item = LostAndFoundItem::create([
-            'inputted_by_admin_id' => 2,
+            'inputted_by_admin_id' => auth::id(),
             'item_name' => $request->item_name,
             'description' => $request->description,
             'location_found' => $request->location_found,
-            'featured_image_url' => '',
             'status' => $request->status,
         ]);
 
-        $images = $request->file('featured_images');
-        $imagePaths = [];
-
-        foreach ($images as $image) {
+        foreach ($request->file('featured_images') as $image) {
             $path = $image->store('lost-found', 'public');
-            $imagePaths[] = $path;
-
-            \App\Models\LostItemPhoto::create([
+            LostItemPhoto::create([
                 'item_id' => $item->item_id,
                 'image_url' => $path,
-                'caption' => '',
-                'uploaded_by_admin_id' => 2,
+                'uploaded_by_admin_id' => auth::id(),
             ]);
         }
 
-        $item->update(['featured_image_url' => $imagePaths[0]]);
-
         return redirect()->route('admin.barang-hilang')
             ->with('success', 'Barang berhasil ditambahkan!');
+    }
+
+    public function edit($item_id)
+    {
+        $item = LostAndFoundItem::with('photos')->findOrFail($item_id);
+        return view('admin.lost-found.edit', compact('item'));
+    }
+
+    public function update(Request $request, $item_id)
+    {
+        $request->validate([
+            'item_name' => 'required|string|max:100',
+            'description' => 'required|string',
+            'location_found' => 'required|string|max:100',
+            'status' => 'required|in:Tersedia,Diambil',
+            'featured_images' => 'nullable|array',
+            'featured_images.*' => 'image|mimes:jpeg,png,jpg|max:10240',
+        ]);
+
+        $item = LostAndFoundItem::findOrFail($item_id);
+        $item->update([
+            'item_name' => $request->item_name,
+            'description' => $request->description,
+            'location_found' => $request->location_found,
+            'status' => $request->status,
+        ]);
+
+        if ($request->hasFile('featured_images')) {
+            foreach ($item->photos as $photo) {
+                Storage::disk('public')->delete($photo->image_url);
+                $photo->delete();
+            }
+
+            foreach ($request->file('featured_images') as $image) {
+                $path = $image->store('lost-found', 'public');
+                LostItemPhoto::create([
+                    'item_id' => $item->item_id,
+                    'image_url' => $path,
+                    'uploaded_by_admin_id' => auth::id(),
+                ]);
+            }
+        }
+
+        return redirect()->route('admin.barang-hilang')
+            ->with('success', 'Barang berhasil diperbarui!');
+    }
+
+    public function destroy($item_id)
+    {
+        $item = LostAndFoundItem::findOrFail($item_id);
+
+        foreach ($item->photos as $photo) {
+            Storage::disk('public')->delete($photo->image_url);
+            $photo->delete();
+        }
+
+        $item->delete();
+
+        return redirect()->route('admin.barang-hilang')
+            ->with('success', 'Barang berhasil dihapus!');
     }
 }

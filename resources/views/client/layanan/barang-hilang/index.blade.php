@@ -22,62 +22,66 @@
         </div>
 
         @if($items->isEmpty())
-            <div class="alert alert-info text-center">
-                <i class="fas fa-info-circle me-2"></i>
-                Belum ada barang yang dilaporkan ditemukan.
-            </div>
+        <div class="alert alert-info text-center">
+            <i class="fas fa-info-circle me-2"></i>
+            Belum ada barang yang dilaporkan ditemukan.
+        </div>
         @else
-            <!-- Kartu Barang -->
-            <div class="row g-4">
-                @foreach($items as $item)
-                    <div class="col-md-4">
-                        <div class="card h-100 shadow-sm border border-light rounded-3">
-                            <!-- Gambar -->
-                            <div class="card-body d-flex flex-column">
-                                <div class="text-center mb-3">
-                                    @if($item->featured_image_url)
-                                        <img src="{{ asset('storage/' . $item->featured_image_url) }}"
-                                             alt="{{ $item->item_name }}"
-                                             class="img-fluid rounded"
-                                             style="height: 180px; object-fit: cover; width: 100%;">
-                                    @else
-                                        <div class="bg-light d-flex align-items-center justify-content-center rounded"
-                                             style="height: 180px;">
-                                            <i class="fas fa-box-open fs-1 text-muted"></i>
-                                        </div>
-                                    @endif
-                                </div>
+        <!-- Kartu Barang -->
+        <div class="row g-4">
+            @foreach($items as $item)
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border border-light rounded-3">
+                    <!-- Gambar -->
+                    <div class="card-body d-flex flex-column">
+                        <div class="text-center mb-3">
+                            @php
+                            $firstPhoto = $item->photos->first();
+                            @endphp
 
-                                <!-- Informasi Barang -->
-                                <div class="flex-grow-1">
-                                    <h5 class="card-title fw-bold">{{ $item->item_name }}</h5>
-                                    <p class="text-muted small mb-1">
-                                        <i class="fas fa-map-marker-alt me-1"></i> {{ $item->location_found }}
-                                    </p>
-                                    <p class="text-muted small mb-1">
-                                        <i class="fas fa-align-left me-1"></i> {{ Str::limit($item->description, 40) }}
-                                    </p>
-                                    <p class="fw-semibold small mb-0 text-success">
-                                        <i class="fas fa-info-circle me-1"></i> Status: {{ $item->status }}
-                                    </p>
-                                </div>
-
-                                <!-- Tombol Lihat Detail -->
-                                <div class="mt-3">
-                                    <button type="button" class="btn btn-sm btn-outline-success w-100" data-bs-toggle="modal" data-bs-target="#detailModal{{ $item->item_id }}">
-                                        Lihat Detail
-                                    </button>
-                                </div>
+                            @if($firstPhoto)
+                            <img src="{{ asset('storage/' . $firstPhoto->image_url) }}"
+                                alt="{{ $item->item_name }}"
+                                class="img-fluid rounded"
+                                style="height: 180px; object-fit: cover; width: 100%;">
+                            @else
+                            <div class="bg-light d-flex align-items-center justify-content-center rounded"
+                                style="height: 180px;">
+                                <i class="fas fa-box-open fs-1 text-muted"></i>
                             </div>
+                            @endif
+                        </div>
+
+                        <!-- Informasi Barang -->
+                        <div class="flex-grow-1">
+                            <h5 class="card-title fw-bold">{{ $item->item_name }}</h5>
+                            <p class="text-muted small mb-1">
+                                <i class="fas fa-map-marker-alt me-1"></i> {{ $item->location_found }}
+                            </p>
+                            <p class="text-muted small mb-1">
+                                <i class="fas fa-align-left me-1"></i> {{ Str::limit($item->description, 40) }}
+                            </p>
+                            <p class="fw-semibold small mb-0 text-success">
+                                <i class="fas fa-info-circle me-1"></i> Status: {{ $item->status }}
+                            </p>
+                        </div>
+
+                        <!-- Tombol Lihat Detail -->
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-sm btn-outline-success w-100" data-bs-toggle="modal" data-bs-target="#detailModal{{ $item->item_id }}">
+                                Lihat Detail
+                            </button>
                         </div>
                     </div>
-                @endforeach
+                </div>
             </div>
+            @endforeach
+        </div>
 
-            <!-- Pagination -->
-            <div class="d-flex justify-content-center mt-4">
-                {{ $items->links() }}
-            </div>
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            {{ $items->links() }}
+        </div>
         @endif
     </div>
 </section>
@@ -92,18 +96,35 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row">
+                <div class="row g-4">
                     <div class="col-md-6">
-                        @if($item->featured_image_url)
-                            <img src="{{ asset('storage/' . $item->featured_image_url) }}"
-                                 alt="{{ $item->item_name }}"
-                                 class="img-fluid rounded"
-                                 style="max-height: 300px; object-fit: contain; width: 100%;">
+                        @if($item->photos->isEmpty())
+                        <div class="bg-light d-flex align-items-center justify-content-center rounded" style="height: 300px;">
+                            <i class="fas fa-box-open fs-1 text-muted"></i>
+                        </div>
+                        @elseif($item->photos->count() === 1)
+                        <img src="{{ asset('storage/' . $item->photos[0]->image_url) }}"
+                            alt="{{ $item->item_name }}"
+                            class="img-fluid rounded"
+                            style="max-height: 300px; object-fit: contain; width: 100%;">
                         @else
-                            <div class="bg-light d-flex align-items-center justify-content-center rounded"
-                                 style="height: 300px;">
-                                <i class="fas fa-box-open fs-1 text-muted"></i>
+                        <div id="photoCarousel{{ $item->item_id }}" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                @foreach($item->photos as $index => $photo)
+                                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                                    <img src="{{ asset('storage/' . $photo->image_url) }}"
+                                        class="d-block w-100"
+                                        style="max-height: 300px; object-fit: contain;">
+                                </div>
+                                @endforeach
                             </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#photoCarousel{{ $item->item_id }}" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon"></span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#photoCarousel{{ $item->item_id }}" data-bs-slide="next">
+                                <span class="carousel-control-next-icon"></span>
+                            </button>
+                        </div>
                         @endif
                     </div>
                     <div class="col-md-6">
@@ -119,11 +140,11 @@
                         <h6 class="fw-bold">Status:</h6>
                         <p>
                             @if($item->status === 'Tersedia')
-                                <span class="badge bg-success">Tersedia</span>
+                            <span class="badge bg-success">Tersedia</span>
                             @elseif($item->status === 'Diambil')
-                                <span class="badge bg-secondary">Diambil</span>
+                            <span class="badge bg-secondary">Diambil</span>
                             @else
-                                <span class="badge bg-warning">{{ $item->status }}</span>
+                            <span class="badge bg-warning">{{ $item->status }}</span>
                             @endif
                         </p>
 
@@ -131,10 +152,10 @@
                         <p>{{ $item->created_at->format('d M Y H:i') }}</p>
 
                         @if($item->retrieved_by_name)
-                            <h6 class="fw-bold">Diambil Oleh:</h6>
-                            <p>{{ $item->retrieved_by_name }}</p>
-                            <h6 class="fw-bold">Tanggal Diambil:</h6>
-                            <p>{{ $item->retrieved_at?->format('d M Y H:i') ?? '—' }}</p>
+                        <h6 class="fw-bold">Diambil Oleh:</h6>
+                        <p>{{ $item->retrieved_by_name }}</p>
+                        <h6 class="fw-bold">Tanggal Diambil:</h6>
+                        <p>{{ $item->retrieved_at?->format('d M Y H:i') ?? '—' }}</p>
                         @endif
                     </div>
                 </div>
@@ -151,12 +172,13 @@
 
 @section('styles')
 <style>
-.card {
-    transition: transform 0.2s;
-}
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-}
+    .card {
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
 </style>
 @endsection
