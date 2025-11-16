@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Keuangan\ZISController;
-use App\Http\Controllers\Layanan\LostFoundController as LayananLostFoundController;
 use App\Http\Controllers\Postingan\PostinganController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\LostFoundController;
@@ -91,7 +90,7 @@ Route::prefix('admin/postingan')->name('postingan.admin.')->group(function () {
 
 // Other Pages
 Route::get('/donasi', [ZISController::class, 'index'])->name('informasi.rekening');
-Route::get('/layanan/barang-hilang', [LayananLostFoundController::class, 'index'])->name('layanan.barang-hilang');
+Route::get('/layanan/barang-hilang', [LostFoundController::class, 'index'])->name('layanan.barang-hilang');
 
 // Admin Panel
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -99,24 +98,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Lost and Found Management
     Route::get('/barang-hilang', [LostFoundController::class, 'adminIndex'])->name('barang-hilang');
-    Route::get('/barang-hilang/tambah', [LayananLostFoundController::class, 'create'])->name('barang-hilang.tambah');
-    Route::post('/barang-hilang', [LayananLostFoundController::class, 'store'])->name('barang-hilang.store');
-    Route::get('/barang-hilang/{id}/edit', [LayananLostFoundController::class, 'edit'])->name('barang-hilang.edit');
-    Route::put('/barang-hilang/{id}', [LayananLostFoundController::class, 'update'])->name('barang-hilang.update');
-    Route::delete('/barang-hilang/{id}', [LayananLostFoundController::class, 'destroy'])->name('barang-hilang.destroy');
-
-    // Admin basic index routes for features linked in admin home
-    Route::get('/galeri', [ManagementController::class, 'galeri'])->name('galeri');
-    Route::get('/kegiatan', [ManagementController::class, 'kegiatan'])->name('kegiatan');
-    Route::get('/donasi/verifikasi', [ManagementController::class, 'donasi'])->name('donasi.verifikasi');
-    Route::get('/keuangan', [ManagementController::class, 'keuangan'])->name('keuangan');
-    Route::get('/kajian', [ManagementController::class, 'kajian'])->name('kajian');
-    Route::get('/pengguna', [ManagementController::class, 'pengguna'])->name('pengguna');
-    Route::get('/konsultasi', [ManagementController::class, 'konsultasi'])->name('konsultasi');
+    Route::get('/barang-hilang/tambah', [LostFoundController::class, 'create'])->name('barang-hilang.tambah');
+    Route::post('/barang-hilang', [LostFoundController::class, 'store'])->name('barang-hilang.store');
+    Route::get('/barang-hilang/{id}/edit', [LostFoundController::class, 'edit'])->name('barang-hilang.edit');
+    Route::put('/barang-hilang/{id}', [LostFoundController::class, 'update'])->name('barang-hilang.update');
+    Route::delete('/barang-hilang/{id}', [LostFoundController::class, 'destroy'])->name('barang-hilang.destroy');
 });
 
 // Temporary/Test route
-Route::get('/aku/ini/test', [NewsController::class, 'index']);
+// Route::get('/aku/ini/test', [NewsController::class, 'index']);
 Route::get('/aku/ini/test-email', function () {
     // return view('emails.reset-password', ['resetUrl' => 'https://example.com/reset-password']);
     Mail::to("gensinkn@gmail.com")->queue(new \App\Mail\ResetPasswordMail("1", "gensinkn@gmail.com"));
