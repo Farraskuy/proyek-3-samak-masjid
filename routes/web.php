@@ -57,7 +57,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // LOST AND FOUND MANAGEMENT
     Route::get('/barang-hilang', [LostFoundController::class, 'adminIndex'])->name('barang-hilang');
     Route::get('/barang-hilang/tambah', [LostFoundController::class, 'create'])->name('barang-hilang.tambah');
-    Route::post('/barang-hilang', [LostFoundController::class, 'store']);
+    Route::post('/barang-hilang', [LostFoundController::class, 'store'])->name('barang-hilang.store');
+    Route::get('/barang-hilang/{id}/edit', [Layanan\LostFoundController::class, 'edit'])->name('barang-hilang.edit');
+    Route::put('/barang-hilang/{id}', [Layanan\LostFoundController::class, 'update'])->name('barang-hilang.update');
+    Route::delete('/barang-hilang/{id}', [Layanan\LostFoundController::class, 'destroy'])->name('barang-hilang.destroy');
 });
 
 

@@ -45,6 +45,16 @@ class LostAndFound extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'inputted_by_admin_id' => $adminId,
+                'item_name' => 'Botol Minum Stainless Steel',
+                'description' => 'Berwarna biru dengan tutup hitam',
+                'location_found' => 'Area Wudhu Wanita',
+                'featured_image_url' => '',
+                'status' => 'Tersedia',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }
