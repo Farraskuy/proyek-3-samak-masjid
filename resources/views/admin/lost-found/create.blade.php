@@ -19,29 +19,48 @@
                 <div class="mb-3">
                     <label class="form-label">Nama Barang <span class="text-danger">*</span></label>
                     <input type="text" name="item_name" class="form-control" required>
+                    @error('item_name')
+                        <div class="text-danger mt-1">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Deskripsi <span class="text-danger">*</span></label>
-                    <textarea name="description" class="form-control" rows="3" required></textarea>
+                    <textarea name="description" class="form-control" rows="3" required>{{ old('description') }}</textarea>
+                    @error('description')
+                        <div class="text-danger mt-1">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Lokasi Ditemukan <span class="text-danger">*</span></label>
-                    <input type="text" name="location_found" class="form-control" required>
+                    <input type="text" name="location_found" class="form-control" required value="{{ old('location_found') }}">
+                    @error('location_found')
+                        <div class="text-danger mt-1">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label">Status <span class="text-danger">*</span></label>
                     <select name="status" class="form-select" required>
-                        <option value="Tersedia">Tersedia</option>
-                        <option value="Diambil">Diambil</option>
+                        <option value="Tersedia" {{ old('status') == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
+                        <option value="Diambil" {{ old('status') == 'Diambil' ? 'selected' : '' }}>Diambil</option>
                     </select>
+                    @error('status')
+                        <div class="text-danger mt-1">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Foto Barang (Opsional)</label>
-                    <input type="file" name="featured_image" class="form-control" accept="image/*">
+                    <label class="form-label">Foto Barang <span class="text-danger">*</span></label>
+                    <input type="file" name="featured_images[]" class="form-control" accept="image/*" multiple required>
+                    <small class="text-muted">Pilih minimal 1 foto. Bisa pilih banyak sekaligus.</small>
+                    @error('featured_images')
+                        <div class="text-danger mt-1">{{ $message }}</div>
+                    @enderror
+                    @error('featured_images.*')
+                        <div class="text-danger mt-1">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <button type="submit" class="btn btn-success">
