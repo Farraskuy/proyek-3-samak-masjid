@@ -7,10 +7,16 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Keuangan\ZISController;
-use App\Http\Controllers\Postingan\PostinganController;
+use App\Http\Controllers\PostinganController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\LostFoundController;
 use App\Http\Controllers\KeuanganController;
+use App\Http\Controllers\DonasiController;
+use App\Http\Controllers\GaleriController;
+use App\Http\Controllers\KegiatanController;
+use App\Http\Controllers\KajianController;
+use App\Http\Controllers\PenggunaController;
+use App\Http\Controllers\KonsultasiController;
 use Illuminate\Support\Facades\Mail;
 
 /*
@@ -103,6 +109,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/barang-hilang/{id}/edit', [LostFoundController::class, 'edit'])->name('barang-hilang.edit');
     Route::put('/barang-hilang/{id}', [LostFoundController::class, 'update'])->name('barang-hilang.update');
     Route::delete('/barang-hilang/{id}', [LostFoundController::class, 'destroy'])->name('barang-hilang.destroy');
+
+    // Admin feature indexes (sidebar)
+    Route::get('/galeri', [GaleriController::class, 'index'])->name('galeri');
+    Route::get('/kegiatan', [KegiatanController::class, 'index'])->name('kegiatan');
+    Route::get('/donasi/verifikasi', [DonasiController::class, 'index'])->name('donasi.verifikasi');
+    Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan');
+    Route::get('/kajian', [KajianController::class, 'index'])->name('kajian');
+    Route::get('/pengguna', [PenggunaController::class, 'index'])->name('pengguna');
+    Route::get('/konsultasi', [KonsultasiController::class, 'index'])->name('konsultasi');
 });
 
 // Temporary/Test route

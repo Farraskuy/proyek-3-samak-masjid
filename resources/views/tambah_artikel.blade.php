@@ -59,14 +59,14 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.6);
-            
+
             /* Menengahkan konten (modal-box) */
             display: flex;
             justify-content: center;
             align-items: center;
-            
+
             /* Tampil di paling depan */
-            z-index: 1000; 
+            z-index: 1;
         }
 
         .modal-box {
@@ -123,7 +123,7 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Tombol Back -->
-    <button id="backButton" 
+    <button id="backButton"
             style="margin-bottom: 15px; padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 1%; margin-left: 2%; margin-bottom: 1%;">
       ← Kembali
     </button>
@@ -165,7 +165,7 @@
         <!-- Hidden input untuk isi Quill -->
         <input type="hidden" name="content_view" id="content_hidden">
 
-        <button type="submit" 
+        <button type="submit"
                 style="margin-top: 15px; padding: 8px 15px; background-color: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer;">
           Simpan Artikel
         </button>
@@ -181,7 +181,7 @@
             ['bold', 'italic', 'underline'],
             [{ 'header': [1, 2, false] }],
             ['link', 'image'],
-            [{ 'align': [] }], 
+            [{ 'align': [] }],
             ['clean']
           ]
         }
@@ -220,7 +220,7 @@
 
 
 
-      
+
 
 
 

@@ -279,6 +279,7 @@
     display: block;
     pointer-events: none;
     transition: 0s;
+    z-index: 99999;
 }
 
 .sidebar .nav-links li .sub-menu span.fa-regular {
@@ -310,7 +311,7 @@
 .sidebar .nav-links li .sub-menu.blank {
     opacity: 1;
     pointer-events: auto;
-    padding: 3px 20px 6px 16px;
+    padding: 0;
     opacity: 0;
     pointer-events: none;
 }
@@ -647,6 +648,23 @@ fieldset:disabled {
     background-color: #e2cbf7;
 }
 
+.table td,
+.table th {
+    font-size: 14px;
+}
+
+.row.g-0.gap-3 * {
+    font-size: 14px;
+}
+
+.table td.fit,
+.table th.fit {
+    padding-left: 15px;
+    padding-right: 15px;
+    white-space: nowrap;
+    width: 1%;
+}
+
 /* .btn i.fa-spinner-third {
     display: none;
 }
@@ -674,4 +692,3 @@ fieldset:disabled {
     opacity: 1;
     visibility: visible;
 }
-
