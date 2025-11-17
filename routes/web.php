@@ -86,6 +86,10 @@ Route::prefix('admin/postingan')->name('postingan.admin.')->group(function () {
     Route::get('/tambah', [PostinganController::class, 'create'])->name('create');
     Route::post('/posts', [PostinganController::class, 'store'])->name('store');
     Route::delete('/delete/{id}', [PostinganController::class, 'deleteArtikel'])->name('delete');
+
+    Route::get('/edit/{id}',[PostinganController::class,'edit'])->name('edit');
+
+    Route::put('/update/{id}', [PostinganController::class, 'update'])->name('update');
 });
 
 // Other Pages

@@ -29,29 +29,39 @@ class PostinganController extends Controller
     }
 
     // Show detail page by slug (previously DetailPostinganController::return_resource)
-    public function showDetail($slug)
+    public function showDetail($slug_from_view)
     {
-        $data_posts = DB::table('posts')->select('content')->where('slug', $slug)->first();
+        
+        $data_posts= \DB::table('posts')->select('content')->where('slug',$slug_from_view)->first();
 
         $kontent_html_tag = $data_posts->content;
 
+        // BUNGKUS AGAR TIDAK DI-MERGE
+        $kontent_html_tag = "<div>$kontent_html_tag</div>";
+
         $obj_html = new \DOMDocument();
         libxml_use_internal_errors(true);
+
+        // load HTML wrapper
         $obj_html->loadHTML($kontent_html_tag, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         libxml_clear_errors();
 
+        // Tambah prefix /storage/
         $img = $obj_html->getElementsByTagName("img");
-
-        foreach ($img as $image_tag) {
-            $src = $image_tag->getAttribute('src');
+        foreach($img as $image_tag){
+            $src = $image_tag->getAttribute('src');  
             if (!str_starts_with($src, '/storage/')) {
                 $image_tag->setAttribute('src', '/storage/' . $src);
             }
         }
 
-        $updated_html = $obj_html->saveHTML();
+        // Ambil isi dalam wrapper div
+        $updated_html = $obj_html->saveHTML($obj_html->documentElement);
 
-        return view('post.fitur_detail_postingan', ['data_posts' => $updated_html]);
+        // Hapus <div> pembungkus
+        $updated_html = preg_replace('/^<div>|<\/div>$/', '', $updated_html);
+
+        return view('post.fitur_detail_postingan',['data_posts' => $updated_html]);
     }
 
     // Return add-article form (previously AddPostinganController::return_resource)
@@ -140,7 +150,7 @@ class PostinganController extends Controller
     public function getEditArtikel()
     {
         $post = DB::table('posts')->select('title', 'status', 'kategori', 'slug', 'post_id')->get();
-        return view('post.edit_artikel_admin')->with('post_data', $post);
+        return view('post.list_artikel_admin')->with('post_data', $post);
     }
 
     // Delete article and associated images (previously ShowPostingan::deleteArtikel)
@@ -178,4 +188,95 @@ class PostinganController extends Controller
             Storage::disk('public')->delete($src);
         }
     }
+
+    public function edit($id)
+    {
+        $post = DB::table('posts')->where('post_id', $id)->firstOrFail();
+
+        // Tambahkan /storage/ hanya untuk tag <img>
+        $post->content = preg_replace(
+            '/<img\s+[^>]*src="(news\/[^"]+)"/i',
+            '<img src="/storage/$1"',
+            $post->content
+        );
+
+        return view('post.edit_postingan_admin', compact('post'));
+    }
+
+
+
+
+
+   public function update(Request $request, $id)
+    {
+        // 1. Ambil data post yang ada
+        $post = DB::table('posts')->where('post_id', $id)->firstOrFail();
+
+        // 2. Validasi input
+        $validated = $request->validate([
+            'title_view' => 'required|string|max:255',
+            'keterangan_view' => 'required|string',
+            'kategori_view' => 'required|string',
+            'image_view' => 'nullable|image|max:2048', // Boleh null jika tidak ganti gambar
+            'content_view' => 'nullable|string'
+        ]);
+
+        // 3. Handle Gambar Header (Featured Image)
+        $featuredImagePath = $post->featured_image_url; // Default pakai gambar lama
+
+        if ($request->hasFile('image_view')) {
+            // Jika ada gambar baru di-upload:
+            
+            // Hapus gambar lama (jika ada)
+            if ($post->featured_image_url) {
+                Storage::delete($post->featured_image_url);
+            }
+
+            // Simpan gambar baru
+            $image = $request->file('image_view');
+            $newName = uniqid() . '_' . $image->getClientOriginalName();
+            $featuredImagePath = $image->storeAs('public/news/images', $newName);
+        }
+
+            // 4. Handle Konten Quill (termasuk gambar base64 baru)
+            $content = $request->input('content_view');
+
+            if ($content) {
+
+                // Hapus prefix /storage/ agar database tetap bersih
+                $content = preg_replace(
+                    '/src="\/storage\/(news\/[^"]+)"/i',
+                    'src="$1"',
+                    $content
+                );
+
+                // Proses gambar base64 baru
+                $content = $this->processQuillImages($content);
+            }
+
+
+        // 5. Handle Slug (buat baru jika judul berubah)
+        $slug = $post->slug;
+        if ($post->title !== $validated['title_view']) {
+             $slug = Str::slug($validated['title_view']) . '-' . 'DAKWAH' . uniqid();
+        }
+
+        // 6. Update ke database
+        DB::table('posts')->where('post_id', $id)->update([
+            'title' => $validated['title_view'],
+            'slug' => $slug,
+            'keterangan' => $validated['keterangan_view'],
+            'featured_image_url' => $featuredImagePath,
+            'content' => $content,
+            'kategori' => $validated['kategori_view'],
+            'created_at' => now() // Tambahkan updated_at
+            // Anda bisa tambahkan field lain jika perlu di-update
+        ]);
+
+        return redirect()->to('/admin/postingan')->with('success_post_disimpan_di_database', 'Data berhasil diupdate!');
+    }
+
+
+
+
 }

@@ -137,7 +137,7 @@
           </div>
           
           <div class="d-flex gap-2">
-            <a href="/admin/artikel/edit/{{ $row->post_id }}" class="btn btn-light border" aria-label="Edit">
+            <a href="/admin/postingan/edit/{{ $row->post_id }}" class="btn btn-light border" aria-label="Edit">
               <i class="fas fa-pen text-muted"></i>
             </a>
             
