@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="{{ asset('assets/fonts/fonts.css') }}">
 
     {{-- icon --}}
-    {{-- <link rel="shortcut icon" href="{{ asset('assets/img') }}/logo.png" type="image/x-icon"> --}}
+    <link rel="shortcut icon" href="{{ asset('assets/image') }}/logo.ico" type="image/x-icon">
 
     {{-- style --}}
     <link rel="stylesheet" href="{{ asset('assets/css/admin.css') }}">
@@ -84,7 +84,7 @@
                     @csrf
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-16px" id="exampleModalLabel">Konfirmasi Logout</h1>
+                            <p class="modal-title fw-semibold" id="exampleModalLabel">Konfirmasi Logout</p>
                         </div>
                         <div class="modal-body">
                             <p class="mb-0 fs-15px">Apakah anda yain ingin logout?</p>
@@ -107,6 +107,46 @@
 
     {{-- development test clockwork --}}
     {{-- <script src="https://cdn.jsdelivr.net/gh/underground-works/clockwork-browser@1/dist/toolbar.js"></script> --}}
+
+
+    {{-- Auto Show Alerts --}}
+    <script>
+        @if (session('success'))
+            Toast.fire({
+                icon: 'success',
+                title: @json(session('success'))
+            });
+        @endif
+
+        @if (session('error'))
+            Toast.fire({
+                icon: 'error',
+                title: @json(session('error'))
+            });
+        @endif
+
+        @if (session('warning'))
+            Toast.fire({
+                icon: 'warning',
+                title: @json(session('warning'))
+            });
+        @endif
+
+        @if (session('info'))
+            Toast.fire({
+                icon: 'info',
+                title: @json(session('info'))
+            });
+        @endif
+
+        // Jika ada error validasi (multiple errors)
+        @if ($errors->any())
+            Toast.fire({
+                icon: 'error',
+                title: @json($errors->first()) // tampilkan error pertama
+            });
+        @endif
+    </script>
 
     {{-- custom script --}}
     <script src="{{ asset('assets/js') }}/admin.js"></script>

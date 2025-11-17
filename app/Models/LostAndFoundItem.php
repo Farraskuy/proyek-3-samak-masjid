@@ -33,4 +33,9 @@ class LostAndFoundItem extends Model
     {
         return $this->belongsTo(\App\Models\User::class, 'inputted_by_admin_id');
     }
+
+    public function photos()
+    {
+        return $this->hasMany(\App\Models\LostItemPhoto::class, 'item_id', 'item_id');
+    }
 }

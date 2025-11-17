@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        Schema::create('otps', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('destination'); // email or phone number
+            $table->enum('type', ['email', 'phone']);
+            $table->string('code');
+            $table->unsignedSmallInteger('attempts')->default(0);
+            $table->boolean('used')->default(false);
+            $table->timestamp('expires_at')->nullable();
+            $table->timestamps();
+
+            $table->index(['destination', 'type']);
+        });
+    }
+
+    public function down()
+    {
+        Schema::dropIfExists('otps');
+    }
+};

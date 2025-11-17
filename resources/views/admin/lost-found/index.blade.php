@@ -48,18 +48,23 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>
                             <div class="d-flex align-items-center">
-                                @if($item->featured_image_url)
-                                <img src="{{ asset('storage/' . $item->featured_image_url) }}"
-                                    alt="{{ $item->item_name }}"
-                                    class="me-3 rounded"
-                                    width="40" height="40"
-                                    style="object-fit: cover;">
+                                @php
+                                    $firstPhoto = $item->photos->first();
+                                @endphp
+
+                                @if($firstPhoto)
+                                    <img src="{{ asset('storage/' . $firstPhoto->image_url) }}"
+                                        alt="{{ $item->item_name }}"
+                                        class="me-3 rounded"
+                                        width="40" height="40"
+                                        style="object-fit: cover;">
                                 @else
-                                <div class="bg-light me-3 d-flex align-items-center justify-content-center rounded"
-                                    style="width: 40px; height: 40px;">
-                                    <i class="fa-duotone fa-box text-muted fs-5"></i>
-                                </div>
+                                    <div class="bg-light me-3 d-flex align-items-center justify-content-center rounded"
+                                        style="width: 40px; height: 40px;">
+                                        <i class="fa-duotone fa-box text-muted fs-5"></i>
+                                    </div>
                                 @endif
+
                                 <div>
                                     <div class="fw-semibold">{{ $item->item_name }}</div>
                                     <small class="text-muted">{{ Str::limit($item->description, 40) }}</small>
@@ -88,12 +93,16 @@
                         <td>{{ $item->created_at->format('d M Y') }}</td>
                         <td class="text-end">
                             <div class="d-flex justify-content-end gap-1">
-                                <button class="btn btn-sm btn-outline-secondary disabled">
+                                <a href="{{ route('admin.barang-hilang.edit', $item->item_id) }}" class="btn btn-sm btn-outline-secondary">
                                     <i class="fa-regular fa-pen-to-square"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger disabled">
-                                    <i class="fa-regular fa-trash-can"></i>
-                                </button>
+                                </a>
+                                <form action="{{ route('admin.barang-hilang.destroy', $item->item_id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus barang ini? Semua foto akan ikut terhapus.')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>

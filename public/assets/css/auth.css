@@ -12,3 +12,51 @@ body {
     position: relative;
     overflow: hidden;
 }
+
+/* Scroll to bottom button styling */
+.scroll-to-bottom-btn {
+    position: absolute;
+    bottom: 2rem;
+    right: 2rem;
+    width: 44px;
+    height: 44px;
+    background-color: #175C9E;
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(23, 92, 158, 0.3);
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.scroll-to-bottom-btn:hover {
+    background-color: #0d3d7a;
+    box-shadow: 0 6px 16px rgba(23, 92, 158, 0.4);
+    transform: translateY(-2px);
+}
+
+.scroll-to-bottom-btn.show {
+    display: flex;
+}
+
+.btn-submit {
+    background-color: #175C9E;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 18px;
+}
+
+.btn-submit:hover {
+    background-color: #134570;
+}
+
+.btn-submit:disabled {
+    background-color: #175C9E !important;
+    color: #ffffff !important;
+    opacity: 0.8 !important;
+}

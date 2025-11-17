@@ -7,7 +7,8 @@
                     <i class="fas fa-mosque me-2 text-warning"></i>SAMAK-Masjid
                 </h6>
                 <p class="text-white-50">
-                    Sistem Administrasi Masjid Masjid yang melayani sivitas akademika dengan berbagai program kegiatan islami.
+                    Sistem Administrasi Masjid Masjid yang melayani sivitas akademika dengan berbagai program kegiatan
+                    islami.
                 </p>
             </div>
 
