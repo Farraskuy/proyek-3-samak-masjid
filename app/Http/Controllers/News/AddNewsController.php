@@ -161,14 +161,19 @@ class AddNewsController extends Controller
         return redirect()->to('/admin/artikel')->with('success_post_disimpan_di_database', 'Data berhasil diupdate!');
     }
 
-
 public function edit($id)
-    {
-        // Ambil data post, atau gagal jika tidak ditemukan
-        $post = DB::table('posts')->where('post_id', $id)->firstOrFail();
-        
-        // Kirim data post ke view 'admin.artikel.edit'
-        return view('post.edit_artikel_admin', compact('post'));
-    }
+{
+    $post = DB::table('posts')->where('post_id', $id)->firstOrFail();
+
+    // Tambahkan /storage/ hanya untuk tag <img>
+    $post->content = preg_replace(
+        '/<img\s+[^>]*src="(news\/[^"]+)"/i',
+        '<img src="/storage/$1"',
+        $post->content
+    );
+
+    return view('post.edit_artikel_admin', compact('post'));
+}
+
 
 }
