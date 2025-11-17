@@ -86,7 +86,7 @@
     });
 
     // --- BARU: Mengisi editor dengan konten dari database ---
-    // Gunakan {!! json_encode(...) !!} untuk mengubah string PHP (yang berisi HTML)
+    // Gunakan json_encode(...)  untuk mengubah string PHP (yang berisi HTML)
     // menjadi string JavaScript yang aman.
     const existingContent = {!! json_encode($post->content) !!};
     if (existingContent) {

@@ -101,4 +101,74 @@ class AddNewsController extends Controller
           return view('post.tambah_artikel');
     }
 
+
+    public function update(Request $request, $id)
+    {
+        // 1. Ambil data post yang ada
+        $post = DB::table('posts')->where('post_id', $id)->firstOrFail();
+
+        // 2. Validasi input
+        $validated = $request->validate([
+            'title_view' => 'required|string|max:255',
+            'keterangan_view' => 'required|string',
+            'kategori_view' => 'required|string',
+            'image_view' => 'nullable|image|max:2048', // Boleh null jika tidak ganti gambar
+            'content_view' => 'nullable|string'
+        ]);
+
+        // 3. Handle Gambar Header (Featured Image)
+        $featuredImagePath = $post->featured_image_url; // Default pakai gambar lama
+
+        if ($request->hasFile('image_view')) {
+            // Jika ada gambar baru di-upload:
+            
+            // Hapus gambar lama (jika ada)
+            if ($post->featured_image_url) {
+                Storage::delete($post->featured_image_url);
+            }
+
+            // Simpan gambar baru
+            $image = $request->file('image_view');
+            $newName = uniqid() . '_' . $image->getClientOriginalName();
+            $featuredImagePath = $image->storeAs('public/news/images', $newName);
+        }
+
+        // 4. Handle Konten Quill (termasuk gambar base64 baru)
+        $content = $request->input('content_view');
+        if ($content) {
+            // Proses gambar base64 baru, gambar lama (URL) akan diabaikan
+            $content = $this->processQuillImages($content);
+        }
+
+        // 5. Handle Slug (buat baru jika judul berubah)
+        $slug = $post->slug;
+        if ($post->title !== $validated['title_view']) {
+             $slug = Str::slug($validated['title_view']) . '-' . 'DAKWAH' . uniqid();
+        }
+
+        // 6. Update ke database
+        DB::table('posts')->where('post_id', $id)->update([
+            'title' => $validated['title_view'],
+            'slug' => $slug,
+            'keterangan' => $validated['keterangan_view'],
+            'featured_image_url' => $featuredImagePath,
+            'content' => $content,
+            'kategori' => $validated['kategori_view'],
+            'updated_at' => now() // Tambahkan updated_at
+            // Anda bisa tambahkan field lain jika perlu di-update
+        ]);
+
+        return redirect()->to('/admin/artikel')->with('success_post_disimpan_di_database', 'Data berhasil diupdate!');
+    }
+
+
+public function edit($id)
+    {
+        // Ambil data post, atau gagal jika tidak ditemukan
+        $post = DB::table('posts')->where('post_id', $id)->firstOrFail();
+        
+        // Kirim data post ke view 'admin.artikel.edit'
+        return view('post.edit_artikel_admin', compact('post'));
+    }
+
 }

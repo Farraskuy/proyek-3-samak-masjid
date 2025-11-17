@@ -15,7 +15,12 @@ use App\Http\Controllers\News\DetailNewsController;
 
 Route::get('admin/artikel/tambah', [AddNewsController::class,'return_resource']);
 
-Route::get('/admin/artikel/edit/',[])
+
+// TODOOOOOOOOO : EMIR ALTHAF 5:43
+Route::get('/admin/artikel/edit/{id}',[AddNewsController::class,'edit'])->name('admin.artikel.edit');
+
+Route::put('/admin/artikel/update/{id}', [AddNewsController::class, 'update'])->name('admin.artikel.update');
+
 
 
 Route::get('/postingan',[HalamanPostinganController::class,'return_resource']);
