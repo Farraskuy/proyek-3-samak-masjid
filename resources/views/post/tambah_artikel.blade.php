@@ -133,7 +133,7 @@
       <h3>Tambah Artikel Baru</h3>
 
       <!-- Form biasa (non-async) -->
-      <form action="/posts" method="POST" id="form-postingan" enctype="multipart/form-data">
+      <form action="/admin/postingan/posts" method="POST" id="form-postingan" enctype="multipart/form-data">
         @csrf
 
         <label for="headerImage">Gambar Header:</label><br>

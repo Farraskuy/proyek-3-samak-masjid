@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Postingan;
 
 use App\Http\Controllers\Controller;
-use App\Models\Postingan;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -12,10 +12,20 @@ use Illuminate\Support\Facades\Storage;
 class PostinganController extends Controller
 {
     // Show listing page (previously HalamanPostinganController::return_resource)
-    public function index()
+    public function index(Request $request)
     {
-        $data_posts = Postingan::all();
-        return view('post.halaman_postingan', ['data_posts' => $data_posts]);
+        $filter = $request->query('filter'); // ?filter=...
+
+        $query = \DB::table('posts');
+
+            if (!empty($filter)) {
+        $query->where('kategori', $filter);
+    }
+        $query->orderBy('created_at', 'desc');
+        
+        $data_posts = $query->paginate(9)->appends($request->query());
+
+        return view('post.halaman_postingan',['data_posts'=> $data_posts]);
     }
 
     // Show detail page by slug (previously DetailPostinganController::return_resource)
@@ -48,7 +58,7 @@ class PostinganController extends Controller
     public function create()
     {
         session()->flash('token_tambah_artikel', 199);
-        return view('tambah_artikel');
+        return view('post.tambah_artikel');
     }
 
     // Store uploaded article (previously AddPostinganController::upload)
@@ -88,7 +98,7 @@ class PostinganController extends Controller
             'user_id' => 1
         ]);
 
-        return redirect()->to('/admin/artikel')->with('success_post_disimpan_di_database', 'Data berhasil disimpan!');
+        return redirect()->to('/admin/postingan')->with('success_post_disimpan_di_database', 'Data berhasil disimpan!');
     }
 
     // Process base64 images in Quill content and store them (from AddPostinganController::processQuillImages)
@@ -130,7 +140,7 @@ class PostinganController extends Controller
     public function getEditArtikel()
     {
         $post = DB::table('posts')->select('title', 'status', 'kategori', 'slug', 'post_id')->get();
-        return view('edit_artikel')->with('post_data', $post);
+        return view('post.edit_artikel_admin')->with('post_data', $post);
     }
 
     // Delete article and associated images (previously ShowPostingan::deleteArtikel)

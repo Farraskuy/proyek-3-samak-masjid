@@ -1,133 +1,161 @@
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@extends('client.layout')
 
-<button id="backButton" 
-        style="margin-bottom: 15px; padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 1%; margin-left: 2%; margin-bottom: 1%;">
-    ← Kembali
-</button>
+@section('title', 'Beranda - SAMAK-Kampus')
 
-<div style="max-width: 90%; margin: auto; border: 1px solid #ddd; border-radius: 8px; padding: 15px; ">
-    
-    <h3>Edit Artikel</h3>
+@push('styles')
+    <style>
+        * {
+            font-family: 'Poppins', "Lexend", Geneva, Verdana, sans-serif;
+        }
 
-    @if ($errors->any())
-        <div style="color: red; margin-bottom: 15px;">
-            <strong>Error:</strong>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+        .bg-pattern {
+            background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+            background-size: 100% 100%;
+        }
 
-    <form action="{{ route('admin.artikel.update', $post->post_id) }}" method="POST" id="form-postingan" enctype="multipart/form-data">
-        @csrf
-        @method('PUT') <label for="headerImage">Gambar Header: (Kosongkan jika tidak ingin ganti)</label><br>
-        <input type="file" name="image_view" id="headerImage" accept="image/*" style="margin-bottom: 15px;"><br>
-        
-        <img id="preview" 
-             src="{{ $post->featured_image_url ? Storage::url($post->featured_image_url) : '' }}" 
-             alt="Preview" 
-             style="max-width: 200px; display: {{ $post->featured_image_url ? 'block' : 'none' }};">
+        .feature-card:hover {
+            border-color: #2dd4bf !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
 
-        <label for="title">Judul Artikel:</label><br>
-        <input type="text" name="title_view" id="title" placeholder="Tulis judul di sini"
-               value="{{ old('title_view', $post->title) }}"
-               style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;"><br>
+        .btn-amber {
+            background-color: #f59e0b;
+            border-color: #f59e0b;
+            color: white;
+        }
 
-        <label for="keterangan">Keterangan:</label><br>
-        <input type="text" name="keterangan_view" id="keterangan" placeholder="Tuliskan keterangan di sini"
-               value="{{ old('keterangan_view', $post->keterangan) }}"
-               style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;"><br>
+        .btn-amber:hover {
+            background-color: #d97706;
+            border-color: #d97706;
+        }
 
-        <label for="kategori">Kategori Konten:</label><br>
-        <select name="kategori_view" id="kategori" style="margin-bottom: 10px;" required>
-            <option value="" hidden disabled>Pilih kategori...</option>
+        .feature-icon {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .feature-card {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+        }
+    </style>
+@endpush
+
+@section('content')
+ 
+
+<!-- untuk menampilkan status boy -->
+@if (session('success_post_disimpan_di_database'))
+
+    <style>
+        .tombol-sukses-lonjong {
+           
+            border-radius: 50px !important; 
             
-            <option value="artikel" {{ old('kategori_view', $post->kategori) == 'artikel' ? 'selected' : '' }}>
-                Artikel dakwah
-            </option>
-            <option value="berita" {{ old('kategori_view', $post->kategori) == 'berita' ? 'selected' : '' }}>
-                Berita
-            </option>
-            <option value="tausiyah" {{ old('kategori_view', $post->kategori) == 'tausiyah' ? 'selected' : '' }}>
-                Tausiyah singkat
-            </option>
-        </select><br>
-
-        <div id="editorContainer" style="width: 100%; min-height: 250px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 10px;">
-            <div id="editor" style="height: 300px;"></div>
-        </div>
-
-        <input type="hidden" name="content_view" id="content_hidden">
-
-        <button type="submit" 
-                style="margin-top: 15px; padding: 8px 15px; background-color: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer;">
-            Update Artikel
-        </button>
-    </form>
-</div>
-
-<script>
-    // Inisialisasi Quill Editor
-    const quill = new Quill('#editor', {
-        theme: 'snow',
-        modules: {
-            toolbar: [
-                ['bold', 'italic', 'underline'],
-                [{ 'header': [1, 2, false] }],
-                ['link', 'image'],
-                [{ 'align': [] }], 
-                ['clean']
-            ]
+          
+            padding-left: 30px !important;
+            padding-right: 30px !important;
+            width: 70% !important;
         }
-    });
-
-    // --- BARU: Mengisi editor dengan konten dari database ---
-    // Gunakan json_encode(...)  untuk mengubah string PHP (yang berisi HTML)
-    // menjadi string JavaScript yang aman.
-    const existingContent = {!! json_encode($post->content) !!};
-    if (existingContent) {
-        quill.root.innerHTML = existingContent;
-    }
-    // --- Selesai bagian baru ---
+    </style>
 
 
-    // Isi hidden input sebelum submit
-    const form = document.querySelector('form');
-    form.addEventListener('submit', function () {
-        const html = quill.root.innerHTML;
-        // Cek jika editor kosong (hanya berisi <p><br></p>), anggap saja kosong
-        if (html === '<p><br></p>') {
-            document.getElementById('content_hidden').value = '';
-        } else {
-            document.getElementById('content_hidden').value = html;
-        }
-    });
+    <script>
+        Swal.fire({
+            title: 'Sukses!',
+            text: '{{ session('success_post_disimpan_di_database') }}',
+            
 
-    // Tombol kembali
-    const backButton = document.getElementById('backButton');
-    backButton.addEventListener('click', function () {
-        window.location.href = '/admin/artikel'; // Arahkan kembali ke daftar artikel
-    });
 
-    // Preview Gambar
-    const input = document.getElementById('headerImage');
-    const preview = document.getElementById('preview');
+            background: 'linear-gradient(to bottom, #e0f2e9, #b8e0c9)', 
+            imageUrl: '{{ asset('storage/icon_popup/popup_wow.jpg') }}', 
+            imageWidth: 80,
+            imageHeight: 80,
+            imageAlt: 'Ikon Sukses',
 
-    input.addEventListener('change', function() {
-        const file = this.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.style.display = 'block';
+            
+            confirmButtonText: 'OK',
+            customClass: {
+            
+                confirmButton: 'tombol-sukses-lonjong' 
             }
-            reader.readAsDataURL(file);
-        }
-        // Jangan sembunyikan jika tidak ada file, biarkan gambar lama terlihat
-    });
+        });
+    </script>
+@endif
 
-</script>
+        
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kelola Artikel</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+</head>
+<body class="bg-body-tertiary"> <div class="container my-5">
+    
+    <header class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="h3 text-success fw-bold mb-0">Kelola Artikel</h1>
+      
+      <a href="/admin/postingan/tambah" class="btn btn-success d-flex align-items-center shadow-sm">
+        <i class="fas fa-plus me-2"></i> Tambah Artikel
+      </a>
+    </header>
+
+    <main class="card shadow-sm border-0 rounded-3 p-4">
+      <h2 class="h5 mb-3">Daftar Artikel</h2>
+
+      <div class="d-flex flex-column gap-3">
+        
+        @foreach ($post_data as $row)
+        <div class="d-flex justify-content-between align-items-center p-3 rounded-2 border bg-light">
+          
+          <div class="d-flex flex-column">
+            <span class="fw-semibold mb-1">{{ $row->title }}</span>
+            
+            <div class="d-flex gap-2">
+              <span class="badge rounded-pill text-bg-secondary">{{ $row->kategori }}</span>
+              
+              @if ($row->status == 'published' || $row->status == 'Dipublikasikan')
+                <span class="badge rounded-pill text-bg-light text-success-emphasis border border-success-subtle">
+                  {{ $row->status }}
+                </span>
+              @else
+                <span class="badge rounded-pill text-bg-light text-danger-emphasis border border-danger-subtle">
+                  {{ $row->status }}
+                </span>
+              @endif
+            </div>
+          </div>
+          
+          <div class="d-flex gap-2">
+            <a href="/admin/artikel/edit/{{ $row->post_id }}" class="btn btn-light border" aria-label="Edit">
+              <i class="fas fa-pen text-muted"></i>
+            </a>
+            
+            <form action="/admin/postingan/delete/{{ $row->post_id }}" method="post">
+              @csrf
+              @method('DELETE')
+              <button type="submit"  class="btn btn-danger" aria-label="Hapus" onclick="return confirm('Anda yakin ingin menghapus artikel ini?')">
+                <i class="fas fa-trash"></i>
+                  </button>
+            </form>
+          </div>
+        </div>
+        @endforeach
+        
+        </div> </main> </div> <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
+
+
+
+@endsection
