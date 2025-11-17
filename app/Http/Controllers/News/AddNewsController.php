@@ -154,7 +154,7 @@ class AddNewsController extends Controller
             'featured_image_url' => $featuredImagePath,
             'content' => $content,
             'kategori' => $validated['kategori_view'],
-            // 'updated_at' => now() // Tambahkan updated_at
+            'created_at' => now() // Tambahkan updated_at
             // Anda bisa tambahkan field lain jika perlu di-update
         ]);
 
