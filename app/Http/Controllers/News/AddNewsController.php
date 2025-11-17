@@ -133,12 +133,22 @@ class AddNewsController extends Controller
             $featuredImagePath = $image->storeAs('public/news/images', $newName);
         }
 
-        // 4. Handle Konten Quill (termasuk gambar base64 baru)
-        $content = $request->input('content_view');
-        if ($content) {
-            // Proses gambar base64 baru, gambar lama (URL) akan diabaikan
-            $content = $this->processQuillImages($content);
-        }
+            // 4. Handle Konten Quill (termasuk gambar base64 baru)
+            $content = $request->input('content_view');
+
+            if ($content) {
+
+                // Hapus prefix /storage/ agar database tetap bersih
+                $content = preg_replace(
+                    '/src="\/storage\/(news\/[^"]+)"/i',
+                    'src="$1"',
+                    $content
+                );
+
+                // Proses gambar base64 baru
+                $content = $this->processQuillImages($content);
+            }
+
 
         // 5. Handle Slug (buat baru jika judul berubah)
         $slug = $post->slug;
