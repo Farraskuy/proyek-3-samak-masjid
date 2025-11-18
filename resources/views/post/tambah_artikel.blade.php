@@ -197,7 +197,7 @@
       // Tombol kembali
       const backButton = document.getElementById('backButton');
       backButton.addEventListener('click', function () {
-        window.location.href = '/admin/artikel';
+        window.location.href = '/admin/postingan';
       });
 
       const input = document.getElementById('headerImage');

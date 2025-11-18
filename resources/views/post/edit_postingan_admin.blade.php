@@ -110,7 +110,7 @@
     // Tombol kembali
     const backButton = document.getElementById('backButton');
     backButton.addEventListener('click', function () {
-        window.location.href = '/admin/artikel'; // Arahkan kembali ke daftar artikel
+        window.location.href = '/admin/postingan'; // Arahkan kembali ke daftar artikel
     });
 
     // Preview Gambar

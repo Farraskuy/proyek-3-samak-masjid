@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Postingan;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -14,7 +14,7 @@ class PostinganController extends Controller
     public function index(Request $request)
     {
         $filter = $request->query('filter'); // ?filter=...
-        $query = Postingan::query();
+        $query = Post::query();
 
         if (!empty($filter)) {
             $query->where('kategori', $filter);
@@ -29,7 +29,7 @@ class PostinganController extends Controller
     public function showDetail($slug_from_view)
     {
 
-        $postRecord = Postingan::select('content')->where('slug', $slug_from_view)->first();
+        $postRecord = Post::select('content')->where('slug', $slug_from_view)->first();
 
         if (!$postRecord) {
             abort(404, 'Postingan tidak ditemukan');
@@ -97,7 +97,7 @@ class PostinganController extends Controller
 
         $slug = Str::slug($validated['title_view']);
 
-        Postingan::create([
+        Post::create([
             'title' => $validated['title_view'],
             'slug' => $slug . '-' . 'DAKWAH' . uniqid(),
             'keterangan' => $validated['keterangan_view'],
@@ -150,7 +150,7 @@ class PostinganController extends Controller
     // Admin: list articles for edit (previously ShowPostingan::getEditArtikel)
     public function indexAdmin()
     {
-        $post = Postingan::orderBy('created_at', 'desc')->get();
+        $post = Post::orderBy('created_at', 'desc')->get();
         return view('post.list_artikel_admin')->with('post_data', $post);
     }
 
@@ -159,14 +159,14 @@ class PostinganController extends Controller
     {
         $this->search_delete_featured_image($id);
         $this->search_delete_kontent_image($id);
-        Postingan::where('post_id', (int)$id)->delete();
+        Post::where('post_id', (int)$id)->delete();
         return redirect()->back()->with('status', 'Artikel berhasil dihapus');
     }
 
     // Delete featured image file
     protected function search_delete_featured_image($id)
     {
-        $featured_image_fc = Postingan::select('featured_image_url')->where('post_id', (int)$id)->first();
+        $featured_image_fc = Post::select('featured_image_url')->where('post_id', (int)$id)->first();
         if ($featured_image_fc && $featured_image_fc->featured_image_url) {
             $path = $featured_image_fc->featured_image_url;
             Storage::disk('public')->delete($path);
@@ -176,7 +176,7 @@ class PostinganController extends Controller
     // Delete images embedded in content
     protected function search_delete_kontent_image($id)
     {
-        $kontent_image = Postingan::select('content')->where('post_id', (int)$id)->first();
+        $kontent_image = Post::select('content')->where('post_id', (int)$id)->first();
         if (!$kontent_image) {
             return;
         }
@@ -197,7 +197,7 @@ class PostinganController extends Controller
 
     public function edit($id)
     {
-        $post = Postingan::where('post_id', $id)->firstOrFail();
+        $post = Post::where('post_id', $id)->firstOrFail();
 
         // Tambahkan /storage/ hanya untuk tag <img>
         $post->content = preg_replace(
@@ -216,7 +216,7 @@ class PostinganController extends Controller
     public function update(Request $request, $id)
     {
         // 1. Ambil data post yang ada
-        $post = Postingan::where('post_id', $id)->firstOrFail();
+        $post = Post::where('post_id', $id)->firstOrFail();
 
         // 2. Validasi input
         $validated = $request->validate([
