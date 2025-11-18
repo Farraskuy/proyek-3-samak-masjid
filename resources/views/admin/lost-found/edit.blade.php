@@ -42,6 +42,21 @@
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label">Kategori <span class="text-danger">*</span></label>
+                    <select name="category" class="form-select" required>
+                        <option value="">-- Pilih Kategori --</option>
+                        <option value="kendaraan" {{ (old('category', $item->category) == 'kendaraan') ? 'selected' : '' }}>Kendaraan</option>
+                        <option value="elektronik" {{ (old('category', $item->category) == 'elektronik') ? 'selected' : '' }}>Elektronik</option>
+                        <option value="aksesoris" {{ (old('category', $item->category) == 'aksesoris') ? 'selected' : '' }}>Aksesoris</option>
+                        <option value="dokumen" {{ (old('category', $item->category) == 'dokumen') ? 'selected' : '' }}>Dokumen</option>
+                        <option value="lain-lain" {{ (old('category', $item->category) == 'lain-lain') ? 'selected' : '' }}>Lain-lain</option>
+                    </select>
+                    @error('category')
+                    <div class="text-danger mt-1">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label">Status <span class="text-danger">*</span></label>
                     <select name="status" class="form-select" required>
                         <option value="Tersedia" {{ (old('status', $item->status) == 'Tersedia') ? 'selected' : '' }}>Tersedia</option>

@@ -16,6 +16,12 @@ class LostFoundController extends Controller
         $query = LostAndFoundItem::with('photos')
             ->where('status', 'Tersedia');
 
+        // Filter berdasarkan kategori (jika ada)
+        if (request('category')) {
+            $query->where('category', request('category'));
+        }
+
+        // Filter pencarian
         if (request('search')) {
             $query->where(function ($q) {
                 $q->where('item_name', 'like', '%' . request('search') . '%')
@@ -49,6 +55,7 @@ class LostFoundController extends Controller
             'status' => 'required|in:Tersedia,Diambil',
             'featured_images' => 'required|array|min:1',
             'featured_images.*' => 'image|mimes:jpeg,png,jpg|max:10240',
+            'category' => 'required|in:kendaraan,elektronik,aksesoris,dokumen,lain-lain',
         ]);
 
         $item = LostAndFoundItem::create([
@@ -57,6 +64,7 @@ class LostFoundController extends Controller
             'description' => $request->description,
             'location_found' => $request->location_found,
             'status' => $request->status,
+            'category' => $request->category,
         ]);
 
         foreach ($request->file('featured_images') as $image) {
@@ -95,6 +103,7 @@ class LostFoundController extends Controller
             'description' => $request->description,
             'location_found' => $request->location_found,
             'status' => $request->status,
+            'category' => $request->category,
         ]);
 
         if ($request->has('remove_photos')) {

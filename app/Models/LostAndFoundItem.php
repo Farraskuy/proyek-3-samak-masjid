@@ -22,6 +22,7 @@ class LostAndFoundItem extends Model
         'status',
         'retrieved_by_name',
         'retrieved_at',
+        'category',
     ];
 
     protected $casts = [
