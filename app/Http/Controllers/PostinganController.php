@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Postingan;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Post;
+use App\Models\Postingan;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
@@ -15,26 +14,28 @@ class PostinganController extends Controller
     public function index(Request $request)
     {
         $filter = $request->query('filter'); // ?filter=...
+        $query = Postingan::query();
 
-        $query = \DB::table('posts');
+        if (!empty($filter)) {
+            $query->where('kategori', $filter);
+        }
 
-            if (!empty($filter)) {
-        $query->where('kategori', $filter);
-    }
-        $query->orderBy('created_at', 'desc');
-        
-        $data_posts = $query->paginate(9)->appends($request->query());
+        $data_posts = $query->orderBy('created_at', 'desc')->paginate(9)->withQueryString();
 
-        return view('post.halaman_postingan',['data_posts'=> $data_posts]);
+        return view('post.halaman_postingan', ['data_posts' => $data_posts]);
     }
 
     // Show detail page by slug (previously DetailPostinganController::return_resource)
     public function showDetail($slug_from_view)
     {
-        
-        $data_posts= \DB::table('posts')->select('content')->where('slug',$slug_from_view)->first();
 
-        $kontent_html_tag = $data_posts->content;
+        $postRecord = Postingan::select('content')->where('slug', $slug_from_view)->first();
+
+        if (!$postRecord) {
+            abort(404, 'Postingan tidak ditemukan');
+        }
+
+        $kontent_html_tag = $postRecord->content;
 
         // BUNGKUS AGAR TIDAK DI-MERGE
         $kontent_html_tag = "<div>$kontent_html_tag</div>";
@@ -48,8 +49,8 @@ class PostinganController extends Controller
 
         // Tambah prefix /storage/
         $img = $obj_html->getElementsByTagName("img");
-        foreach($img as $image_tag){
-            $src = $image_tag->getAttribute('src');  
+        foreach ($img as $image_tag) {
+            $src = $image_tag->getAttribute('src');
             if (!str_starts_with($src, '/storage/')) {
                 $image_tag->setAttribute('src', '/storage/' . $src);
             }
@@ -61,7 +62,7 @@ class PostinganController extends Controller
         // Hapus <div> pembungkus
         $updated_html = preg_replace('/^<div>|<\/div>$/', '', $updated_html);
 
-        return view('post.fitur_detail_postingan',['data_posts' => $updated_html]);
+        return view('post.fitur_detail_postingan', ['data_posts' => $updated_html]);
     }
 
     // Return add-article form (previously AddPostinganController::return_resource)
@@ -96,7 +97,7 @@ class PostinganController extends Controller
 
         $slug = Str::slug($validated['title_view']);
 
-        DB::table('posts')->insert([
+        Postingan::create([
             'title' => $validated['title_view'],
             'slug' => $slug . '-' . 'DAKWAH' . uniqid(),
             'keterangan' => $validated['keterangan_view'],
@@ -147,9 +148,9 @@ class PostinganController extends Controller
     }
 
     // Admin: list articles for edit (previously ShowPostingan::getEditArtikel)
-    public function getEditArtikel()
+    public function indexAdmin()
     {
-        $post = DB::table('posts')->select('title', 'status', 'kategori', 'slug', 'post_id')->get();
+        $post = Postingan::orderBy('created_at', 'desc')->get();
         return view('post.list_artikel_admin')->with('post_data', $post);
     }
 
@@ -158,22 +159,27 @@ class PostinganController extends Controller
     {
         $this->search_delete_featured_image($id);
         $this->search_delete_kontent_image($id);
-        DB::table('posts')->where('post_id', (int)$id)->delete();
+        Postingan::where('post_id', (int)$id)->delete();
         return redirect()->back()->with('status', 'Artikel berhasil dihapus');
     }
 
     // Delete featured image file
     protected function search_delete_featured_image($id)
     {
-        $featured_image_fc = DB::table('posts')->select('featured_image_url')->where('post_id', (int)$id)->first();
-        $path = $featured_image_fc->featured_image_url;
-        Storage::disk('public')->delete($path);
+        $featured_image_fc = Postingan::select('featured_image_url')->where('post_id', (int)$id)->first();
+        if ($featured_image_fc && $featured_image_fc->featured_image_url) {
+            $path = $featured_image_fc->featured_image_url;
+            Storage::disk('public')->delete($path);
+        }
     }
 
     // Delete images embedded in content
     protected function search_delete_kontent_image($id)
     {
-        $kontent_image = DB::table('posts')->select('content')->where('post_id', (int)$id)->first();
+        $kontent_image = Postingan::select('content')->where('post_id', (int)$id)->first();
+        if (!$kontent_image) {
+            return;
+        }
         $kontent_html_tag = $kontent_image->content;
 
         $obj_html = new \DOMDocument();
@@ -191,7 +197,7 @@ class PostinganController extends Controller
 
     public function edit($id)
     {
-        $post = DB::table('posts')->where('post_id', $id)->firstOrFail();
+        $post = Postingan::where('post_id', $id)->firstOrFail();
 
         // Tambahkan /storage/ hanya untuk tag <img>
         $post->content = preg_replace(
@@ -207,10 +213,10 @@ class PostinganController extends Controller
 
 
 
-   public function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
         // 1. Ambil data post yang ada
-        $post = DB::table('posts')->where('post_id', $id)->firstOrFail();
+        $post = Postingan::where('post_id', $id)->firstOrFail();
 
         // 2. Validasi input
         $validated = $request->validate([
@@ -226,7 +232,7 @@ class PostinganController extends Controller
 
         if ($request->hasFile('image_view')) {
             // Jika ada gambar baru di-upload:
-            
+
             // Hapus gambar lama (jika ada)
             if ($post->featured_image_url) {
                 Storage::delete($post->featured_image_url);
@@ -238,35 +244,31 @@ class PostinganController extends Controller
             $featuredImagePath = $image->storeAs('public/news/images', $newName);
         }
 
-            // 4. Handle Konten Quill (termasuk gambar base64 baru)
-            $content = $request->input('content_view');
+        // 4. Handle Konten Quill (termasuk gambar base64 baru)
+        $content = $request->input('content_view');
 
-            if ($content) {
+        if ($content) {
 
-                // Hapus prefix /storage/ agar database tetap bersih
-                $content = preg_replace(
-                    '/src="\/storage\/(news\/[^"]+)"/i',
-                    'src="$1"',
-                    $content
-                );
+            // Hapus prefix /storage/ agar database tetap bersih
+            $content = preg_replace(
+                '/src="\/storage\/(news\/[^"]+)"/i',
+                'src="$1"',
+                $content
+            );
 
-                // Proses gambar base64 baru
-                $content = $this->processQuillImages($content);
-
-                // HAPUS GAMBAR LAMA YANG TIDAK ADA DI KONTEN BARU
-                $this->deleteRemovedQuillImages($post->content, $content);
-
-            }
+            // Proses gambar base64 baru
+            $content = $this->processQuillImages($content);
+        }
 
 
         // 5. Handle Slug (buat baru jika judul berubah)
         $slug = $post->slug;
         if ($post->title !== $validated['title_view']) {
-             $slug = Str::slug($validated['title_view']) . '-' . 'DAKWAH' . uniqid();
+            $slug = Str::slug($validated['title_view']) . '-' . 'DAKWAH' . uniqid();
         }
 
         // 6. Update ke database
-        DB::table('posts')->where('post_id', $id)->update([
+        $post->update([
             'title' => $validated['title_view'],
             'slug' => $slug,
             'keterangan' => $validated['keterangan_view'],
@@ -274,31 +276,8 @@ class PostinganController extends Controller
             'content' => $content,
             'kategori' => $validated['kategori_view'],
             'created_at' => now() // Tambahkan updated_at
-            // Anda bisa tambahkan field lain jika perlu di-update
         ]);
 
         return redirect()->to('/admin/postingan')->with('success_post_disimpan_di_database', 'Data berhasil diupdate!');
     }
-
-    private function deleteRemovedQuillImages($oldContent, $newContent)
-    {
-        // Ambil semua path IMG dari konten lama (tanpa /storage/)
-        preg_match_all('/<img[^>]+src="(news\/[^"]+)"/i', $oldContent, $oldMatches);
-        $oldImages = $oldMatches[1] ?? [];
-
-        // Ambil semua path IMG dari konten baru
-        preg_match_all('/<img[^>]+src="(news\/[^"]+)"/i', $newContent, $newMatches);
-        $newImages = $newMatches[1] ?? [];
-
-        // Cari gambar yang DIHAPUS
-        $deletedImages = array_diff($oldImages, $newImages);
-
-        // Hapus filenya di storage
-        foreach ($deletedImages as $img) {
-            Storage::delete($img);
-        }
-    }
-
-
-
 }

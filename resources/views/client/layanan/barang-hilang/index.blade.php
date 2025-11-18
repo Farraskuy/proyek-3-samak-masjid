@@ -2,19 +2,81 @@
 
 @section('title', 'Barang Hilang & Ditemukan - SAMAK-Kampus')
 
+@push('styles')
+<style>
+    * {
+        font-family: 'Poppins', "Lexend", sans-serif;
+    }
+
+    /* Pattern soft elegan */
+    .bg-pattern {
+        background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+        background-size: 25px 25px;
+    }
+
+    /* Hover card */
+    .item-card {
+        transition: all 0.3s ease-in-out;
+        border: 1px solid #eaeaea !important;
+    }
+
+    .item-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    /* Thumbnail wrapper */
+    .card-thumbnail-wrapper {
+        position: relative;
+        height: 190px;
+        border-radius: 12px;
+        overflow: hidden;
+        background-color: #f8f9fa;
+    }
+
+    .card-thumbnail-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .fallback-icon {
+        display: none;
+        font-size: 3rem;
+        color: #adb5bd;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    /* Modal carousel */
+    .carousel-inner img {
+        max-height: 400px;
+        object-fit: contain;
+        background: #f8f9fa;
+        border-radius: 16px !important;
+    }
+</style>
+@endpush
+
 @section('content')
+
+{{-- HERO SECTION --}}
+<section class="py-5 hero-animate bg-pattern"
+    style="background-color: #175C9E; height: 320px; display:flex; align-items:center;">
+    <div class="container text-center">
+        <h1 class="display-5 fw-bold text-white mb-3">
+            Barang Hilang & Ditemukan
+        </h1>
+        <p class="text-white-50 lead">
+            Temukan barang yang hilang atau laporkan temuan di area masjid kampus.
+        </p>
+    </div>
+</section>
+
 <section class="py-5">
     <div class="container">
-
-        {{-- HEAD TITLE --}}
-        <div class="text-center mb-5">
-            <h2 class="fw-bold" style="font-family: 'Playfair Display', serif; color:#1B6B43; letter-spacing:0.5px;">
-                Barang Hilang & Ditemukan
-            </h2>
-            <p class="text-muted mt-2" style="font-size: 15px;">
-                Temukan barang hilang atau laporkan temuan di area masjid kampus.
-            </p>
-        </div>
 
         {{-- SEARCH BAR PANJANG DI TENGAH --}}
         <div class="d-flex justify-content-center mb-4">
@@ -42,11 +104,11 @@
                     </a>
                 </div>
                 @foreach([
-                ['name' => 'Kendaraan', 'icon' => 'fa-car', 'value' => 'kendaraan'],
-                ['name' => 'Elektronik', 'icon' => 'fa-mobile-alt', 'value' => 'elektronik'],
-                ['name' => 'Aksesoris', 'icon' => 'fa-glasses', 'value' => 'aksesoris'],
-                ['name' => 'Dokumen', 'icon' => 'fa-file-alt', 'value' => 'dokumen'],
-                ['name' => 'Lain-lain', 'icon' => 'fa-boxes', 'value' => 'lain-lain']
+                    ['name' => 'Kendaraan', 'icon' => 'fa-car', 'value' => 'kendaraan'],
+                    ['name' => 'Elektronik', 'icon' => 'fa-mobile-alt', 'value' => 'elektronik'],
+                    ['name' => 'Aksesoris', 'icon' => 'fa-glasses', 'value' => 'aksesoris'],
+                    ['name' => 'Dokumen', 'icon' => 'fa-file-alt', 'value' => 'dokumen'],
+                    ['name' => 'Lain-lain', 'icon' => 'fa-boxes', 'value' => 'lain-lain']
                 ] as $cat)
                 <div class="col-md-2 text-center">
                     <a href="{{ route('layanan.barang-hilang') }}?category={{ $cat['value'] }}"
@@ -260,47 +322,4 @@
 </div>
 @endforeach
 
-@endsection
-
-@section('styles')
-<style>
-    .item-card {
-        transition: .25s ease;
-        border: 1px solid #eaeaea !important;
-    }
-
-    .item-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08) !important;
-    }
-
-    .carousel-inner img {
-        border-radius: 16px !important;
-    }
-
-    .hero-bg {
-        background-image: url('{{ asset(' assets/images/bg-barang-hilang.png') }}');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        padding: 80px 0;
-        margin-bottom: 30px;
-    }
-
-    .hero-bg .container {
-        position: relative;
-        z-index: 1;
-    }
-
-    .hero-bg::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255, 255, 255, 0.9);
-        z-index: 0;
-    }
-</style>
 @endsection

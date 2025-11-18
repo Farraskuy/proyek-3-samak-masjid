@@ -83,19 +83,19 @@
 
 <body style="margin:0; padding:0; font-family:'Inter', Arial, sans-serif; background-color:#f8fafc;">
 
-    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#f8fafc;">
+    <table    role="presentation" style="background-color:#f8fafc;">
         <tr>
             <td align="center" style="padding: 20px 0;">
-                <table class="container" width="600" cellpadding="0" cellspacing="0" role="presentation"
+                <table class="container" width="600"    role="presentation"
                     style="width:600px; background-color:#ffffff; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.05);">
                     <tr>
                         <td class="content-padding" style="padding: 40px;">
 
-                            <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                            <table    role="presentation"
                                 style="margin-bottom: 30px;">
                                 <tr>
                                     <td class="header-logo" style="text-align: left;">
-                                        <table cellpadding="0" cellspacing="0" role="presentation">
+                                        <table    role="presentation">
                                             <tr>
                                                 <td style="padding-right: 12px; vertical-align: middle;">
                                                     <img src="{{ asset('assets/images/logo.png') }}"
@@ -114,7 +114,7 @@
                                 </tr>
                             </table>
 
-                            <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                            <table    role="presentation">
                                 <tr>
                                     <td style="padding-bottom: 25px;">
                                         <h1 class="title"
@@ -142,7 +142,7 @@
 
                                 <tr>
                                     <td class="code-block" style="padding-top: 10px; padding-bottom: 30px;">
-                                        <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                                        <table    role="presentation">
                                             <tr>
                                                 <td align="center" style="background-color:#f8fafc; border-radius:8px; padding: 20px 25px;">
                                                     <h1 style="margin:0; font-family:'Inter', Arial, sans-serif; font-size: 40px; font-weight: 700; color: #175C9E; letter-spacing: 6px; mso-line-height-rule: exactly;">
@@ -172,7 +172,7 @@
                                 </tr>
                             </table>
 
-                            <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                            <table    role="presentation"
                                 style="margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 30px;">
                                 <tr>
                                     <td>

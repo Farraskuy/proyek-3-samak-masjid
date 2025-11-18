@@ -1,14 +1,11 @@
 @extends('admin.layout')
 
-@section('title', 'Kegiatan')
+@section('title', 'Postingan')
 
 @section('content')
-    @php
-        $columns = ['#', 'Judul', 'Lokasi', 'Tanggal', 'Aksi'];
-    @endphp
-
     <section class="p-3">
-        <h4 class="fw-semibold">Kegiatan</h4>
+        <h4 class="fw-semibold">Manajemen Postingan</h4>
+        <a href="{{ url('admin/postingan/tambah') }}" class="btn btn-sm btn-success fw-semibold mb-3">Tambah Data</a>
 
         <div class="row g-0 gap-3">
             <form method="get" id="form_filter" class="col rounded-3 bg-white p-3 pt-0 form-filter"
@@ -33,13 +30,15 @@
                     </div>
                 </div>
 
+
                 <div class="table-responsive position-relative mb-3" style="min-height: 200px">
                     <table class="table table-sm table-hover fs-14px">
                         <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Judul</th>
-                                <th>Lokasi</th>
+                                <th>Kategori</th>
+                                <th>Status</th>
                                 <th>Tanggal</th>
                                 <th>Aksi</th>
                             </tr>
@@ -48,16 +47,40 @@
                             @forelse(($data ?? collect()) as $index => $row)
                                 <tr>
                                     <td>{{ ($data->firstItem() ?? 0) + $index }}</td>
-                                    <td>{{ $row->event_name ?? '-' }}</td>
-                                    <td>{{ $row->location ?? '-' }}</td>
-                                    <td>{{ $row->start_time ?? '-' }}</td>
-                                    <td>-</td>
+                                    <td>{{ $row->title ?? '-' }}</td>
+                                    <td>{{ $row->kategori ?? '-' }}</td>
+                                    <td>
+                                        @if (in_array(strtolower($row->status ?? ''), ['published', 'dipublikasikan']))
+                                            <span
+                                                class="badge rounded-pill text-bg-light text-success-emphasis border border-success-subtle">{{ $row->status }}</span>
+                                        @else
+                                            <span
+                                                class="badge rounded-pill text-bg-light text-danger-emphasis border border-danger-subtle">{{ $row->status }}</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $row->created_at ?? '-' }}</td>
+                                    <td class="text-nowrap">
+                                        <a href="/admin/artikel/edit/{{ $row->post_id }}"
+                                            class="btn btn-light btn-sm border" aria-label="Edit">
+                                            <i class="fas fa-pen text-muted"></i>
+                                        </a>
+
+                                        <form action="/admin/artikel/delete/{{ $row->post_id }}" method="post"
+                                            class="d-inline-block">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm" aria-label="Hapus"
+                                                onclick="return confirm('Anda yakin ingin menghapus artikel ini?')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="text-center">
+                                    <td colspan="6" class="text-center">
                                         <div class="py-4">
-                                            <img src="{{ asset('assets/images/no-data.png') }}"" alt="No data"
+                                            <img src="{{ asset('assets/images/no-data.png') }}" alt="No data"
                                                 style="max-width:240px; opacity: 0.5;">
                                             <p>Data Tidak Ada</p>
                                         </div>

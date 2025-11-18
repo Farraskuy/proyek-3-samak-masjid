@@ -70,7 +70,7 @@
                     <button
                         class="btn btn-outline-light text-dark d-flex align-items-center px-3 py-1 rounded-pill border-2 dropdown-toggle"
                         type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                        style="transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); height: 38px; font-size: 0.875rem;">
+                        style="transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); height: 38px;">
                         <div class="me-2">
                             <i class="fas fa-user-circle"></i>
                         </div>

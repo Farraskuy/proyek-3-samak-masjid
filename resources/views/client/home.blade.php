@@ -61,8 +61,7 @@
     <section class="d-flex align-items-center py-5 py-md-6 hero-animate bg-pattern"
         style="background-color: #175C9E; height: 400px;">
         <div class="container position-relative">
-            <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10 bg-pattern"></div>
-
+q
             <div class="row align-items-center text-center text-md-start">
 
                 <div class="col-md-7">
