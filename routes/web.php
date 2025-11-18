@@ -88,7 +88,7 @@ Route::prefix('postingan')->group(function () {
 
 // Admin News Management (use existing PostinganController)
 Route::prefix('admin/postingan')->name('postingan.admin.')->group(function () {
-    Route::get('/', [PostinganController::class, 'getEditArtikel'])->name('index');
+    Route::get('/', [PostinganController::class, 'indexAdmin'])->name('index');
     Route::get('/tambah', [PostinganController::class, 'create'])->name('create');
     Route::post('/posts', [PostinganController::class, 'store'])->name('store');
     Route::delete('/delete/{id}', [PostinganController::class, 'deleteArtikel'])->name('delete');

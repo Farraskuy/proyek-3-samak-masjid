@@ -65,6 +65,8 @@
         });
     </script>
 
+    @stack('styles')
+
     <title>@yield('title')</title>
 </head>
 
@@ -150,6 +152,8 @@
 
     {{-- custom script --}}
     <script src="{{ asset('assets/js') }}/admin.js"></script>
+
+    @stack('scripts')
 </body>
 
 </html>

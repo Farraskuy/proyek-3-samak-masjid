@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Postingan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -21,7 +22,11 @@ class PostinganController extends Controller
     // Show detail page by slug (previously DetailPostinganController::return_resource)
     public function showDetail($slug)
     {
-        $data_posts = DB::table('posts')->select('content')->where('slug', $slug)->first();
+        $data_posts = Postingan::where('slug', $slug)->first();
+
+        if (!$data_posts) {
+            abort(404, 'Postingan tidak ditemukan');
+        }
 
         $kontent_html_tag = $data_posts->content;
 
@@ -48,7 +53,7 @@ class PostinganController extends Controller
     public function create()
     {
         session()->flash('token_tambah_artikel', 199);
-        return view('tambah_artikel');
+        return view('admin.postingan.tambah');
     }
 
     // Store uploaded article (previously AddPostinganController::upload)
@@ -62,33 +67,68 @@ class PostinganController extends Controller
             'content_view' => 'nullable|string'
         ]);
 
-        $featuredImagePath = null;
-        if ($request->hasFile('image_view')) {
-            $image = $request->file('image_view');
-            $newName = uniqid() . '_' . $image->getClientOriginalName();
-            $featuredImagePath = $image->storeAs('news/images', $newName);
+        // Daftar file yang berhasil disimpan, dipakai untuk rollback jika error
+        $savedFiles = [];
+
+        DB::beginTransaction();
+
+        try {
+            // =============== 1. Upload Featured Image (jika ada) ===============
+            $featuredImagePath = null;
+
+            if ($request->hasFile('image_view')) {
+                $image = $request->file('image_view');
+
+                $newName = uniqid() . '_' . $image->getClientOriginalName();
+                $featuredImagePath = $image->storeAs('news/images', $newName);
+
+                // Catat file untuk rollback jika error
+                $savedFiles[] = $featuredImagePath;
+            }
+
+            // =============== 2. Process Quill HTML Images ===============
+            $content = $request->input('content_view');
+
+            if ($content) {
+                $content = $this->processQuillImages($content);
+                $savedFiles = array_merge($savedFiles, $content['savedFiles']);
+            }
+
+            // =============== 3. Generate Slug ===============
+            $slug = Str::slug($validated['title_view']) . '-DAKWAH' . uniqid();
+
+            // =============== 4. Insert Database ===============
+            Postingan::create([
+                'title' => $validated['title_view'],
+                'slug' => $slug,
+                'keterangan' => $validated['keterangan_view'],
+                'featured_image_url' => $featuredImagePath,
+                'content' => $content,
+                'kategori' => $validated['kategori_view'],
+                'created_at' => now(),
+                'status' => $request->input('status') != 'draff' ? 'pending' : 'draft',
+                'user_id' => Auth::id(),
+            ]);
+
+            DB::commit();
+
+            return redirect()
+                ->to('/admin/artikel')
+                ->with('success_post_disimpan_di_database', 'Data berhasil disimpan!');
+        } catch (\Throwable $e) {
+
+            DB::rollBack();
+
+            // =============== 5. Hapus semua file yang terlanjur disimpan ===============
+            foreach ($savedFiles as $file) {
+                if (Storage::exists($file)) {
+                    Storage::delete($file);
+                }
+            }
+
+            // Debugging
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        $content = $request->input('content_view');
-        if ($content) {
-            $content = $this->processQuillImages($content);
-        }
-
-        $slug = Str::slug($validated['title_view']);
-
-        DB::table('posts')->insert([
-            'title' => $validated['title_view'],
-            'slug' => $slug . '-' . 'DAKWAH' . uniqid(),
-            'keterangan' => $validated['keterangan_view'],
-            'featured_image_url' => $featuredImagePath,
-            'content' => $content,
-            'kategori' => $validated['kategori_view'],
-            'created_at' => now(),
-            'status' => 'not publish',
-            'user_id' => 1
-        ]);
-
-        return redirect()->to('/admin/artikel')->with('success_post_disimpan_di_database', 'Data berhasil disimpan!');
     }
 
     // Process base64 images in Quill content and store them (from AddPostinganController::processQuillImages)
@@ -100,37 +140,58 @@ class PostinganController extends Controller
         libxml_clear_errors();
 
         $images = $dom->getElementsByTagName('img');
-
+        $savedFiles = [];
         foreach ($images as $img) {
             $src = $img->getAttribute('src');
 
             if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
+
                 $data = substr($src, strpos($src, ',') + 1);
                 $data = base64_decode($data);
                 $extension = $type[1];
                 $fileName = uniqid() . '.' . $extension;
                 $path = 'news/quill/' . $fileName;
 
+                // Simpan file
                 Storage::put($path, $data);
 
+                // Catat file untuk rollback
+                $savedFiles[] = $path;
+
+                // Ganti src menjadi path file
                 $img->setAttribute('src', $path);
             }
         }
 
+        // Ambil isi body
         $body = $dom->getElementsByTagName('body')->item(0);
-        $elemen_dari_body = '';
-        foreach ($body->childNodes as $isi_elemen_body) {
-            $elemen_dari_body .= $dom->saveHTML($isi_elemen_body);
+        $result = '';
+
+        foreach ($body->childNodes as $child) {
+            $result .= $dom->saveHTML($child);
         }
 
-        return $elemen_dari_body;
+        return [
+            'content' => $result,
+            'savedFiles' => $savedFiles
+        ];
     }
 
+
     // Admin: list articles for edit (previously ShowPostingan::getEditArtikel)
-    public function getEditArtikel()
+    public function indexAdmin()
     {
-        $post = DB::table('posts')->select('title', 'status', 'kategori', 'slug', 'post_id')->get();
-        return view('edit_artikel')->with('post_data', $post);
+        $perPage = request()->query('showing', 50);
+        $query = Postingan::orderBy('created_at', 'desc');
+
+        if ($perPage === 'all') {
+            $post = $query->get();
+        } else {
+            $perPage = intval($perPage) > 0 ? intval($perPage) : 50;
+            $post = $query->paginate($perPage)->withQueryString();
+        }
+
+        return view('admin.postingan.index')->with('data', $post);
     }
 
     // Delete article and associated images (previously ShowPostingan::deleteArtikel)
@@ -138,22 +199,26 @@ class PostinganController extends Controller
     {
         $this->search_delete_featured_image($id);
         $this->search_delete_kontent_image($id);
-        DB::table('posts')->where('post_id', (int)$id)->delete();
+        Postingan::where('post_id', (int)$id)->delete();
         return redirect()->back()->with('status', 'Artikel berhasil dihapus');
     }
 
     // Delete featured image file
     protected function search_delete_featured_image($id)
     {
-        $featured_image_fc = DB::table('posts')->select('featured_image_url')->where('post_id', (int)$id)->first();
-        $path = $featured_image_fc->featured_image_url;
-        Storage::disk('public')->delete($path);
+        $featured_image_fc = Postingan::select('featured_image_url')->where('post_id', (int)$id)->first();
+        if ($featured_image_fc && $featured_image_fc->featured_image_url) {
+            Storage::disk('public')->delete($featured_image_fc->featured_image_url);
+        }
     }
 
     // Delete images embedded in content
     protected function search_delete_kontent_image($id)
     {
-        $kontent_image = DB::table('posts')->select('content')->where('post_id', (int)$id)->first();
+        $kontent_image = Postingan::select('content')->where('post_id', (int)$id)->first();
+        if (!$kontent_image) {
+            return;
+        }
         $kontent_html_tag = $kontent_image->content;
 
         $obj_html = new \DOMDocument();

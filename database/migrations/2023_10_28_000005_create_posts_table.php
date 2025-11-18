@@ -11,18 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
-            $table->id('post_id');
+        Schema::create('postingans', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('user_id')->constrained('users', 'id');
             $table->string('title', 255);
             $table->string('slug', 270)->unique();
-            $table->text('content');
-            $table->string('featured_image_url', 255);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('published_at')->nullable();
-            $table->string('status', 20)->default('published');
             $table->text('keterangan');
-            $table->string('kategori', 50);
+            $table->text('content');
+            $table->string('featured_image_url', 255)->nullable();
+            $table->enum('status', ['published', 'not published', 'pending', 'telah dipebaiki', 'revisi', 'draft']);
+            $table->enum('kategori', ['Berita', 'Artikel', 'Tausiyah']);
+            $table->timestamp('published_at')->nullable();
+            $table->timestamps();
         });
     }
 

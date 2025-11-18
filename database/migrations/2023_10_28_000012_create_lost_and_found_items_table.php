@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('item_name', 100);
             $table->text('description');
             $table->string('location_found', 100);
-            $table->string('featured_image_url', 255);
+            $table->string('featured_image_url', 255)->nullable();
             $table->string('status', 30)->default('Tersedia');
             $table->timestamp('created_at')->useCurrent();
             $table->string('retrieved_by_name', 100)->nullable();
