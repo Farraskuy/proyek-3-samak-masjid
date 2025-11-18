@@ -1,0 +1,189 @@
+<?php
+
+namespace App\Http\Controllers\News;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+
+class AddNewsController extends Controller
+{
+    public function upload(Request $request)
+    {
+        // untuk validasi input form di tambah_artikel
+        $validated = $request->validate([
+            'title_view' => 'required|string|max:255',
+            'keterangan_view' => 'required|string',
+            'kategori_view' => 'required|string',
+            'image_view' => 'nullable|image|max:2048', 
+            'content_view' => 'nullable|string'
+        ]);
+
+        // memberi nama ke gambar ke laravel storage dan dimasukan ke storage
+        $featuredImagePath = null;
+        if ($request->hasFile('image_view')) {
+            $image = $request->file('image_view');
+            $newName = uniqid() . '_' . $image->getClientOriginalName();
+            $featuredImagePath = $image->storeAs('news/images', $newName);
+        }
+
+        // Handle Quill content
+        $content = $request->input('content_view');
+        if ($content) {
+            // Apabila konten 
+            $content = $this->processQuillImages($content);
+        }
+
+        $slug = Str::slug($validated['title_view']);
+
+        // Simpan ke database
+        DB::table('posts')->insert([
+            'title' => $validated['title_view'],
+            'slug' => $slug . '-' . 'DAKWAH'. uniqid(),
+            'keterangan' => $validated['keterangan_view'],
+            'featured_image_url' => $featuredImagePath,
+            'content' => $content,
+            'kategori' => $validated['kategori_view'],
+            'created_at' => now(),
+            'status' => 'not publish',
+            'user_id' =>  1
+        ]);
+
+        return redirect()->to('/admin/artikel')->with('success_post_disimpan_di_database', 'Data berhasil disimpan!');
+    }
+
+    /**
+     * Proses image yang ada di Quill editor
+     * Mengubah <img src="data:image/..."> menjadi path file Laravel
+     */
+    private function processQuillImages($content)
+    {
+        // Gunakan DOMDocument untuk parsing HTML
+        $dom = new \DOMDocument();
+        libxml_use_internal_errors(true);
+        $dom->loadHTML(mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8'));
+        libxml_clear_errors();
+
+        $images = $dom->getElementsByTagName('img');
+
+        foreach ($images as $img) {
+            $src = $img->getAttribute('src');
+            
+            // Cek apakah base64
+            if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
+                $data = substr($src, strpos($src, ',') + 1);
+                $data = base64_decode($data);
+                $extension = $type[1]; // png, jpg, dll
+                $fileName = uniqid() . '.' . $extension;
+                $path = 'news/quill/' . $fileName;
+
+                Storage::put($path, $data);
+
+                // Ganti src dengan path file Laravel
+                $img->setAttribute('src', $path);
+            }
+        }
+
+        $body =  $dom->getElementsByTagName('body')->item(0);
+        $elemen_dari_body ='';
+        foreach($body->childNodes as $isi_elemen_body){
+          $elemen_dari_body  .= $dom->saveHTML($isi_elemen_body) ;
+        }
+
+        // Return HTML kembali
+        return $elemen_dari_body;
+    }
+
+
+        public function return_resource(){
+          return view('post.tambah_artikel');
+    }
+
+
+    public function update(Request $request, $id)
+    {
+        // 1. Ambil data post yang ada
+        $post = DB::table('posts')->where('post_id', $id)->firstOrFail();
+
+        // 2. Validasi input
+        $validated = $request->validate([
+            'title_view' => 'required|string|max:255',
+            'keterangan_view' => 'required|string',
+            'kategori_view' => 'required|string',
+            'image_view' => 'nullable|image|max:2048', // Boleh null jika tidak ganti gambar
+            'content_view' => 'nullable|string'
+        ]);
+
+        // 3. Handle Gambar Header (Featured Image)
+        $featuredImagePath = $post->featured_image_url; // Default pakai gambar lama
+
+        if ($request->hasFile('image_view')) {
+            // Jika ada gambar baru di-upload:
+            
+            // Hapus gambar lama (jika ada)
+            if ($post->featured_image_url) {
+                Storage::delete($post->featured_image_url);
+            }
+
+            // Simpan gambar baru
+            $image = $request->file('image_view');
+            $newName = uniqid() . '_' . $image->getClientOriginalName();
+            $featuredImagePath = $image->storeAs('public/news/images', $newName);
+        }
+
+            // 4. Handle Konten Quill (termasuk gambar base64 baru)
+            $content = $request->input('content_view');
+
+            if ($content) {
+
+                // Hapus prefix /storage/ agar database tetap bersih
+                $content = preg_replace(
+                    '/src="\/storage\/(news\/[^"]+)"/i',
+                    'src="$1"',
+                    $content
+                );
+
+                // Proses gambar base64 baru
+                $content = $this->processQuillImages($content);
+            }
+
+
+        // 5. Handle Slug (buat baru jika judul berubah)
+        $slug = $post->slug;
+        if ($post->title !== $validated['title_view']) {
+             $slug = Str::slug($validated['title_view']) . '-' . 'DAKWAH' . uniqid();
+        }
+
+        // 6. Update ke database
+        DB::table('posts')->where('post_id', $id)->update([
+            'title' => $validated['title_view'],
+            'slug' => $slug,
+            'keterangan' => $validated['keterangan_view'],
+            'featured_image_url' => $featuredImagePath,
+            'content' => $content,
+            'kategori' => $validated['kategori_view'],
+            'created_at' => now() // Tambahkan updated_at
+            // Anda bisa tambahkan field lain jika perlu di-update
+        ]);
+
+        return redirect()->to('/admin/artikel')->with('success_post_disimpan_di_database', 'Data berhasil diupdate!');
+    }
+
+public function edit($id)
+{
+    $post = DB::table('posts')->where('post_id', $id)->firstOrFail();
+
+    // Tambahkan /storage/ hanya untuk tag <img>
+    $post->content = preg_replace(
+        '/<img\s+[^>]*src="(news\/[^"]+)"/i',
+        '<img src="/storage/$1"',
+        $post->content
+    );
+
+    return view('post.edit_artikel_admin', compact('post'));
+}
+
+
+}
