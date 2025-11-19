@@ -65,7 +65,7 @@
 {{-- HERO SECTION --}}
 <section class="py-5 hero-animate bg-pattern"
     style="background-color: #175C9E; height: 320px; display:flex; align-items:center;">
-    <div class="container text-center">
+    <div class="container text-center" data-aos="fade-down"data-aos-delay="100" data-aos-duration="700"> 
         <h1 class="display-5 fw-bold text-white mb-3">
             Barang Hilang & Ditemukan
         </h1>
@@ -79,7 +79,7 @@
     <div class="container">
 
         {{-- SEARCH BAR PANJANG DI TENGAH --}}
-        <div class="d-flex justify-content-center mb-4">
+        <div class="d-flex justify-content-center mb-4"data-aos="fade-down"data-aos-delay="100" data-aos-duration="700">
             <form method="GET" class="w-100 d-flex shadow-sm rounded-pill px-3 py-2"
                 style="max-width: 800px; background: #ffffff; border:1px solid #e5e5e5;">
                 <input type="text" name="search" class="form-control border-0 shadow-0"
@@ -92,7 +92,7 @@
         </div>
 
         {{-- KATEGORI IKON --}}
-        <div class="d-flex justify-content-center mb-4">
+        <div class="d-flex justify-content-center mb-4"data-aos="fade-up"data-aos-delay="100" data-aos-duration="700">
             <div class="row g-3 w-100" style="max-width: 800px;">
                 <div class="col-md-2 text-center">
                     <a href="{{ route('layanan.barang-hilang') }}"
@@ -133,7 +133,7 @@
         @else
 
         {{-- LIST OF CARDS --}}
-        <div class="row g-4">
+        <div class="row g-4"data-aos="fade-up"data-aos-delay="100" data-aos-duration="700">
             @foreach($items as $item)
             <div class="col-md-4">
                 <div class="card h-100 rounded-4 shadow-sm border-0 item-card">

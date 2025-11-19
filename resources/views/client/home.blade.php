@@ -213,7 +213,7 @@
             @if (empty($events))
                 <div class="text-center py-5">
                     <img src="https://undraw.co/api/illustrations/empty" class="empty-illustration" alt="No events">
-                    <p class="text-muted mt-3">Belum ada kegiatan untuk saat ini.</p>
+                    <p class="text-muted mt-x`3">Belum ada kegiatan untuk saat ini.</p>
                 </div>
             @endif
 
