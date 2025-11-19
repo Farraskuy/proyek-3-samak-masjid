@@ -6,8 +6,8 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Keuangan\ZISController;
-use App\Http\Controllers\PostinganController;
+use App\Http\Controllers\Donasi\ZISController;
+use App\Http\Controllers\Postingan\PostinganController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\LostFoundController;
 use App\Http\Controllers\KeuanganController;
@@ -19,6 +19,7 @@ use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\KonsultasiController;
 use App\Http\Controllers\FormBuilderController;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\Donasi\Admin\BankController;
 
 /*
 |--------------------------------------------------------------------------
@@ -104,7 +105,8 @@ Route::prefix('admin/postingan')->name('postingan.admin.')->group(function () {
 });
 
 // Other Pages
-Route::get('/donasi', [ZISController::class, 'index'])->name('informasi.rekening');
+Route::get('/donasi', [ZISController::class, 'index'])->name('donasi.informasi');
+Route::get('/donasi/sekarang', [ZISController::class, 'donasi'])->name('donasi.sekarang');
 Route::get('/layanan/barang-hilang', [LostFoundController::class, 'index'])->name('layanan.barang-hilang');
 
 // Admin Panel
@@ -140,6 +142,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/forms/{id}/responses', [FormBuilderController::class, 'responses'])->name('forms.responses');
     Route::get('/forms/{formId}/responses/{responseId}', [FormBuilderController::class, 'responseShow'])->name('forms.responses.show');
     Route::delete('/forms/{formId}/responses/{responseId}', [FormBuilderController::class, 'responseDelete'])->name('forms.responses.delete');
+
+    //Donasi (Bank Controller)
+    Route::resource('banks', BankController::class);
 });
 
 // Temporary/Test route

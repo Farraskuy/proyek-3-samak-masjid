@@ -1,23 +1,30 @@
 <?php
 
-namespace App\Http\Controllers\Keuangan;
+namespace App\Http\Controllers\Donasi;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Models\BankAccount;
 use App\Models\DonationConfirmation;
-use Illuminate\Http\Request;
 
 class ZISController extends Controller
 {
     public function index()
     {
-        // Ambil data bank yang active
+        return view('client.donasi.informasi.index');
+    }
+
+    //Ini tempat kalkulator dan nomor rekening berada
+    public function donasi()
+    {
+        // Ambil data bank yang active 
         $rekening = BankAccount::where('is_active',true)->get();
 
-        return view('client.keuangan.informasi.index', [
+        return view('client.donasi.index', [
             'daftarRekening' => $rekening
         ]);
     }
+
 }
 
 

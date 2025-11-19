@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('account_number', 50);
             $table->string('account_holder_name', 100);
             $table->string('logo_url', 255);
+            $table->enum('category', ['zakat', 'infaq']);
             $table->boolean('is_active')->default(true);
         });
     }
