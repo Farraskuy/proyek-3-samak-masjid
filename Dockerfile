@@ -1,37 +1,46 @@
-# Dockerfile
-FROM php:8.2-cli-alpine
+FROM php:8.4-fpm
 
-# Install dependensi sistem (termasuk untuk gd, pgsql, dll)
-RUN apk add --no-cache \
-    $PHPIZE_DEPS \
-    postgresql-dev \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    freetype-dev \
+# Update package list and install dependencies
+RUN apt-get update && apt-get install -y \
     libzip-dev \
-    oniguruma-dev \
-    zip \
-    unzip \
-    curl \
-    git
+    libpng-dev \
+    postgresql-client \
+    libpq-dev \
+    nodejs \
+    npm \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install ekstensi PHP
-RUN docker-php-ext-install \
-    pdo \
-    pdo_pgsql \
-    pgsql \
-    mbstring \
-    exif \
-    pcntl \
-    bcmath \
-    gd \
-    zip
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
-WORKDIR /var/www/html
+# Install required packages
+RUN docker-php-ext-install pdo pgsql pdo_pgsql gd bcmath zip \
+    && pecl install redis \
+    && docker-php-ext-enable redis
 
+WORKDIR /usr/share/nginx/html/
+
+# Copy the codebase
 COPY . ./
 
-EXPOSE 8000
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Run composer install for production and give permissions
+RUN sed 's_@php artisan package:discover_/bin/true_;' -i composer.json \
+    && composer install --ignore-platform-req=php --no-dev --optimize-autoloader \
+    && composer clear-cache \
+    && php artisan package:discover --ansi \
+    && chmod -R 775 storage \
+    && chown -R www-data:www-data storage \
+    && mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache
+
+# Copy entrypoint
+COPY ./scripts/php-fpm-entrypoint /usr/local/bin/php-entrypoint
+
+# Give permisisons to everything in bin/
+RUN chmod a+x /usr/local/bin/*
+
+ENTRYPOINT ["/usr/local/bin/php-entrypoint"]
+
+CMD ["php-fpm"]

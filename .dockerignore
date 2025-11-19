@@ -1,4 +1,21 @@
-# Include any files or directories that you don't want to be copied to your
+vendor
+.env
+.env.local
+.env.*.backup
+.idea
+.vscode
+node_modules
+storage/*.key
+storage/*.lock
+storage/debugbar
+public/hot
+public/storage
+.git
+/.github
+docker-compose.override.yml
+docker-compose.*.yml
+tests
+phpunit.xml# Include any files or directories that you don't want to be copied to your
 # container here (e.g., local build artifacts, temporary files, etc.).
 #
 # For more help, visit the .dockerignore file reference guide at

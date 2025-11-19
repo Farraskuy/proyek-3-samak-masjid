@@ -212,7 +212,7 @@
             {{-- EMPTY STATE --}}
             @if (empty($events))
                 <div class="text-center py-5">
-                    <img src="https://undraw.co/api/illustrations/empty" class="empty-illustration" alt="No events">
+                    <img src="{{ asset('assets/images/no-data.png') }}" class="empty-illustration" alt="No events">
                     <p class="text-muted mt-x`3">Belum ada kegiatan untuk saat ini.</p>
                 </div>
             @endif
