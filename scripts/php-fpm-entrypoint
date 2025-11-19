@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 main() {
     if [ "$IS_WORKER" = "true" ]; then
         exec "$@"
@@ -7,9 +9,17 @@ main() {
         prepare_file_permissions
         run_npm_build
         prepare_storage
-        wait_for_db
-        run_migrations
-        optimize_app
+
+        # Start background maintenance tasks (wait for DB, run migrations and optimize)
+        # This prevents blocking the container from starting PHP-FPM and allows nginx
+        # to connect to the fastcgi endpoint immediately.
+        (
+            wait_for_db
+            run_migrations
+            optimize_app
+        ) &
+
+        # Start php-fpm (replaces the shell)
         run_server "$@"
     fi
 }
