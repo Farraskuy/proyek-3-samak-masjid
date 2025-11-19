@@ -15,7 +15,7 @@
 #navbar-samak .nav-link {
     padding: 0.45rem 0.75rem;
     margin: 0.2rem 0;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
     border-radius: 8px;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -82,7 +82,7 @@
     DROPDOWN MENU
 ----------------------------------------------------------- */
 #navbar-samak .dropdown-toggle {
-    font-size: 12px;
+    font-size: 13px;
 }
 
 #navbar-samak .dropdown-menu {

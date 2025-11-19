@@ -81,9 +81,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 
 // News Routes (client)
-Route::prefix('postingan')->group(function () {
-    Route::get('/', [PostinganController::class, 'index']);
-    Route::get('/{slug}', [PostinganController::class, 'showDetail']);
+Route::prefix('postingan')->name('client.')->group(function () {
+    Route::get('/', [PostinganController::class, 'index'])->name('berita');
+    Route::get('/{slug}', [PostinganController::class, 'showDetail'])->name('berita.detail');
 });
 
 // Admin News Management (use existing PostinganController)
@@ -96,6 +96,10 @@ Route::prefix('admin/postingan')->name('postingan.admin.')->group(function () {
     Route::get('/edit/{id}',[PostinganController::class,'edit'])->name('edit');
 
     Route::put('/update/{id}', [PostinganController::class, 'update'])->name('update');
+    // Approval workflow for super-admin
+    Route::get('/approval', [PostinganController::class, 'approvalIndex'])->name('approval.index');
+    Route::get('/approval/{id}', [PostinganController::class, 'approvalShow'])->name('approval.show');
+    Route::post('/approval/{id}', [PostinganController::class, 'approvalUpdate'])->name('approval.update');
 });
 
 // Other Pages

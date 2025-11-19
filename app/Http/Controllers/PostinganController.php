@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Post;
+use App\Models\Postingan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 
 class PostinganController extends Controller
 {
@@ -14,62 +15,88 @@ class PostinganController extends Controller
     public function index(Request $request)
     {
         $filter = $request->query('filter'); // ?filter=...
-        $query = Post::query();
+        $keyword = $request->query('keyword');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        $query = Postingan::query();
 
         if (!empty($filter)) {
-            $query->where('kategori', $filter);
+            $query->whereRaw('LOWER(kategori) = ?', [strtolower($filter)]);
         }
 
-        $data_posts = $query->orderBy('created_at', 'desc')->paginate(9)->withQueryString();
+        if (!empty($keyword)) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('title', 'like', "%{$keyword}%")->orWhere('keterangan', 'like', "%{$keyword}%");
+            });
+        }
 
-        return view('post.halaman_postingan', ['data_posts' => $data_posts]);
+        if (!empty($startDate)) {
+            $query->whereDate('created_at', '>=', $startDate);
+        }
+
+        if (!empty($endDate)) {
+            $query->whereDate('created_at', '<=', $endDate);
+        }
+
+        $cacheKey = 'postingan.index:' . md5($request->fullUrl());
+        $data_posts = Cache::remember($cacheKey, now()->addMinutes(60), function () use ($query) {
+            return $query->orderBy('created_at', 'desc')->paginate(9);
+        });
+
+        // ensure paginator keeps query string
+        if (method_exists($data_posts, 'withQueryString')) {
+            $data_posts = $data_posts->withQueryString();
+        }
+
+        return view('client.postingan.index', ['data_posts' => $data_posts]);
     }
 
     // Show detail page by slug (previously DetailPostinganController::return_resource)
     public function showDetail($slug_from_view)
     {
 
-        $postRecord = Post::select('content')->where('slug', $slug_from_view)->first();
+        $post = Postingan::where('slug', $slug_from_view)->firstOrFail();
 
-        if (!$postRecord) {
-            abort(404, 'Postingan tidak ditemukan');
-        }
+        $kontent_html_tag = $post->content;
 
-        $kontent_html_tag = $postRecord->content;
-
-        // BUNGKUS AGAR TIDAK DI-MERGE
+        // Wrap to avoid merging
         $kontent_html_tag = "<div>$kontent_html_tag</div>";
 
         $obj_html = new \DOMDocument();
         libxml_use_internal_errors(true);
 
-        // load HTML wrapper
         $obj_html->loadHTML($kontent_html_tag, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         libxml_clear_errors();
 
-        // Tambah prefix /storage/
+        // Prefix storage/ for images
         $img = $obj_html->getElementsByTagName("img");
+        /** @var \DOMElement $image_tag */
         foreach ($img as $image_tag) {
+            /** @var string $src */
             $src = $image_tag->getAttribute('src');
-            if (!str_starts_with($src, '/storage/')) {
-                $image_tag->setAttribute('src', '/storage/' . $src);
+            if (!str_starts_with($src, '/storage/') && !str_starts_with($src, 'http')) {
+                $image_tag->setAttribute('src', '/storage/' . ltrim($src, '/'));
             }
         }
 
-        // Ambil isi dalam wrapper div
         $updated_html = $obj_html->saveHTML($obj_html->documentElement);
+        $updated_html = preg_replace(['/^<div>/', '/<\/div>$/'], ['', ''], $updated_html);
 
-        // Hapus <div> pembungkus
-        $updated_html = preg_replace('/^<div>|<\/div>$/', '', $updated_html);
+        // cache detail by slug to speed up repeated views
+        $cacheKey = 'postingan.show:' . $post->slug;
+        $cachedHtml = Cache::remember($cacheKey, now()->addMinutes(60), function () use ($updated_html) {
+            return $updated_html;
+        });
 
-        return view('post.fitur_detail_postingan', ['data_posts' => $updated_html]);
+        return view('client.postingan.detail', ['post' => $post, 'content_html' => $cachedHtml]);
     }
 
     // Return add-article form (previously AddPostinganController::return_resource)
     public function create()
     {
         session()->flash('token_tambah_artikel', 199);
-        return view('post.tambah_artikel');
+        return view('admin.postingan.tambah');
     }
 
     // Store uploaded article (previously AddPostinganController::upload)
@@ -97,7 +124,7 @@ class PostinganController extends Controller
 
         $slug = Str::slug($validated['title_view']);
 
-        Post::create([
+        Postingan::create([
             'title' => $validated['title_view'],
             'slug' => $slug . '-' . 'DAKWAH' . uniqid(),
             'keterangan' => $validated['keterangan_view'],
@@ -122,7 +149,9 @@ class PostinganController extends Controller
 
         $images = $dom->getElementsByTagName('img');
 
+        /** @var \DOMElement $img */
         foreach ($images as $img) {
+            /** @var string $src */
             $src = $img->getAttribute('src');
 
             if (preg_match('/^data:image\/(\w+);base64,/', $src, $type)) {
@@ -150,8 +179,80 @@ class PostinganController extends Controller
     // Admin: list articles for edit (previously ShowPostingan::getEditArtikel)
     public function indexAdmin()
     {
-        $post = Post::orderBy('created_at', 'desc')->get();
-        return view('post.list_artikel_admin')->with('post_data', $post);
+        $perPage = request()->query('showing', 50);
+        $query = Postingan::orderBy('created_at', 'desc');
+
+        if ($perPage === 'all') {
+            $post = $query->get();
+        } else {
+            $perPage = intval($perPage) > 0 ? intval($perPage) : 50;
+            $post = $query->paginate($perPage)->withQueryString();
+        }
+
+        return view('admin.postingan.index')->with('data', $post);
+    }
+
+    // Approval index for super-admin: list postingans awaiting approval
+    public function approvalIndex(Request $request)
+    {
+        $perPage = $request->query('showing', 50);
+        $query = Postingan::where('approval_status', 'pending')->orderBy('created_at', 'desc');
+
+        if ($perPage === 'all') {
+            $data = $query->get();
+        } else {
+            $perPage = intval($perPage) > 0 ? intval($perPage) : 50;
+            $data = $query->paginate($perPage)->withQueryString();
+        }
+
+        return view('admin.postingan.approval_index')->with('data', $data);
+    }
+
+    // Show approval detail + preview
+    public function approvalShow($id)
+    {
+        $post = Postingan::where('post_id', (int)$id)->firstOrFail();
+        return view('admin.postingan.approval_detail')->with('post', $post);
+    }
+
+    // Handle approval action (approve/reject/revision)
+    public function approvalUpdate(Request $request, $id)
+    {
+        $post = Postingan::where('post_id', (int)$id)->firstOrFail();
+
+        $validated = $request->validate([
+            'decision' => 'required|in:approve,reject,revision',
+            'status' => 'nullable|in:published,not published,revisi',
+            'note' => 'nullable|string'
+        ]);
+
+        $decision = $validated['decision'];
+
+        if ($decision === 'approve') {
+            $post->approval_status = 'approved';
+            $post->approval_note = $validated['note'] ?? null;
+            $post->approved_by = optional($request->user())->id ?? null;
+            $post->approved_at = now();
+            // optionally change publication status if provided
+            if (!empty($validated['status']) && $validated['status'] === 'published') {
+                $post->status = 'published';
+                $post->published_at = now();
+            }
+        } elseif ($decision === 'reject') {
+            $post->approval_status = 'rejected';
+            $post->approval_note = $validated['note'] ?? null;
+            $post->approved_by = optional($request->user())->id ?? null;
+            $post->approved_at = now();
+        } else { // revision
+            $post->approval_status = 'revision';
+            $post->approval_note = $validated['note'] ?? null;
+            // mark post status as 'revisi' so admin sees it needs edits
+            $post->status = 'revisi';
+        }
+
+        $post->save();
+
+        return redirect()->route('postingan.admin.approval.index')->with('status', 'Keputusan approval disimpan.');
     }
 
     // Delete article and associated images (previously ShowPostingan::deleteArtikel)
@@ -159,14 +260,14 @@ class PostinganController extends Controller
     {
         $this->search_delete_featured_image($id);
         $this->search_delete_kontent_image($id);
-        Post::where('post_id', (int)$id)->delete();
+        Postingan::where('post_id', (int)$id)->delete();
         return redirect()->back()->with('status', 'Artikel berhasil dihapus');
     }
 
     // Delete featured image file
     protected function search_delete_featured_image($id)
     {
-        $featured_image_fc = Post::select('featured_image_url')->where('post_id', (int)$id)->first();
+        $featured_image_fc = Postingan::select('featured_image_url')->where('post_id', (int)$id)->first();
         if ($featured_image_fc && $featured_image_fc->featured_image_url) {
             $path = $featured_image_fc->featured_image_url;
             Storage::disk('public')->delete($path);
@@ -176,7 +277,7 @@ class PostinganController extends Controller
     // Delete images embedded in content
     protected function search_delete_kontent_image($id)
     {
-        $kontent_image = Post::select('content')->where('post_id', (int)$id)->first();
+        $kontent_image = Postingan::select('content')->where('post_id', (int)$id)->first();
         if (!$kontent_image) {
             return;
         }
@@ -189,7 +290,9 @@ class PostinganController extends Controller
 
         $img = $obj_html->getElementsByTagName("img");
 
+        /** @var \DOMElement $image_tag */
         foreach ($img as $image_tag) {
+            /** @var string $src */
             $src = $image_tag->getAttribute('src');
             Storage::disk('public')->delete($src);
         }
@@ -197,7 +300,7 @@ class PostinganController extends Controller
 
     public function edit($id)
     {
-        $post = Post::where('post_id', $id)->firstOrFail();
+        $post = Postingan::where('post_id', $id)->firstOrFail();
 
         // Tambahkan /storage/ hanya untuk tag <img>
         $post->content = preg_replace(
@@ -206,7 +309,7 @@ class PostinganController extends Controller
             $post->content
         );
 
-        return view('post.edit_postingan_admin', compact('post'));
+        return view('admin.postingan.edit', compact('post'));
     }
 
 
@@ -216,7 +319,7 @@ class PostinganController extends Controller
     public function update(Request $request, $id)
     {
         // 1. Ambil data post yang ada
-        $post = Post::where('post_id', $id)->firstOrFail();
+        $post = Postingan::where('post_id', $id)->firstOrFail();
 
         // 2. Validasi input
         $validated = $request->validate([
