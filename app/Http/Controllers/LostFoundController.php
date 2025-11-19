@@ -30,7 +30,7 @@ class LostFoundController extends Controller
             });
         }
 
-        $items = $query->latest()->paginate(3);
+        $items = $query->latest()->paginate(9);
 
         return view('client.layanan.barang-hilang.index', compact('items'));
     }
