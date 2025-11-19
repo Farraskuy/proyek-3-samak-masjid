@@ -18,6 +18,7 @@ class BankAccount extends Model
         'account_number',
         'account_holder_name',
         'logo_url',
+        'category',
         'is_active'
     ];
 }

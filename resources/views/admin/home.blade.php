@@ -120,6 +120,15 @@
                         </div>
                     </a>
 
+                    {{-- 8. Manajemen Rekening Bank --}}
+                    <a href="{{ url('/admin/banks') }}" class="btn text-start home-item">
+                        <i class="fa-duotone icon fa-building-columns" style="color: #0dcaf0"></i>
+                        <div>
+                            <p class="fw-semibold m-0">Manajemen Rekening <i class="fa-regular fa-arrow-right"></i></p>
+                            <p class="m-0 text-secondary">Atur Bank Zakat & Infak </p>
+                        </div>
+                    </a>
+
                 </div>
             </div>
 
