@@ -211,14 +211,14 @@ class PostinganController extends Controller
     // Show approval detail + preview
     public function approvalShow($id)
     {
-        $post = Postingan::where('post_id', (int)$id)->firstOrFail();
+        $post = Postingan::where('id', (int)$id)->firstOrFail();
         return view('admin.postingan.approval_detail')->with('post', $post);
     }
 
     // Handle approval action (approve/reject/revision)
     public function approvalUpdate(Request $request, $id)
     {
-        $post = Postingan::where('post_id', (int)$id)->firstOrFail();
+        $post = Postingan::where('id', (int)$id)->firstOrFail();
 
         $validated = $request->validate([
             'decision' => 'required|in:approve,reject,revision',
@@ -265,14 +265,14 @@ class PostinganController extends Controller
 
         $this->search_delete_featured_image($id);
         $this->search_delete_kontent_image($id);
-        Postingan::where('post_id', (int)$id)->delete();
+        Postingan::where('id', (int)$id)->delete();
         return redirect()->back()->with('status', 'Artikel berhasil dihapus');
     }
 
     // Delete featured image file
     protected function search_delete_featured_image($id)
     {
-        $featured_image_fc = Postingan::select('featured_image_url')->where('post_id', (int)$id)->first();
+        $featured_image_fc = Postingan::select('featured_image_url')->where('id', (int)$id)->first();
         if ($featured_image_fc && $featured_image_fc->featured_image_url) {
             $path = $featured_image_fc->featured_image_url;
             Storage::disk('public')->delete($path);
@@ -282,7 +282,7 @@ class PostinganController extends Controller
     // Delete images embedded in content
     protected function search_delete_kontent_image($id)
     {
-        $kontent_image = Postingan::select('content')->where('post_id', (int)$id)->first();
+        $kontent_image = Postingan::select('content')->where('id', (int)$id)->first();
         if (!$kontent_image) {
             return;
         }
@@ -305,7 +305,7 @@ class PostinganController extends Controller
 
     public function edit($id)
     {
-        $post = Postingan::where('post_id', $id)->firstOrFail();
+        $post = Postingan::where('id', $id)->firstOrFail();
 
         // Tambahkan /storage/ hanya untuk tag <img>
         $post->content = preg_replace(
@@ -324,7 +324,7 @@ class PostinganController extends Controller
     public function update(Request $request, $id)
     {
         // 1. Ambil data post yang ada
-        $post = Postingan::where('post_id', $id)->firstOrFail();
+        $post = Postingan::where('id', $id)->firstOrFail();
 
         // 2. Validasi input
         // accept both legacy field names and new names from blade
