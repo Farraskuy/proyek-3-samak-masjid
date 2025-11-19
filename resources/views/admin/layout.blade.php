@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="{{ asset('assets/fonts/fonts.css') }}">
 
     {{-- icon --}}
-    <link rel="shortcut icon" href="{{ asset('assets/image') }}/logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('assets/image') }}/logo.png" type="image/x-icon">
 
     {{-- style --}}
     <link rel="stylesheet" href="{{ asset('assets/css/admin.css') }}">

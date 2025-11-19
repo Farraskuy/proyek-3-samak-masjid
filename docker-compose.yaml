@@ -49,7 +49,7 @@ services:
       - db-data:/bitnami/postgresql
     environment:
       - POSTGRESQL_DATABASE=samak_db
-      - POSTGRESQL_USERNAME=samak_db_user
+      - POSTGRESQL_USERNAME=postgresql
       - POSTGRESQL_PASSWORD=mdipmli8jf8io7qkgvbt
   redis:
     image: bitnami/redis

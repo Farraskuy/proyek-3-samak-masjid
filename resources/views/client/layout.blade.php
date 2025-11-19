@@ -11,7 +11,7 @@
 
 
     {{-- icon --}}
-    <link rel="shortcut icon" href="{{ asset('assets/image') }}/logo.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('assets/image') }}/logo.png" type="image/x-icon">
 
     {{-- FontAwesome CSS --}}
     <link rel="stylesheet" href="{{ asset('assets/css/font-awesome/solid.css') }}">
