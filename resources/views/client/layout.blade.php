@@ -123,13 +123,14 @@
     </style>
 
     <!-- Custom CSS -->
+    @stack('meta')
     @stack('styles')
 </head>
 
 <body>
     @include('components.navbar')
 
-    <main class="flex-grow-1">
+    <main class="grow">
         @yield('content')
     </main>
 
@@ -150,6 +151,55 @@
 
     @stack('scripts')
 
+    {{-- Global image fallback handler: centralize fallback behavior for the client views --}}
+    <script>
+        (function(){
+            function handleWrapper(wrapper){
+                var img = wrapper.querySelector('img');
+                var icon = wrapper.querySelector('.fallback-icon');
+
+                function show(){ if(img) img.style.display='none'; if(icon) icon.style.display='block'; }
+                function hide(){ if(icon) icon.style.display='none'; if(img) img.style.display='block'; }
+
+                if(!img){
+                    if(icon) icon.style.display='block';
+                    return;
+                }
+
+                var src = img.getAttribute('src') || '';
+                if(!src.trim()){
+                    show();
+                    return;
+                }
+
+                img.addEventListener('error', show);
+                img.addEventListener('load', function(){ if(img.naturalWidth>1) hide(); else show(); });
+
+                // safety check if image already failed before listeners
+                setTimeout(function(){ if(img && img.naturalWidth===0) show(); }, 300);
+            }
+
+            function initFallbacks(){
+                // generic thumbnail wrappers
+                document.querySelectorAll('.card-thumbnail-wrapper').forEach(handleWrapper);
+
+                // recommend-card wrappers (they also use .card-thumbnail-wrapper)
+                document.querySelectorAll('.recommend-card .card-thumbnail-wrapper').forEach(handleWrapper);
+
+                // hero image (optional): hide if fails, leaving skeleton
+                var hero = document.querySelector('.hero-wrapper img.hero-image');
+                if(hero){
+                    hero.addEventListener('error', function(){ this.style.display='none'; });
+                }
+            }
+
+            if(document.readyState === 'loading'){
+                document.addEventListener('DOMContentLoaded', initFallbacks);
+            } else {
+                initFallbacks();
+            }
+        })();
+    </script>
 
     {{-- Auto Show Alerts --}}
     <script>

@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('post_category', function (Blueprint $table) {
-            $table->foreignId('category_id')->constrained('categories', 'category_id');
-            $table->foreignId('post_id')->constrained('posts', 'post_id');
-            $table->primary(['category_id', 'post_id']);
+        Schema::table('lost_and_found_items', function (Blueprint $table) {
+            $table->string('category')->default('lain-lain');
         });
     }
 
@@ -23,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('post_category');
+        Schema::table('lost_and_found_items', function (Blueprint $table) {
+            //
+        });
     }
 };

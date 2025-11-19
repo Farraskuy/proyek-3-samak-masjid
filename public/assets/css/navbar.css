@@ -15,7 +15,7 @@
 #navbar-samak .nav-link {
     padding: 0.45rem 0.75rem;
     margin: 0.2rem 0;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     border-radius: 8px;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -40,7 +40,7 @@
     MINIMAL NAV STYLE
 ----------------------------------------------------------- */
 #navbar-samak .nav-min {
-    padding: 6px 16px !important;
+    padding: 6px 12px !important;
     border-radius: 20px;
     transition: 0.25s ease;
     font-weight: 500;
@@ -81,7 +81,12 @@
 /* -----------------------------------------------------------
     DROPDOWN MENU
 ----------------------------------------------------------- */
+#navbar-samak .dropdown-toggle {
+    font-size: 13px;
+}
+
 #navbar-samak .dropdown-menu {
+    font-size: 14px;
     border-radius: 16px;
     overflow: hidden;
     padding: 0;
