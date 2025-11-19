@@ -60,14 +60,14 @@
                                     </td>
                                     <td>{{ $row->created_at ?? '-' }}</td>
                                     <td class="text-nowrap">
-                                        <a href="/admin/artikel/edit/{{ $row->post_id }}"
+                                        <a href="/admin/artikel/edit/{{ $row->id }}"
                                             class="btn btn-light btn-sm border" aria-label="Edit">
                                             <i class="fas fa-pen text-muted"></i>
                                         </a>
 
                                         @if(optional(auth()->user())->role === 'super admin')
                                             <button type="button" class="btn btn-danger btn-sm btn-delete-article"
-                                                    data-action="{{ url('/admin/artikel/delete/'.$row->post_id) }}"
+                                                    data-action="{{ url('/admin/artikel/delete/'.$row->id) }}"
                                                     aria-label="Hapus">
                                                 <i class="fas fa-trash"></i>
                                             </button>

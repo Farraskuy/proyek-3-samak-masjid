@@ -23,7 +23,7 @@ class Postingan extends Model
     ];
 
     protected $fillable = [
-        'post_id',
+        'id',
         'user_id',
         'title',
         'slug',

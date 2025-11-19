@@ -31,7 +31,7 @@
                                     <td>{{ optional($row->creator)->name ?? ($row->user_id ?? '-') }}</td>
                                     <td>{{ $row->created_at ?? '-' }}</td>
                                     <td class="text-nowrap">
-                                        <a href="{{ url('/admin/postingan/approval/' . ($row->post_id ?? $row->id)) }}" class="btn btn-primary btn-sm">Lihat Postingan</a>
+                                        <a href="{{ url('/admin/postingan/approval/' . ($row->id ?? $row->id)) }}" class="btn btn-primary btn-sm">Lihat Postingan</a>
                                     </td>
                                 </tr>
                             @empty

@@ -32,7 +32,7 @@
                 <div class="card p-3 mb-3">
                     <h5 class="fw-semibold">Publikasi / Keputusan Approval</h5>
 
-                    <form action="{{ route('postingan.admin.approval.update', ['id' => $post->post_id]) }}" method="POST">
+                    <form action="{{ route('postingan.admin.approval.update', ['id' => $post->id]) }}" method="POST">
                         @csrf
 
                         <div class="mb-2">
