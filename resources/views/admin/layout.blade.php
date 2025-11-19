@@ -103,6 +103,28 @@
                 </form>
             </div>
 
+            <!-- Reusable Delete Confirmation Modal (used by admin index pages) -->
+            <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+                <form id="confirmDeleteForm" method="POST" class="modal-dialog modal-dialog-centered">
+                    @csrf
+                    @method('DELETE')
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <p class="modal-title fw-semibold">Konfirmasi Hapus</p>
+                        </div>
+                        <div class="modal-body">
+                            <p class="mb-0 fs-15px">Apakah anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="d-flex gap-1 justify-content-end">
+                                <button type="button" class="fw-semibold btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" class="fw-semibold btn btn-sm btn-danger">Ya, Hapus</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
             @yield('content')
         </main>
     </div>
@@ -152,6 +174,25 @@
 
     {{-- custom script --}}
     <script src="{{ asset('assets/js') }}/admin.js"></script>
+
+    <script>
+        // Attach delete modal behaviour: any .btn-delete-article sets form action and shows modal
+        document.addEventListener('DOMContentLoaded', function () {
+            var deleteButtons = document.querySelectorAll('.btn-delete-article');
+            deleteButtons.forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    var action = btn.getAttribute('data-action');
+                    var form = document.getElementById('confirmDeleteForm');
+                    if (form) {
+                        form.action = action;
+                        var modalEl = document.getElementById('confirmDeleteModal');
+                        var modal = new bootstrap.Modal(modalEl);
+                        modal.show();
+                    }
+                });
+            });
+        });
+    </script>
 
     @stack('scripts')
 </body>

@@ -256,8 +256,13 @@ class PostinganController extends Controller
     }
 
     // Delete article and associated images (previously ShowPostingan::deleteArtikel)
-    public function deleteArtikel($id)
+    public function deleteArtikel(Request $request, $id)
     {
+        // Only allow super admin to delete
+        if (optional($request->user())->role !== 'super admin') {
+            abort(403, 'Unauthorized');
+        }
+
         $this->search_delete_featured_image($id);
         $this->search_delete_kontent_image($id);
         Postingan::where('post_id', (int)$id)->delete();
@@ -322,18 +327,24 @@ class PostinganController extends Controller
         $post = Postingan::where('post_id', $id)->firstOrFail();
 
         // 2. Validasi input
+        // accept both legacy field names and new names from blade
         $validated = $request->validate([
-            'title_view' => 'required|string|max:255',
-            'keterangan_view' => 'required|string',
-            'kategori_view' => 'required|string',
-            'image_view' => 'nullable|image|max:2048', // Boleh null jika tidak ganti gambar
-            'content_view' => 'nullable|string'
+            'title' => 'sometimes|required|string|max:255',
+            'title_view' => 'sometimes|required|string|max:255',
+            'keterangan' => 'sometimes|required|string',
+            'keterangan_view' => 'sometimes|required|string',
+            'kategori' => 'sometimes|required|string',
+            'kategori_view' => 'sometimes|required|string',
+            'featured_image_url' => 'sometimes|nullable',
+            'image_view' => 'sometimes|nullable|image|max:2048', // Boleh null jika tidak ganti gambar
+            'content' => 'sometimes|nullable|string',
+            'content_view' => 'sometimes|nullable|string'
         ]);
 
         // 3. Handle Gambar Header (Featured Image)
         $featuredImagePath = $post->featured_image_url; // Default pakai gambar lama
 
-        if ($request->hasFile('image_view')) {
+        if ($request->hasFile('image_view') || $request->hasFile('featured_image_url')) {
             // Jika ada gambar baru di-upload:
 
             // Hapus gambar lama (jika ada)
@@ -342,13 +353,13 @@ class PostinganController extends Controller
             }
 
             // Simpan gambar baru
-            $image = $request->file('image_view');
+            $image = $request->file('image_view') ?? $request->file('featured_image_url');
             $newName = uniqid() . '_' . $image->getClientOriginalName();
             $featuredImagePath = $image->storeAs('public/news/images', $newName);
         }
 
         // 4. Handle Konten Quill (termasuk gambar base64 baru)
-        $content = $request->input('content_view');
+        $content = $request->input('content_view') ?? $request->input('content');
 
         if ($content) {
 
@@ -366,19 +377,25 @@ class PostinganController extends Controller
 
         // 5. Handle Slug (buat baru jika judul berubah)
         $slug = $post->slug;
-        if ($post->title !== $validated['title_view']) {
-            $slug = Str::slug($validated['title_view']) . '-' . 'DAKWAH' . uniqid();
+        $newTitle = $request->input('title_view') ?? $request->input('title');
+        if ($newTitle && $post->title !== $newTitle) {
+            $slug = Str::slug($newTitle) . '-' . 'DAKWAH' . uniqid();
         }
 
         // 6. Update ke database
+        // Update: set approval_status to pending and mark not published to require re-approval
         $post->update([
-            'title' => $validated['title_view'],
+            'title' => $newTitle ?? ($validated['title_view'] ?? $post->title),
             'slug' => $slug,
-            'keterangan' => $validated['keterangan_view'],
+            'keterangan' => $request->input('keterangan_view') ?? $request->input('keterangan') ?? $post->keterangan,
             'featured_image_url' => $featuredImagePath,
-            'content' => $content,
-            'kategori' => $validated['kategori_view'],
-            'created_at' => now() // Tambahkan updated_at
+            'content' => $content ?? $post->content,
+            'kategori' => $request->input('kategori_view') ?? $request->input('kategori') ?? $post->kategori,
+            'approval_status' => 'pending',
+            'status' => 'not publish',
+            'approved_by' => null,
+            'approved_at' => null,
+            'updated_at' => now()
         ]);
 
         return redirect()->to('/admin/postingan')->with('success_post_disimpan_di_database', 'Data berhasil diupdate!');

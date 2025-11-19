@@ -28,17 +28,6 @@
             border-radius: 16px;
             background: linear-gradient(90deg, #e9ecef 0%, #f8f9fa 50%, #e9ecef 100%);
             background-size: 200%;
-            animation: loading 1.2s infinite linear;
-        }
-
-        @keyframes loading {
-            0% {
-                background-position: 200% 0
-            }
-
-            100% {
-                background-position: -200% 0
-            }
         }
 
         /* Article Card */

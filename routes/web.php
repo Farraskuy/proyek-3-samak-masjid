@@ -17,6 +17,7 @@ use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\KajianController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\KonsultasiController;
+use App\Http\Controllers\FormBuilderController;
 use Illuminate\Support\Facades\Mail;
 
 /*
@@ -61,7 +62,7 @@ Route::get('/forgot-password/sent', [ForgotPasswordController::class, 'showPassw
 // Reset password routes
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 
-Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->middleware('throttle:5,1') ->name('password.update');
+Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->middleware('throttle:5,1')->name('password.update');
 
 
 
@@ -93,7 +94,7 @@ Route::prefix('admin/postingan')->name('postingan.admin.')->group(function () {
     Route::post('/posts', [PostinganController::class, 'store'])->name('store');
     Route::delete('/delete/{id}', [PostinganController::class, 'deleteArtikel'])->name('delete');
 
-    Route::get('/edit/{id}',[PostinganController::class,'edit'])->name('edit');
+    Route::get('/edit/{id}', [PostinganController::class, 'edit'])->name('edit');
 
     Route::put('/update/{id}', [PostinganController::class, 'update'])->name('update');
     // Approval workflow for super-admin
@@ -107,7 +108,7 @@ Route::get('/donasi', [ZISController::class, 'index'])->name('informasi.rekening
 Route::get('/layanan/barang-hilang', [LostFoundController::class, 'index'])->name('layanan.barang-hilang');
 
 // Admin Panel
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Lost and Found Management
@@ -126,6 +127,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/kajian', [KajianController::class, 'index'])->name('kajian');
     Route::get('/pengguna', [PenggunaController::class, 'index'])->name('pengguna');
     Route::get('/konsultasi', [KonsultasiController::class, 'index'])->name('konsultasi');
+
+    // Form Builder / Form Management
+    Route::get('/forms', [FormBuilderController::class, 'index'])->name('forms.index');
+    Route::get('/forms/create', [FormBuilderController::class, 'create'])->name('forms.create');
+    Route::post('/forms', [FormBuilderController::class, 'store'])->name('forms.store');
+    Route::get('/forms/{id}/edit', [FormBuilderController::class, 'edit'])->name('forms.edit');
+    Route::put('/forms/{id}', [FormBuilderController::class, 'update'])->name('forms.update');
+    Route::delete('/forms/{id}', [FormBuilderController::class, 'destroy'])->name('forms.destroy');
+
+    // Responses
+    Route::get('/forms/{id}/responses', [FormBuilderController::class, 'responses'])->name('forms.responses');
+    Route::get('/forms/{formId}/responses/{responseId}', [FormBuilderController::class, 'responseShow'])->name('forms.responses.show');
+    Route::delete('/forms/{formId}/responses/{responseId}', [FormBuilderController::class, 'responseDelete'])->name('forms.responses.delete');
 });
 
 // Temporary/Test route

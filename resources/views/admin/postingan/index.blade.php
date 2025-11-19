@@ -65,15 +65,13 @@
                                             <i class="fas fa-pen text-muted"></i>
                                         </a>
 
-                                        <form action="/admin/artikel/delete/{{ $row->post_id }}" method="post"
-                                            class="d-inline-block">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" aria-label="Hapus"
-                                                onclick="return confirm('Anda yakin ingin menghapus artikel ini?')">
+                                        @if(optional(auth()->user())->role === 'super admin')
+                                            <button type="button" class="btn btn-danger btn-sm btn-delete-article"
+                                                    data-action="{{ url('/admin/artikel/delete/'.$row->post_id) }}"
+                                                    aria-label="Hapus">
                                                 <i class="fas fa-trash"></i>
                                             </button>
-                                        </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty
