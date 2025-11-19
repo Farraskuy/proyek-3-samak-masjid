@@ -20,7 +20,8 @@ class BankAccountSeeder extends Seeder
             'account_number' => '7123456789',
             'account_holder_name' => 'DKM Masjid Kampus',
             'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Bank_Syariah_Indonesia.svg/512px-Bank_Syariah_Indonesia.svg.png',
-            'is_active' => true
+            'is_active' => true,
+            'category' => 'zakat'
         ]);
 
         // BankAccount::create([
