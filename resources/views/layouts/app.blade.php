@@ -8,7 +8,7 @@
 
     {{-- Bootstrap CSS --}}
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap/bootstrap.min.css') }}">
-    
+
     {{-- FontAwesome CSS --}}
     <link rel="stylesheet" href="{{ asset('assets/css/font-awesome/solid.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/font-awesome/regular.css') }}">
