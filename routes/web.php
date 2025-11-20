@@ -23,6 +23,9 @@ use App\Http\Controllers\FormBuilderController;
 use App\Http\Controllers\StaticPageController;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Donasi\Admin\BankController;
+use Illuminate\Broadcasting\Broadcasters;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,6 +70,14 @@ Route::get('/forgot-password/sent', [ForgotPasswordController::class, 'showPassw
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 
 Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->middleware('throttle:5,1')->name('password.update');
+
+// Broadcasting Auth untuk Reverb WebSocket
+Broadcast::routes(['middleware' => ['auth:sanctum']]);
+
+// API endpoint untuk mendapatkan user notifications
+Route::middleware('auth')->get('/api/notifications', function () {
+    return \App\Models\Notification::where('user_id', Auth::id())->orderBy('created_at', 'desc')->limit(10)->get();
+});
 
 
 
