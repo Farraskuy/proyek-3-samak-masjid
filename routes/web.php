@@ -18,6 +18,7 @@ use App\Http\Controllers\KajianController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\KonsultasiController;
 use App\Http\Controllers\ClientConsultationController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FormBuilderController;
 use App\Http\Controllers\StaticPageController;
 use Illuminate\Support\Facades\Mail;
@@ -126,6 +127,16 @@ Route::middleware('auth')->prefix('konsultasi-saya')->name('client.consultations
     Route::get('/{id}/pesan', [ClientConsultationController::class, 'getMessages'])->name('get-messages');
     Route::post('/{id}/tutup', [ClientConsultationController::class, 'close'])->name('close');
     Route::delete('/{id}', [ClientConsultationController::class, 'delete'])->name('delete');
+});
+
+// User Profile Routes
+Route::middleware('auth')->prefix('profil')->name('profile.')->group(function () {
+    Route::get('/', [ProfileController::class, 'show'])->name('show');
+    Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+    Route::put('/', [ProfileController::class, 'update'])->name('update');
+    Route::put('/password', [ProfileController::class, 'changePassword'])->name('change-password');
+    Route::get('/preferensi', [ProfileController::class, 'preferences'])->name('preferences');
+    Route::put('/preferensi', [ProfileController::class, 'updatePreferences'])->name('update-preferences');
 });
 
 // Admin Panel

@@ -101,7 +101,7 @@
                             <hr class="dropdown-divider my-1 mx-3">
                         </li>
                         <li>
-                            <a class="dropdown-item py-2" href="">
+                            <a class="dropdown-item py-2" href="{{ route('profile.show') }}">
                                 <div class="d-flex align-items-center">
                                     <div class="bg-light rounded-circle d-flex justify-content-center align-items-center me-3"
                                         style="height: 35px; width: 35px;">
@@ -115,21 +115,37 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item py-2" href="">
+                            <a class="dropdown-item py-2" href="{{ route('client.consultations.index') }}">
                                 <div class="d-flex align-items-center">
                                     <div class="bg-light rounded-circle d-flex justify-content-center align-items-center me-3"
                                         style="height: 35px; width: 35px;">
-                                        <i class="fas fa-bell text-warning"></i>
+                                        <i class="fas fa-comments text-info"></i>
                                     </div>
                                     <div>
-                                        <div class="fw-medium">Notifikasi</div>
-                                        <small class="text-muted">Lihat pemberitahuan terbaru</small>
+                                        <div class="fw-medium">Konsultasi Saya</div>
+                                        <small class="text-muted">Lihat riwayat konsultasi</small>
                                     </div>
                                 </div>
                             </a>
                         </li>
+                        @if (Auth::user()->role !== 'jamaah' && Auth::user()->role !== null)
+                            <li>
+                                <a class="dropdown-item py-2" href="{{ route('admin.dashboard') }}">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-warning bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center me-3"
+                                            style="height: 35px; width: 35px;">
+                                            <i class="fas fa-lock text-warning"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-medium">Ke Admin</div>
+                                            <small class="text-muted">Masuk panel administrator</small>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                        @endif
                         <li>
-                            <a class="dropdown-item py-2" href="">
+                            <a class="dropdown-item py-2" href="{{ route('profile.preferences') }}">
                                 <div class="d-flex align-items-center">
                                     <div class="bg-light rounded-circle d-flex justify-content-center align-items-center me-3"
                                         style="height: 35px; width: 35px;">
