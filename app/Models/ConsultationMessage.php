@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class ConsultationMessage extends Model
+{
+    use HasFactory;
+
+    protected $table = 'consultation_messages';
+    protected $fillable = [
+        'consultation_id',
+        'user_id',
+        'message',
+        'message_type',
+        'attachment_url',
+        'is_read',
+        'read_at',
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'read_at' => 'datetime',
+        'is_read' => 'boolean',
+    ];
+
+    public function consultation()
+    {
+        return $this->belongsTo(Consultation::class, 'consultation_id', 'consultation_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function markAsRead()
+    {
+        if (!$this->is_read) {
+            $this->update([
+                'is_read' => true,
+                'read_at' => now(),
+            ]);
+        }
+    }
+}
+

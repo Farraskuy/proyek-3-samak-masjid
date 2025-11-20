@@ -2,7 +2,7 @@
     <div class="container">
         <!-- Brand -->
         <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
-            <img src="{{ asset('assets/images/logo.png') }}" class="rounded me-2"
+            <img src="{{ asset('assets/images/logo.png') }}" class="rounded me-2" alt="Logo SAMAK Masjid"
                 style="width: 36px; height: 36px; object-fit: cover;">
             <span class="fw-semibold">SAMAK Masjid</span>
         </a>
@@ -58,6 +58,13 @@
                     <a class="nav-link nav-min {{ request()->is('layanan/barang-hilang*') ? 'active' : '' }}"
                         href="/layanan/barang-hilang">
                         Barang Hilang
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link nav-min {{ request()->is('tentang-kami*') ? 'active' : '' }}"
+                        href="/tentang-kami">
+                        Tentang Kami
                     </a>
                 </li>
 

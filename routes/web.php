@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Donasi\ZISController;
-use App\Http\Controllers\Postingan\PostinganController;
+use App\Http\Controllers\PostinganController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\LostFoundController;
 use App\Http\Controllers\KeuanganController;
@@ -17,7 +17,9 @@ use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\KajianController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\KonsultasiController;
+use App\Http\Controllers\ClientConsultationController;
 use App\Http\Controllers\FormBuilderController;
+use App\Http\Controllers\StaticPageController;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Donasi\Admin\BankController;
 
@@ -108,6 +110,23 @@ Route::prefix('admin/postingan')->name('postingan.admin.')->group(function () {
 Route::get('/donasi', [ZISController::class, 'index'])->name('donasi.informasi');
 Route::get('/donasi/sekarang', [ZISController::class, 'donasi'])->name('donasi.sekarang');
 Route::get('/layanan/barang-hilang', [LostFoundController::class, 'index'])->name('layanan.barang-hilang');
+Route::get('/tentang-kami', [StaticPageController::class, 'showAboutUs'])->name('client.tentang-kami');
+
+// Public Form Routes (client)
+Route::get('/form/{slug}', [FormBuilderController::class, 'show'])->name('form.show');
+Route::post('/form/{slug}/submit', [FormBuilderController::class, 'submit'])->name('form.submit');
+
+// Client Consultation Routes
+Route::middleware('auth')->prefix('konsultasi-saya')->name('client.consultations.')->group(function () {
+    Route::get('/', [ClientConsultationController::class, 'index'])->name('index');
+    Route::get('/buat', [ClientConsultationController::class, 'create'])->name('create');
+    Route::post('/', [ClientConsultationController::class, 'store'])->name('store');
+    Route::get('/{id}', [ClientConsultationController::class, 'show'])->name('show');
+    Route::post('/{id}/pesan', [ClientConsultationController::class, 'sendMessage'])->name('send-message');
+    Route::get('/{id}/pesan', [ClientConsultationController::class, 'getMessages'])->name('get-messages');
+    Route::post('/{id}/tutup', [ClientConsultationController::class, 'close'])->name('close');
+    Route::delete('/{id}', [ClientConsultationController::class, 'delete'])->name('delete');
+});
 
 // Admin Panel
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
@@ -129,6 +148,17 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/kajian', [KajianController::class, 'index'])->name('kajian');
     Route::get('/pengguna', [PenggunaController::class, 'index'])->name('pengguna');
     Route::get('/konsultasi', [KonsultasiController::class, 'index'])->name('konsultasi');
+    Route::get('/konsultasi/{id}', [KonsultasiController::class, 'show'])->name('konsultasi.show');
+    Route::post('/konsultasi/{id}/answer', [KonsultasiController::class, 'answer'])->name('konsultasi.answer');
+    Route::post('/konsultasi/{id}/reject', [KonsultasiController::class, 'reject'])->name('konsultasi.reject');
+    Route::post('/konsultasi/{id}/close', [KonsultasiController::class, 'close'])->name('konsultasi.close');
+    Route::post('/konsultasi/{id}/status', [KonsultasiController::class, 'updateStatus'])->name('konsultasi.status');
+    Route::delete('/konsultasi/{id}', [KonsultasiController::class, 'destroy'])->name('konsultasi.destroy');
+
+    // Static Pages Management
+    Route::get('/halaman-statis', [StaticPageController::class, 'indexAdmin'])->name('static-pages.index');
+    Route::get('/halaman-statis/{id}/edit', [StaticPageController::class, 'edit'])->name('static-pages.edit');
+    Route::put('/halaman-statis/{id}', [StaticPageController::class, 'update'])->name('static-pages.update');
 
     // Form Builder / Form Management
     Route::get('/forms', [FormBuilderController::class, 'index'])->name('forms.index');
