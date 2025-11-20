@@ -51,7 +51,7 @@ class Consultation extends Model
 
     public function messages()
     {
-        return $this->hasMany(ConsultationMessage::class, 'consultation_id', 'consultation_id');
+        return $this->hasMany(ConsultationMessage::class, 'consultation_id', 'id');
     }
 }
 

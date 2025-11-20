@@ -29,7 +29,7 @@ class ConsultationMessage extends Model
 
     public function consultation()
     {
-        return $this->belongsTo(Consultation::class, 'consultation_id', 'consultation_id');
+        return $this->belongsTo(Consultation::class, 'consultation_id', 'id');
     }
 
     public function user()
