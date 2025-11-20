@@ -8,13 +8,33 @@ use App\Models\FormResponse;
 use App\Models\FormResponseItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class FormBuilderController extends Controller
 {
     // List forms for admin
-    public function index()
+    public function index(Request $request)
     {
-        $forms = Form::orderBy('created_at','desc')->get();
+        $keyword = $request->query('keyword', '');
+        $perPage = $request->query('showing', 50);
+
+        $query = Form::with('fields', 'responses')->orderBy('created_at', 'desc');
+
+        if (!empty($keyword)) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('title', 'like', "%{$keyword}%")
+                  ->orWhere('description', 'like', "%{$keyword}%")
+                  ->orWhere('slug', 'like', "%{$keyword}%");
+            });
+        }
+
+        if ($perPage === 'all') {
+            $forms = $query->get();
+        } else {
+            $perPage = intval($perPage) > 0 ? intval($perPage) : 50;
+            $forms = $query->paginate($perPage)->withQueryString();
+        }
+
         return view('admin.forms.index', compact('forms'));
     }
 
@@ -28,9 +48,9 @@ class FormBuilderController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
+            'title' => 'required|string|max:255|unique:forms,title',
+            'slug' => 'nullable|string|max:255|unique:forms,slug',
+            'description' => 'nullable|string|max:1000',
             'fields' => 'required|array|min:1',
         ]);
 
@@ -39,28 +59,35 @@ class FormBuilderController extends Controller
             $slug = $slug . '-' . time();
         }
 
-        $form = Form::create([
-            'title' => $data['title'],
-            'slug' => $slug,
-            'description' => $data['description'] ?? null,
-            'settings' => [],
-        ]);
-
-        foreach ($data['fields'] as $i => $f) {
-            FormField::create([
-                'form_id' => $form->id,
-                'label' => $f['label'] ?? 'Field '.$i,
-                'name' => $f['name'] ?? ('field_'.$i),
-                'type' => $f['type'] ?? 'text',
-                'placeholder' => $f['placeholder'] ?? null,
-                'options' => $f['options'] ?? null,
-                'is_required' => !empty($f['is_required']),
-                'validation_rules' => $f['validation_rules'] ?? null,
-                'order' => $i,
+        DB::beginTransaction();
+        try {
+            $form = Form::create([
+                'title' => $data['title'],
+                'slug' => $slug,
+                'description' => $data['description'] ?? null,
+                'settings' => [],
             ]);
-        }
 
-        return redirect()->route('admin.forms.index')->with('success','Form created');
+            foreach ($data['fields'] as $i => $f) {
+                FormField::create([
+                    'form_id' => $form->id,
+                    'label' => $f['label'] ?? 'Field '.$i,
+                    'name' => $f['name'] ?? ('field_'.$i),
+                    'type' => $f['type'] ?? 'text',
+                    'placeholder' => $f['placeholder'] ?? null,
+                    'options' => $f['options'] ?? null,
+                    'is_required' => !empty($f['is_required']),
+                    'validation_rules' => $f['validation_rules'] ?? null,
+                    'order' => $i,
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->route('admin.forms.index')->with('success', 'Form berhasil dibuat!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withInput()->with('error', 'Gagal membuat form: ' . $e->getMessage());
+        }
     }
 
     // Edit form
@@ -165,7 +192,9 @@ class FormBuilderController extends Controller
         $rules = [];
         foreach ($fields as $f) {
             $r = [];
-            if (!empty($f['is_required'])) $r[] = 'required';
+            if (!empty($f['is_required'])) {
+                $r[] = 'required';
+            }
             // accept custom validation_rules array
             if (!empty($f['validation_rules']) && is_array($f['validation_rules'])) {
                 $r = array_merge($r, $f['validation_rules']);
@@ -177,21 +206,29 @@ class FormBuilderController extends Controller
 
         $request->validate($rules);
 
-        $response = FormResponse::create([
-            'form_id' => $form->id,
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-        ]);
-
-        foreach ($fields as $f) {
-            FormResponseItem::create([
-                'response_id' => $response->id,
-                'field_name' => $f['name'],
-                'field_label' => $f['label'],
-                'value' => is_array($request->input($f['name'])) ? json_encode($request->input($f['name'])) : $request->input($f['name']),
+        DB::beginTransaction();
+        try {
+            $response = FormResponse::create([
+                'form_id' => $form->id,
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
             ]);
-        }
 
-        return redirect()->back()->with('success','Response submitted');
+            foreach ($fields as $f) {
+                $value = $request->input($f['name']);
+                FormResponseItem::create([
+                    'response_id' => $response->id,
+                    'field_name' => $f['name'],
+                    'field_label' => $f['label'],
+                    'value' => is_array($value) ? json_encode($value) : $value,
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Terima kasih! Formulir Anda telah berhasil dikirim.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat mengirim formulir: ' . $e->getMessage());
+        }
     }
 }

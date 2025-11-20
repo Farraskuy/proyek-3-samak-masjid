@@ -177,10 +177,21 @@ class PostinganController extends Controller
     }
 
     // Admin: list articles for edit (previously ShowPostingan::getEditArtikel)
-    public function indexAdmin()
+    public function indexAdmin(Request $request)
     {
-        $perPage = request()->query('showing', 50);
+        $perPage = $request->query('showing', 50);
+        $keyword = $request->query('keyword', '');
+
         $query = Postingan::orderBy('created_at', 'desc');
+
+        // Add search filter
+        if (!empty($keyword)) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('title', 'like', "%{$keyword}%")
+                  ->orWhere('keterangan', 'like', "%{$keyword}%")
+                  ->orWhere('slug', 'like', "%{$keyword}%");
+            });
+        }
 
         if ($perPage === 'all') {
             $post = $query->get();

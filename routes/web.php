@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Donasi\ZISController;
 use App\Http\Controllers\PostinganController;
+use App\Http\Controllers\PostinganController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\LostFoundController;
 use App\Http\Controllers\KeuanganController;
@@ -17,10 +18,16 @@ use App\Http\Controllers\KegiatanController;
 use App\Http\Controllers\KajianController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\KonsultasiController;
+use App\Http\Controllers\ClientConsultationController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FormBuilderController;
+use App\Http\Controllers\StaticPageController;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Donasi\Admin\BankController;
 use App\Http\Controllers\Donasi\Admin\DonationConfirmationController;
+use Illuminate\Broadcasting\Broadcasters;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,6 +72,14 @@ Route::get('/forgot-password/sent', [ForgotPasswordController::class, 'showPassw
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 
 Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->middleware('throttle:5,1')->name('password.update');
+
+// Broadcasting Auth untuk Reverb WebSocket
+Broadcast::routes(['middleware' => ['auth:sanctum']]);
+
+// API endpoint untuk mendapatkan user notifications
+Route::middleware('auth')->get('/api/notifications', function () {
+    return \App\Models\Notification::where('user_id', Auth::id())->orderBy('created_at', 'desc')->limit(10)->get();
+});
 
 
 
@@ -113,13 +128,40 @@ Route::post('donasi/store', [ZISController::class, 'storeKonfirmasi'])->name('do
 
 // Other Pages
 Route::get('/layanan/barang-hilang', [LostFoundController::class, 'index'])->name('layanan.barang-hilang');
+Route::get('/tentang-kami', [StaticPageController::class, 'showAboutUs'])->name('client.tentang-kami');
+
+// Public Form Routes (client)
+Route::get('/form/{slug}', [FormBuilderController::class, 'show'])->name('form.show');
+Route::post('/form/{slug}/submit', [FormBuilderController::class, 'submit'])->name('form.submit');
+
+// Client Consultation Routes
+Route::middleware('auth')->prefix('konsultasi-saya')->name('client.consultations.')->group(function () {
+    Route::get('/', [ClientConsultationController::class, 'index'])->name('index');
+    Route::get('/buat', [ClientConsultationController::class, 'create'])->name('create');
+    Route::post('/', [ClientConsultationController::class, 'store'])->name('store');
+    Route::get('/{id}', [ClientConsultationController::class, 'show'])->name('show');
+    Route::post('/{id}/pesan', [ClientConsultationController::class, 'sendMessage'])->name('send-message');
+    Route::get('/{id}/pesan', [ClientConsultationController::class, 'getMessages'])->name('get-messages');
+    Route::post('/{id}/tutup', [ClientConsultationController::class, 'close'])->name('close');
+    Route::delete('/{id}', [ClientConsultationController::class, 'delete'])->name('delete');
+});
+
+// User Profile Routes
+Route::middleware('auth')->prefix('profil')->name('profile.')->group(function () {
+    Route::get('/', [ProfileController::class, 'show'])->name('show');
+    Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+    Route::put('/', [ProfileController::class, 'update'])->name('update');
+    Route::put('/password', [ProfileController::class, 'changePassword'])->name('change-password');
+    Route::get('/preferensi', [ProfileController::class, 'preferences'])->name('preferences');
+    Route::put('/preferensi', [ProfileController::class, 'updatePreferences'])->name('update-preferences');
+});
 
 // Admin Panel
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Lost and Found Management
-    Route::get('/barang-hilang', [LostFoundController::class, 'adminIndex'])->name('barang-hilang');
+    Route::get('/barang-hilang', action: [LostFoundController::class, 'adminIndex'])->name('barang-hilang');
     Route::get('/barang-hilang/tambah', [LostFoundController::class, 'create'])->name('barang-hilang.tambah');
     Route::post('/barang-hilang', [LostFoundController::class, 'store'])->name('barang-hilang.store');
     Route::get('/barang-hilang/{id}/edit', [LostFoundController::class, 'edit'])->name('barang-hilang.edit');
@@ -133,7 +175,19 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan');
     Route::get('/kajian', [KajianController::class, 'index'])->name('kajian');
     Route::get('/pengguna', [PenggunaController::class, 'index'])->name('pengguna');
+
     Route::get('/konsultasi', [KonsultasiController::class, 'index'])->name('konsultasi');
+    Route::get('/konsultasi/{id}', [KonsultasiController::class, 'show'])->name('konsultasi.show');
+    Route::post('/konsultasi/{id}/answer', [KonsultasiController::class, 'answer'])->name('konsultasi.answer');
+    Route::post('/konsultasi/{id}/reject', [KonsultasiController::class, 'reject'])->name('konsultasi.reject');
+    Route::post('/konsultasi/{id}/close', [KonsultasiController::class, 'close'])->name('konsultasi.close');
+    Route::post('/konsultasi/{id}/status', [KonsultasiController::class, 'updateStatus'])->name('konsultasi.status');
+    Route::delete('/konsultasi/{id}', [KonsultasiController::class, 'destroy'])->name('konsultasi.destroy');
+
+    // Static Pages Management
+    Route::get('/halaman-statis', [StaticPageController::class, 'indexAdmin'])->name('static-pages.index');
+    Route::get('/halaman-statis/{id}/edit', [StaticPageController::class, 'edit'])->name('static-pages.edit');
+    Route::put('/halaman-statis/{id}', [StaticPageController::class, 'update'])->name('static-pages.update');
 
     // Form Builder / Form Management
     Route::get('/forms', [FormBuilderController::class, 'index'])->name('forms.index');

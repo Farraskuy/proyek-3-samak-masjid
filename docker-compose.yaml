@@ -1,50 +1,71 @@
-# docker-compose.yml
-version: '3.8'
-
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    image: samak-masjid-app
-    container_name: samak-masjid-app
     restart: unless-stopped
-    working_dir: /var/www/html
-    volumes:
-      - ./:/var/www/html
-      - ./storage/logs:/var/www/html/storage/logs
-    environment:
-      - APP_ENV=local
-      - DB_CONNECTION=pgsql
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_DATABASE=samak_pro
-      - DB_USERNAME=samak_user
-      - DB_PASSWORD=samak123
+    # ports:
+      # - 9000:9000
     depends_on:
       - db
-    networks:
-      - samak-network
-
-  db:
-    image: postgres:17-alpine
-    container_name: samak-masjid-db
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: samak_pro
-      POSTGRES_USER: samak_user
-      POSTGRES_PASSWORD: samak123
+    env_file:
+      # - .env.example
+      - .env.production
     volumes:
-      - samak_db_data:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql  # opsional
+      - storage:/usr/share/nginx/html/storage:rw
+      - public:/usr/share/nginx/html/public:rw
+  # queue-worker:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   restart: unless-stopped
+  #   command: php artisan queue:work
+  #   environment:
+  #     IS_WORKER: "true"
+  #   env_file:
+  #     - .env.production
+  #   depends_on:
+  #     - db
+  #     - redis
+  #   volumes:
+  #     - storage:/usr/share/nginx/html/storage:rw
+  #     - public:/usr/share/nginx/html/public:rw
+  nginx:
+    image: nginx:1-alpine
+    # ports:
+      # - 80:80
+      # - 443:443
+    volumes:
+      - ./docker/nginx:/etc/nginx/templates
+      - storage:/usr/share/nginx/html/storage:rw
+      - public:/usr/share/nginx/html/public:ro
+  db:
+    image: bitnami/postgresql
+    platform: linux/amd64
     ports:
-      - "4321:5432"
-    networks:
-      - samak-network
+      - 15432:5432
+    restart: always
+    volumes:
+      - db-data:/bitnami/postgresql
+    environment:
+      - POSTGRESQL_DATABASE=postgres
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=postgres
+  redis:
+    image: bitnami/redis
+    platform: linux/amd64
+    # ports:
+      # - 6379:6379
+    restart: always
+    volumes:
+      - redis-data:/bitnami/redis/data
+    environment:
+      - ALLOW_EMPTY_PASSWORD=no
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
 
 volumes:
-  samak_db_data:
-
-networks:
-  samak-network:
-    driver: bridge
+  storage:
+  public:
+  db-data:
+  redis-data:

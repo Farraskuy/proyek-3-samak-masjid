@@ -153,7 +153,7 @@
             @if ($data_posts->count() == 0)
 
                 <div class="text-center py-5">
-                    <img src="https://undraw.co/api/illustrations/no-data" class="empty-illus mb-3" alt="No data available">
+                    <img src="{{ asset('assets/images/no-data.png') }}" class="empty-illus mb-3" alt="No data available">
                     <p class="text-muted">Belum ada postingan ditemukan.</p>
                 </div>
             @else

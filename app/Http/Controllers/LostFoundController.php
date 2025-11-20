@@ -35,9 +35,23 @@ class LostFoundController extends Controller
         return view('client.layanan.barang-hilang.index', compact('items'));
     }
 
-    public function adminIndex()
+    public function adminIndex(Request $request)
     {
-        $items = LostAndFoundItem::with('user', 'photos')->latest()->get();
+        $keyword = $request->query('keyword', '');
+
+        $query = LostAndFoundItem::with('user', 'photos')->latest();
+
+        // Add search filter
+        if (!empty($keyword)) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('item_name', 'like', "%{$keyword}%")
+                  ->orWhere('description', 'like', "%{$keyword}%")
+                  ->orWhere('location_found', 'like', "%{$keyword}%")
+                  ->orWhere('category', 'like', "%{$keyword}%");
+            });
+        }
+
+        $items = $query->get();
         return view('admin.lost-found.index', compact('items'));
     }
 
