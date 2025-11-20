@@ -169,14 +169,14 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan');
     Route::get('/kajian', [KajianController::class, 'index'])->name('kajian');
     Route::get('/pengguna', [PenggunaController::class, 'index'])->name('pengguna');
-    
-    Route::get('/konsultasi', [KonsultasiController::class, 'index'])->name('konsultasi');
-    Route::get('/konsultasi/{id}', [KonsultasiController::class, 'show'])->name('konsultasi.show');
-    Route::post('/konsultasi/{id}/answer', [KonsultasiController::class, 'answer'])->name('konsultasi.answer');
-    Route::post('/konsultasi/{id}/reject', [KonsultasiController::class, 'reject'])->name('konsultasi.reject');
-    Route::post('/konsultasi/{id}/close', [KonsultasiController::class, 'close'])->name('konsultasi.close');
-    Route::post('/konsultasi/{id}/status', [KonsultasiController::class, 'updateStatus'])->name('konsultasi.status');
-    Route::delete('/konsultasi/{id}', [KonsultasiController::class, 'destroy'])->name('konsultasi.destroy');
+
+    Route::get('/konsultasi', [KonsultasiController::class, 'index'])->name('admin.konsultasi');
+    Route::get('/konsultasi/{id}', [KonsultasiController::class, 'show'])->name('admin.konsultasi.show');
+    Route::post('/konsultasi/{id}/answer', [KonsultasiController::class, 'answer'])->name('admin.konsultasi.answer');
+    Route::post('/konsultasi/{id}/reject', [KonsultasiController::class, 'reject'])->name('admin.konsultasi.reject');
+    Route::post('/konsultasi/{id}/close', [KonsultasiController::class, 'close'])->name('admin.konsultasi.close');
+    Route::post('/konsultasi/{id}/status', [KonsultasiController::class, 'updateStatus'])->name('admin.konsultasi.status');
+    Route::delete('/konsultasi/{id}', [KonsultasiController::class, 'destroy'])->name('admin.konsultasi.destroy');
 
     // Static Pages Management
     Route::get('/halaman-statis', [StaticPageController::class, 'indexAdmin'])->name('static-pages.index');
