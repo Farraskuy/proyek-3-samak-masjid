@@ -140,7 +140,7 @@
                     </div>
                     <div class="card-body">
                         @if ($consultation->status !== 'closed' && $consultation->status !== 'rejected')
-                            <form action="{{ route('client.consultations.close', $consultation->consultation_id) }}" method="POST" class="mb-2">
+                            <form action="{{ route('client.consultations.close', $consultation->id) }}" method="POST" class="mb-2">
                                 @csrf
                                 <button type="submit" class="btn btn-success w-100" onclick="return confirm('Tutup konsultasi ini?')">
                                     <i class="fas fa-lock"></i> Tutup Konsultasi
@@ -149,7 +149,7 @@
                         @endif
 
                         @if ($consultation->status === 'pending')
-                            <form action="{{ route('client.consultations.delete', $consultation->consultation_id) }}" method="POST">
+                            <form action="{{ route('client.consultations.delete', $consultation->id) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger w-100" onclick="return confirm('Hapus konsultasi ini?')">
@@ -191,3 +191,88 @@
         </div>
     </div>
 @endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/laravel-echo/dist/echo.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/socket.io-client/dist/socket.io.js"></script>
+<script>
+    // Komentar: Inisialisasi Echo.js untuk Reverb
+    window.Echo = new Echo({
+        broadcaster: 'reverb',
+        key: '{{ env('REVERB_APP_KEY') }}',
+        host: '{{ env('REVERB_HOST') }}',
+        port: {{ env('REVERB_PORT') }},
+        scheme: '{{ env('REVERB_SCHEME') }}',
+        authEndpoint: '/broadcasting/auth',
+        auth: {
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }
+    });
+
+    // Komentar: Listen pesan baru di channel privat konsultasi
+    window.Echo.private('consultation.{{ $consultation->id }}')
+        .listen('.ConsultationMessageSent', (e) => {
+            // Komentar: Tambahkan pesan baru ke chat UI
+            const chatBox = document.getElementById('chat-messages');
+            if (chatBox) {
+                const msg = document.createElement('div');
+                msg.className = 'alert alert-primary mb-2';
+                msg.innerHTML = `<strong>${e.user.full_name}:</strong> ${e.message.message}`;
+                chatBox.appendChild(msg);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        });
+
+    // Komentar: Fungsi kirim pesan via AJAX
+    function sendChatMessage() {
+        const input = document.getElementById('chat-input');
+        const form = document.getElementById('chat-form');
+        const chatBox = document.getElementById('chat-messages');
+        if (!input.value.trim()) return;
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: new FormData(form)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                input.value = '';
+            }
+        });
+    }
+</script>
+@endsection
+
+@push('after-content')
+<div class="card shadow-sm mb-3">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0"><i class="fas fa-comments"></i> Chat Konsultasi</h5>
+    </div>
+    <div class="card-body">
+        <div id="chat-messages" style="max-height:300px;overflow-y:auto;">
+            @foreach($messages as $msg)
+                <div class="alert alert-primary mb-2">
+                    <strong>{{ $msg->user->full_name }}:</strong> {{ $msg->message }}
+                </div>
+            @endforeach
+        </div>
+        <form id="chat-form" action="{{ route('client.consultations.send-message', $consultation->id) }}" method="POST" enctype="multipart/form-data" onsubmit="event.preventDefault();sendChatMessage();">
+            @csrf
+            <div class="input-group mt-3">
+                <input type="text" id="chat-input" name="message" class="form-control" placeholder="Ketik pesan..." maxlength="5000" required>
+                <button class="btn btn-primary" type="submit"><i class="fas fa-paper-plane"></i> Kirim</button>
+            </div>
+            <div class="mt-2">
+                <input type="file" name="attachment" class="form-control form-control-sm">
+                <small class="text-muted">File maksimal 5MB</small>
+            </div>
+        </form>
+    </div>
+</div>
+@endpush

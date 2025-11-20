@@ -75,15 +75,15 @@
             @auth
                 <div class="dropdown ms-lg-2">
                     <button
-                        class="btn btn-outline-light text-dark d-flex align-items-center px-3 py-1 rounded-pill border-2 dropdown-toggle"
-                        type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                        style="transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); height: 38px;">
+                        class="btn btn-outline-light text-dark d-flex align-items-center px-3 py-1 rounded-pill border-2"
+                        type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                        style="transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); height: 38px; border: none !important;">
                         <div class="me-2">
                             <i class="fas fa-user-circle"></i>
                         </div>
                         <span class="d-none d-md-inline fw-medium">{{ Auth::user()->full_name ?? 'Jamaah' }}</span>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg py-2">
+                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg py-2" aria-labelledby="userDropdown">
                         <li class="px-3 py-2">
                             <div class="d-flex align-items-center">
                                 <div class="bg-primary bg-opacity-10 rounded-circle d-flex justify-content-center align-items-center me-3"
@@ -91,8 +91,7 @@
                                     <i class="fas fa-user text-primary"></i>
                                 </div>
                                 <div>
-                                    <div class="fw-semibold text-dark">Halo, {{ Auth::user()->full_name ?? 'Jamaah' }}!
-                                    </div>
+                                    <div class="fw-semibold text-dark">Halo, {{ Auth::user()->full_name ?? 'Jamaah' }}!</div>
                                     <small class="text-muted">Selamat datang kembali</small>
                                 </div>
                             </div>
@@ -180,6 +179,45 @@
                         </li>
                     </ul>
                 </div>
+
+                <!-- Notification Bell -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bell"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notif-count" style="font-size:10px;">0</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" id="notif-list">
+                        <li><span class="dropdown-item-text text-muted">Tidak ada notifikasi baru</span></li>
+                    </ul>
+                </li>
+                @push('scripts')
+                <script src="https://cdn.jsdelivr.net/npm/laravel-echo/dist/echo.iife.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/socket.io-client/dist/socket.io.js"></script>
+                <script>
+                window.Echo = new Echo({
+                    broadcaster: 'reverb',
+                    key: '{{ env('REVERB_APP_KEY') }}',
+                    host: '{{ env('REVERB_HOST') }}',
+                    port: {{ env('REVERB_PORT') }},
+                    scheme: '{{ env('REVERB_SCHEME') }}',
+                    authEndpoint: '/broadcasting/auth',
+                    auth: {
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    }
+                });
+                window.Echo.private('user.{{ Auth::id() }}')
+                    .listen('.NotificationCreated', function(e) {
+                        let notifList = document.getElementById('notif-list');
+                        let notifCount = document.getElementById('notif-count');
+                        let li = document.createElement('li');
+                        li.innerHTML = `<a class='dropdown-item' href='${e.notification.action_url}'>${e.notification.title}: ${e.notification.message}</a>`;
+                        notifList.prepend(li);
+                        notifCount.textContent = parseInt(notifCount.textContent) + 1;
+                    });
+                </script>
+                @endpush
             @endauth
 
             <!-- Guest Login Button -->

@@ -79,7 +79,7 @@
                                         </td>
                                         <td><small>{{ $consultation->created_at->format('d M Y') }}</small></td>
                                         <td>
-                                            <a href="{{ route('konsultasi.show', $consultation->consultation_id) }}"
+                                            <a href="{{ route('konsultasi.show', $consultation->id) }}"
                                                 class="btn btn-sm btn-light border" title="Lihat Detail">
                                                 <i class="fas fa-eye"></i>
                                             </a>
@@ -131,7 +131,7 @@
                     <!-- Consultation Items -->
                     <div class="list-group list-group-flush">
                         @forelse($consultations as $cons)
-                            <a href="{{ route('admin.konsultasi.show', $cons->consultation_id) }}"
+                            <a href="{{ route('admin.konsultasi.show', $cons->id) }}"
                                 class="list-group-item list-group-item-action py-2">
                                 <small class="d-block text-truncate">{{ $cons->question_subject }}</small>
                                 <small class="text-muted d-block">

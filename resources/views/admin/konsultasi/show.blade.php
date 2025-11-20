@@ -138,7 +138,7 @@
                         @endif
 
                         <hr>
-                        <form action="{{ route('konsultasi.destroy', $consultation->consultation_id) }}"
+                        <form action="{{ route('konsultasi.destroy', $consultation->id) }}"
                             method="POST" class="d-inline-block w-100">
                             @csrf
                             @method('DELETE')
@@ -260,7 +260,7 @@
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <form action="{{ route('konsultasi.answer', $consultation->consultation_id) }}" method="POST">
+                <form action="{{ route('konsultasi.answer', $consultation->id) }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
@@ -293,7 +293,7 @@
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form action="{{ route('konsultasi.reject', $consultation->consultation_id) }}" method="POST">
+                <form action="{{ route('konsultasi.reject', $consultation->id) }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
@@ -326,7 +326,7 @@
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <form action="{{ route('konsultasi.close', $consultation->consultation_id) }}" method="POST">
+                <form action="{{ route('konsultasi.close', $consultation->id) }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
@@ -359,7 +359,7 @@
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <form action="{{ route('konsultasi.answer', $consultation->consultation_id) }}" method="POST">
+                <form action="{{ route('konsultasi.answer', $consultation->id) }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
@@ -392,7 +392,7 @@
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <form action="{{ route('konsultasi.status', $consultation->consultation_id) }}" method="POST">
+                <form action="{{ route('konsultasi.status', $consultation->id) }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
@@ -431,4 +431,89 @@
         </div>
     </div>
 @endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/laravel-echo/dist/echo.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/socket.io-client/dist/socket.io.js"></script>
+<script>
+    // Komentar: Inisialisasi Echo.js untuk Reverb
+    window.Echo = new Echo({
+        broadcaster: 'reverb',
+        key: '{{ env('REVERB_APP_KEY') }}',
+        host: '{{ env('REVERB_HOST') }}',
+        port: {{ env('REVERB_PORT') }},
+        scheme: '{{ env('REVERB_SCHEME') }}',
+        authEndpoint: '/broadcasting/auth',
+        auth: {
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }
+    });
+
+    // Komentar: Listen pesan baru di channel privat konsultasi
+    window.Echo.private('consultation.{{ $consultation->id }}')
+        .listen('.ConsultationMessageSent', (e) => {
+            // Komentar: Tambahkan pesan baru ke chat UI
+            const chatBox = document.getElementById('chat-messages');
+            if (chatBox) {
+                const msg = document.createElement('div');
+                msg.className = 'alert alert-primary mb-2';
+                msg.innerHTML = `<strong>${e.user.full_name}:</strong> ${e.message.message}`;
+                chatBox.appendChild(msg);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        });
+
+    // Komentar: Fungsi kirim pesan via AJAX
+    function sendChatMessage() {
+        const input = document.getElementById('chat-input');
+        const form = document.getElementById('chat-form');
+        const chatBox = document.getElementById('chat-messages');
+        if (!input.value.trim()) return;
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: new FormData(form)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                input.value = '';
+            }
+        });
+    }
+</script>
+@endsection
+
+@push('after-content')
+<div class="card shadow-sm mb-3">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0"><i class="fas fa-comments"></i> Chat Konsultasi</h5>
+    </div>
+    <div class="card-body">
+        <div id="chat-messages" style="max-height:300px;overflow-y:auto;">
+            @foreach($consultation->messages as $msg)
+                <div class="alert alert-primary mb-2">
+                    <strong>{{ $msg->user->full_name }}:</strong> {{ $msg->message }}
+                </div>
+            @endforeach
+        </div>
+        <form id="chat-form" action="{{ route('client.consultations.send-message', $consultation->id) }}" method="POST" enctype="multipart/form-data" onsubmit="event.preventDefault();sendChatMessage();">
+            @csrf
+            <div class="input-group mt-3">
+                <input type="text" id="chat-input" name="message" class="form-control" placeholder="Ketik pesan..." maxlength="5000" required>
+                <button class="btn btn-primary" type="submit"><i class="fas fa-paper-plane"></i> Kirim</button>
+            </div>
+            <div class="mt-2">
+                <input type="file" name="attachment" class="form-control form-control-sm">
+                <small class="text-muted">File maksimal 5MB</small>
+            </div>
+        </form>
+    </div>
+</div>
+@endpush
 

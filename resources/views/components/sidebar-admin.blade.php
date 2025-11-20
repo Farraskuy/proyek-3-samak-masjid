@@ -159,6 +159,32 @@
             </ul>
         </li>
 
+            {{-- 7. FORM BUILDER / GENERATOR --}}
+            <li class="{{ request()->is('admin/forms*') ? 'showMenu' : '' }}">
+                <div class="nav-button {{ request()->is('admin/forms*') ? 'active' : '' }}">
+                    <div class="iocn-link" onclick="expandMenu(this)">
+                        <a>
+                            <i class="fa-regular fa-clipboard-list"></i>
+                            <span class="link_name">Form Builder</span>
+                        </a>
+                        <i class='fa-regular fa-angle-down arrow'></i>
+                    </div>
+                </div>
+                <ul class="sub-menu">
+                    <li><span class="link_name fw-semibold">Form Builder</span></li>
+                    <li class="nav-button {{ request()->is('admin/forms') ? 'active' : '' }}">
+                        <a class="d-flex gap-2 fw-semibold" href="{{ route('admin.forms.index') }}">
+                            <span class="fa-regular fa-list"></span> Daftar Form
+                        </a>
+                    </li>
+                    <li class="nav-button {{ request()->is('admin/forms/create') ? 'active' : '' }}">
+                        <a class="d-flex gap-2 fw-semibold" href="{{ route('admin.forms.create') }}">
+                            <span class="fa-regular fa-plus"></span> Buat Form Baru
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
 
         {{-- BAGIAN BAWAH: PENGATURAN & KELUAR --}}
         <li class="position-absolute w-100 bg-white" style="bottom: 0">

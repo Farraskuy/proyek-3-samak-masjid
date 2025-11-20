@@ -181,6 +181,10 @@ class ClientConsultationController extends Controller
                 'attachment_url' => $attachmentUrl,
             ]);
 
+                // Broadcast pesan ke channel konsultasi (chat real-time)
+                // Komentar: Menggunakan event ConsultationMessageSent untuk broadcast ke Reverb
+                event(new \App\Events\ConsultationMessageSent($message, Auth::user(), $consultationId));
+
             DB::commit();
 
             // Create notification

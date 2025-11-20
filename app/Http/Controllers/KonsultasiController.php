@@ -80,6 +80,16 @@ class KonsultasiController extends Controller
     {
         $consultation = Consultation::findOrFail($id);
 
+            // Pembatasan ustadz hanya bisa menanggapi maksimal 5 konsultasi aktif
+            $ustadzId = Auth::id();
+            $activeCount = Consultation::whereIn('status', ['in_progress', 'answered'])
+                ->where('answered_by_ustadz_id', $ustadzId)
+                ->count();
+            if ($activeCount >= 5) {
+                // Komentar: Ustadz sudah menanggapi 5 konsultasi aktif, tidak bisa menjawab lagi
+                return redirect()->back()->with('error', 'Anda hanya dapat menanggapi maksimal 5 konsultasi aktif sekaligus. Selesaikan konsultasi yang sedang berjalan sebelum menjawab yang baru.');
+            }
+
         $validated = $request->validate([
             'answer_text' => 'required|string',
         ]);

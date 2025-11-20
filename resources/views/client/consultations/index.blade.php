@@ -142,7 +142,7 @@
                                         @endif
                                     </div>
                                     <div>
-                                        <a href="{{ route('client.consultations.show', $consultation->consultation_id) }}"
+                                        <a href="{{ route('client.consultations.show', $consultation->id) }}"
                                             class="btn btn-sm btn-primary">
                                             <i class="fas fa-eye"></i> Lihat Detail
                                         </a>
