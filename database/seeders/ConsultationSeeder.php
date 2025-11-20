@@ -96,7 +96,7 @@ class ConsultationSeeder extends Seeder
         $firstConsultation = Consultation::first();
         if ($firstConsultation) {
             ConsultationMessage::create([
-                'consultation_id' => $firstConsultation->consultation_id,
+                'consultation_id' => $firstConsultation->id,
                 'user_id' => 1,
                 'message' => 'Assalamu alaikum, saya ingin menanyakan tentang busana islami',
                 'message_type' => 'text',
@@ -105,7 +105,7 @@ class ConsultationSeeder extends Seeder
             ]);
 
             ConsultationMessage::create([
-                'consultation_id' => $firstConsultation->consultation_id,
+                'consultation_id' => $firstConsultation->id,
                 'user_id' => 2,
                 'message' => 'Wa alaikum assalam. Silahkan jelaskan lebih detail pertanyaan Anda',
                 'message_type' => 'text',

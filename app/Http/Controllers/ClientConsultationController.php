@@ -102,8 +102,8 @@ class ClientConsultationController extends Controller
                     'consultation_new',
                     'Pertanyaan Baru',
                     'Ada pertanyaan baru: ' . $validated['question_subject'],
-                    route('konsultasi.show', $consultation->consultation_id),
-                    $consultation->consultation_id,
+                    route('admin.konsultasi.show', $consultation->id),
+                    $consultation->id,
                     Auth::id()
                 );
             }

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
 
-            $table->foreign('consultation_id')->references('consultation_id')->on('consultations')->onDelete('cascade');
+            $table->foreign('consultation_id')->references('id')->on('consultations')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 
             $table->index('consultation_id');

@@ -10,7 +10,7 @@ class Consultation extends Model
     use HasFactory;
 
     protected $table = 'consultations';
-    protected $primaryKey = 'consultation_id';
+    protected $primaryKey = 'id';
     public $incrementing = true;
     protected $keyType = 'int';
     public $timestamps = false;

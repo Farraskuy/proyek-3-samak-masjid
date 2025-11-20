@@ -169,6 +169,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan');
     Route::get('/kajian', [KajianController::class, 'index'])->name('kajian');
     Route::get('/pengguna', [PenggunaController::class, 'index'])->name('pengguna');
+    
     Route::get('/konsultasi', [KonsultasiController::class, 'index'])->name('konsultasi');
     Route::get('/konsultasi/{id}', [KonsultasiController::class, 'show'])->name('konsultasi.show');
     Route::post('/konsultasi/{id}/answer', [KonsultasiController::class, 'answer'])->name('konsultasi.answer');

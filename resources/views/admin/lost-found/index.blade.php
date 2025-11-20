@@ -67,9 +67,9 @@
 
                                             @if ($firstPhoto)
                                                 <img src="{{ asset('storage/' . $firstPhoto->image_url) }}"
-                                                    alt="{{ $item->item_name }}" 
-                                                    class="rounded" 
-                                                    width="40" height="40" 
+                                                    alt="{{ $item->item_name }}"
+                                                    class="rounded"
+                                                    width="40" height="40"
                                                     style="object-fit: cover;">
                                             @else
                                                 <div class="bg-light d-flex align-items-center justify-content-center rounded"

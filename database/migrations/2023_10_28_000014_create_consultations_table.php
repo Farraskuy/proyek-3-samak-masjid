@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('consultations', function (Blueprint $table) {
-            $table->id('consultation_id');
+            $table->id();
             $table->string('question_subject', 150);
             $table->text('question_text');
             $table->string('question_from', 100)->default('Hamba Allah');

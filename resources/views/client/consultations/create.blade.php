@@ -144,12 +144,12 @@
                             <i class="fas fa-heading me-2 text-primary"></i>Subjek Pertanyaan
                             <span class="text-danger">*</span>
                         </label>
-                        <input type="text" 
+                        <input type="text"
                             class="form-control input-lg @error('question_subject') is-invalid @enderror"
-                            id="question_subject" 
-                            name="question_subject" 
+                            id="question_subject"
+                            name="question_subject"
                             placeholder="Contoh: Bagaimana cara ibadah yang benar?"
-                            value="{{ old('question_subject') }}" 
+                            value="{{ old('question_subject') }}"
                             required>
                         @error('question_subject')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -165,11 +165,11 @@
                             <i class="fas fa-pen me-2 text-primary"></i>Detail Pertanyaan
                             <span class="text-danger">*</span>
                         </label>
-                        <textarea 
-                            class="form-control input-lg @error('question_text') is-invalid @enderror" 
+                        <textarea
+                            class="form-control input-lg @error('question_text') is-invalid @enderror"
                             id="question_text"
-                            name="question_text" 
-                            rows="8" 
+                            name="question_text"
+                            rows="8"
                             placeholder="Tuliskan pertanyaan Anda secara detail dan jelas..."
                             required>{{ old('question_text') }}</textarea>
                         @error('question_text')
@@ -203,12 +203,12 @@
 
                         <div class="form-check form-switch mb-3">
                             <input type="hidden" name="is_anonymous" value="0">
-                            <input 
-                                class="form-check-input" 
-                                type="checkbox" 
-                                id="is_anonymous" 
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="is_anonymous"
                                 name="is_anonymous"
-                                value="1" 
+                                value="1"
                                 {{ old('is_anonymous') ? 'checked' : '' }}>
                             <label class="form-check-label" for="is_anonymous">
                                 <span class="fw-medium">Kirim Anonim</span>
