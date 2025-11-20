@@ -15,14 +15,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-
-        // Create Bank Information
         $this->call([
-            BankAccountSeeder::class
+            BankAccountSeeder::class,
+            UsersSeeder::class,
+            LostAndFound::class,
+            PostinganSeeder::class,
+            ConsultationSeeder::class,
+            StaticPageSeeder::class,
         ]);
-
-        $this->call(UsersSeeder::class);
-        $this->call(LostAndFound::class);
-        $this->call(PostinganSeeder::class);
     }
 }

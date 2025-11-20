@@ -198,7 +198,7 @@ class KonsultasiController extends Controller
             $consultation->delete();
             DB::commit();
 
-            return redirect()->route('konsultasi')->with('success', 'Konsultasi berhasil dihapus!');
+            return redirect()->route('admin.konsultasi')->with('success', 'Konsultasi berhasil dihapus!');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());

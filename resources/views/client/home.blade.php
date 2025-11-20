@@ -280,7 +280,7 @@
         {{-- DB-backed posts (passed from HomeController) --}}
         @if (!isset($posts) || $posts->isEmpty())
             <div class="text-center py-5">
-                <img src="https://undraw.co/api/illustrations/no-data" class="empty-illustration" alt="No articles">
+                <img src="{{ asset('assets/images/no-data.png') }}" class="empty-illustration" alt="No articles">
                 <p class="text-muted mt-3">Belum ada artikel saat ini.</p>
             </div>
         @else
