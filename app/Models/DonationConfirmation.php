@@ -11,10 +11,10 @@ class DonationConfirmation extends Model
 
     protected $table = 'donation_confirmations';
     protected $primaryKey = 'confirmation_id';
-    const UPDATED_AT = null;
 
     protected $fillable = [
         'user_id',
+        'guest_name',
         'amount',
         'transfer_date',
         'destination_account_id',
@@ -23,22 +23,22 @@ class DonationConfirmation extends Model
         'notes',
         'status',
         'verified_by',
-        'verified_at',
+        'verified_at'
     ];
 
-    public function user(): BelongsTo
+
+    public function user()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function bankAccount(): BelongsTo
+    public function destinationAccount()
     {
-        return $this->belongsTo(BankAccount::class, 'destionation_account_id', 'account_id');
+        return $this->belongsTo(BankAccount::class, 'destination_account_id', 'account_id');
     }
-
-    public function verifier(): BelongsTo
+   
+    public function verifier()
     {
-        return $this->belongsTo(User::class, 'verified_by', 'id');
+        return $this->belongsTo(User::class, 'verified_by');
     }
-
 }

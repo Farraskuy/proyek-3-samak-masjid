@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Donasi\ZISController;
-use App\Http\Controllers\Postingan\PostinganController;
+use App\Http\Controllers\PostinganController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\LostFoundController;
 use App\Http\Controllers\KeuanganController;
@@ -20,6 +20,7 @@ use App\Http\Controllers\KonsultasiController;
 use App\Http\Controllers\FormBuilderController;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Donasi\Admin\BankController;
+use App\Http\Controllers\Donasi\Admin\DonationConfirmationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -104,9 +105,13 @@ Route::prefix('admin/postingan')->name('postingan.admin.')->group(function () {
     Route::post('/approval/{id}', [PostinganController::class, 'approvalUpdate'])->name('approval.update');
 });
 
-// Other Pages
+// Donation
 Route::get('/donasi', [ZISController::class, 'index'])->name('donasi.informasi');
 Route::get('/donasi/sekarang', [ZISController::class, 'donasi'])->name('donasi.sekarang');
+Route::get('/donasi/konfirmasi', [ZISController::class, 'konfirmasi'])->name('donasi.konfirmasi');
+Route::post('donasi/store', [ZISController::class, 'storeKonfirmasi'])->name('donasi.store');
+
+// Other Pages
 Route::get('/layanan/barang-hilang', [LostFoundController::class, 'index'])->name('layanan.barang-hilang');
 
 // Admin Panel
@@ -145,6 +150,11 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 
     //Donasi (Bank Controller)
     Route::resource('banks', BankController::class);
+
+    // List Donasi
+    Route::get('/donasi/verifikasi', [DonationConfirmationController::class, 'index'])->name('donasi.index');
+    Route::post('/donasi/{id}/approve', [DonationConfirmationController::class, 'approve'])->name('donasi.approve');
+    Route::post('/donasi/{id}/reject', [DonationConfirmationController::class, 'reject'])->name('donasi.reject');
 });
 
 // Temporary/Test route

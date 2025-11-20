@@ -3,104 +3,169 @@
 @section('title', 'Verifikasi Donasi')
 
 @section('content')
-    @php
-        $columns = ['#', 'Nama Pengirim', 'Jumlah', 'Tanggal', 'Bukti', 'Status', 'Aksi'];
-    @endphp
 
     <section class="p-3">
-        <h4 class="fw-semibold">Verifikasi Donasi</h4>
+        <h4 class="fw-semibold mb-4">Verifikasi Donasi Masuk</h4>
+
+        {{-- Alert Notification --}}
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        @if(session('warning'))
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ session('warning') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
 
         <div class="row g-0 gap-3">
-            <form method="get" id="form_filter" class="col rounded-3 bg-white p-3 pt-0 form-filter"
-                style="height: fit-content">
-                <div class="alert-container"></div>
-
-                <div class="bg-white position-sticky pt-3 pb-2" style="top: 61px; z-index: 1">
-                    <div class="d-flex gap-2 justify-content-end mb-2">
-                        <input type="text" class="form-control form-control-sm" placeholder="Cari"
-                            value="{{ request()->query('keyword', '') }}" name="keyword">
-                        <select class="form-select fs-14px h-100 w-auto" style="line-height: 1.7" name="sorted_by">
-                            <option value="">Urutkan berdasarkan</option>
-                        </select>
-                        <div class="btn-group" role="group" aria-label="Order">
-                            <button type="button" class="btn btn-outline-secondary"
-                                onclick="document.getElementById('ordered_by_asc').checked = true; this.form.submit();">Asc</button>
-                            <button type="button" class="btn btn-outline-secondary"
-                                onclick="document.getElementById('ordered_by_desc').checked = true; this.form.submit();">Desc</button>
+            
+            <form method="get" id="form_filter" class="col rounded-3 bg-white p-3 pt-0 form-filter" style="height: fit-content">
+                
+                <div class="bg-white position-sticky pt-3 pb-2" style="top: 0px; z-index: 10">
+                    <div class="d-flex gap-2 justify-content-between mb-2 align-items-center">
+                        <div class="fw-bold text-muted">Total: {{ $data instanceof \Illuminate\Pagination\LengthAwarePaginator ? $data->total() : $data->count() }} Data</div>
+                        
+                        <div class="d-flex gap-2">
+                            <input type="text" class="form-control form-control-sm" placeholder="Cari Nama / Bank..."
+                                value="{{ request()->query('keyword', '') }}" name="keyword">
+                            
+                            {{-- Tombol Sorting --}}
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-secondary {{ request('ordered_by') == 'asc' ? 'active' : '' }}"
+                                    onclick="document.getElementById('ordered_by_val').value = 'asc'; this.form.submit();">
+                                    <i class="fa-solid fa-arrow-up-a-z"></i> Asc
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary {{ request('ordered_by', 'desc') == 'desc' ? 'active' : '' }}"
+                                    onclick="document.getElementById('ordered_by_val').value = 'desc'; this.form.submit();">
+                                    <i class="fa-solid fa-arrow-down-z-a"></i> Desc
+                                </button>
+                            </div>
+                            <input type="hidden" name="ordered_by" id="ordered_by_val" value="{{ request('ordered_by', 'desc') }}">
                         </div>
-                        <input type="radio" name="ordered_by" value="asc" id="ordered_by_asc" hidden>
-                        <input type="radio" name="ordered_by" value="desc" id="ordered_by_desc" hidden checked>
                     </div>
                 </div>
-
-                <div class="table-responsive position-relative mb-3" style="min-height: 200px">
-                    <table class="table table-sm table-hover fs-14px">
-                        <thead>
+            
+            </form> 
+            <div class="table-responsive position-relative mb-3 bg-white p-3" style="min-height: 200px">
+                <table class="table table-hover fs-14px align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Donatur</th>
+                            <th>Info Transfer</th>
+                            <th>Jumlah</th>
+                            <th>Tanggal Trf</th>
+                            <th>Bukti</th>
+                            <th>Status</th>
+                            <th class="text-end">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse(($data ?? []) as $index => $row)
                             <tr>
-                                <th>#</th>
-                                <th>Nama Pengirim</th>
-                                <th>Jumlah</th>
-                                <th>Tanggal</th>
-                                <th>Bukti</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse(($data ?? collect()) as $index => $row)
-                                <tr>
-                                    <td>{{ ($data->firstItem() ?? 0) + $index }}</td>
-                                    <td>{{ optional($row->user)->full_name ?? '#' . ($row->user_id ?? '-') }}</td>
-                                    <td>{{ isset($row->amount) ? number_format($row->amount, 0, ',', '.') : '-' }}</td>
-                                    <td>{{ $row->transfer_date ?? ($row->created_at ?? '-') }}</td>
-                                    <td>
-                                        @if (!empty($row->proof_image_url))
-                                            <a href="{{ asset('storage/' . ltrim($row->proof_image_url, '/')) }}"
-                                                target="_blank">Lihat Bukti</a>
-                                        @else
-                                            -
-                                        @endif
-                                    </td>
-                                    <td>{{ $row->status ?? '-' }}</td>
-                                    <td>-</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="text-center">
-                                        <div class="py-4">
-                                            <img src="{{ asset('assets/images/no-data.png') }}"" alt="No data"
-                                                style="max-width:240px; opacity: 0.5;">
-                                            <p>Data Tidak Ada</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                                <td>{{ $data instanceof \Illuminate\Pagination\LengthAwarePaginator ? ($data->firstItem() + $index) : ($index + 1) }}</td>
+                                
+                                {{-- Donatur --}}
+                                <td>
+                                    <div class="fw-bold">{{ $row->user->name ?? $row->guest_name }}</div>
+                                    <small class="text-muted">{{ $row->user->email ?? '-' }}</small>
+                                </td>
 
-                <div class="d-flex justify-content-between gap-2 flex-wrap">
-                    <div class="d-flex justify-content-between showing-wrapper-bawah">
-                        <div class="d-flex fs-14px align-items-center gap-1">
-                            Menampilkan
-                            <select class="form-select form-select-sm w-auto" name="showing" onchange="this.form.submit()">
-                                <option {{ request()->query('showing', 50) == 10 ? 'selected' : '' }}>10</option>
-                                <option {{ request()->query('showing', 50) == 20 ? 'selected' : '' }}>20</option>
-                                <option {{ request()->query('showing', 50) == 50 ? 'selected' : '' }}>50</option>
-                                <option {{ request()->query('showing', 50) == 100 ? 'selected' : '' }}>100</option>
-                                <option value="all" {{ request()->query('showing') == 'all' ? 'selected' : '' }}>Semua
-                                </option>
-                            </select>
-                            Data
-                        </div>
-                    </div>
-                    <div class="paginate">
-                        @if (isset($data) && method_exists($data, 'links'))
-                            {{ $data->onEachSide(1)->links() }}
-                        @endif
-                    </div>
+                                {{-- Info Bank --}}
+                                <td>
+                                    <small class="d-block text-muted">Dari: <span class="text-dark fw-bold">{{ $row->source_bank }}</span></small>
+                                    <small class="d-block text-muted">Ke: <span class="text-primary fw-bold">{{ $row->destinationAccount->bank_name ?? 'Bank Kita' }}</span></small>
+                                </td>
+
+                                {{-- Jumlah --}}
+                                <td class="fw-bold text-success">
+                                    Rp {{ number_format($row->amount, 0, ',', '.') }}
+                                </td>
+
+                                {{-- Tanggal --}}
+                                <td>{{ \Carbon\Carbon::parse($row->transfer_date)->format('d M Y') }}</td>
+
+                                {{-- Bukti --}}
+                                <td>
+                                    @if (!empty($row->proof_image_url))
+                                        <a href="{{ asset($row->proof_image_url) }}" target="_blank" class="btn btn-sm btn-outline-info">
+                                            <i class="fa-regular fa-image"></i> Lihat
+                                        </a>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+
+                                {{-- Status --}}
+                                <td>
+                                    @if($row->status == 'Verified')
+                                        <span class="badge bg-success">Diterima</span>
+                                    @elseif($row->status == 'Rejected')
+                                        <span class="badge bg-danger">Ditolak</span>
+                                    @else
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    @endif
+                                </td>
+
+                                {{-- Aksi --}}
+                                <td class="text-end">
+                                    @if($row->status == 'Pending')
+                                        <div class="d-flex justify-content-end gap-1">
+                                            
+                                            <form action="{{ route('admin.donasi.approve', $row->confirmation_id) }}" method="POST" onsubmit="return confirm('Yakin terima donasi ini?');">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-success" title="Terima">
+                                                    <i class="fa-solid fa-check"></i>
+                                                </button>
+                                            </form>
+
+                                            <form action="{{ route('admin.donasi.reject', $row->confirmation_id) }}" method="POST" onsubmit="return confirm('Yakin tolak donasi ini?');">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Tolak">
+                                                    <i class="fa-solid fa-xmark"></i>
+                                                </button>
+                                            </form>
+
+                                        </div>
+                                    @else
+                                        <span class="text-muted small">Selesai</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center py-5">
+                                    <img src="{{ asset('assets/images/no-data.png') }}" alt="No data" style="max-width:150px; opacity: 0.5;">
+                                    <p class="text-muted mt-2">Belum ada data konfirmasi donasi.</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap p-3 bg-white rounded-bottom">
+                <div class="d-flex fs-14px align-items-center gap-2">
+                    Menampilkan
+                    <select class="form-select form-select-sm w-auto" name="showing" form="form_filter" onchange="document.getElementById('form_filter').submit()">
+                        <option value="10" {{ request('showing') == 10 ? 'selected' : '' }}>10</option>
+                        <option value="20" {{ request('showing') == 20 ? 'selected' : '' }}>20</option>
+                        <option value="50" {{ request('showing') == 50 ? 'selected' : '' }}>50</option>
+                        <option value="all" {{ request('showing') == 'all' ? 'selected' : '' }}>Semua</option>
+                    </select>
+                    Data
                 </div>
-            </form>
+                <div class="paginate">
+                    @if ($data instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                        {{ $data->onEachSide(1)->links() }}
+                    @endif
+                </div>
+            </div>
+
         </div>
     </section>
 @endsection

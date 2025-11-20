@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('donation_confirmations', function (Blueprint $table) {
             $table->id('confirmation_id');
-            $table->foreignId('user_id')->constrained('users', 'id');
+            $table->foreignId('user_id')->nullable()->constrained('users', 'id');
+            $table->string('guest_name', 100)->nullable();
             $table->decimal('amount', 15, 2);
             $table->date('transfer_date');
             $table->foreignId('destination_account_id')->constrained('bank_accounts', 'account_id');
@@ -22,8 +23,8 @@ return new class extends Migration
             $table->string('notes', 255);
             $table->string('status', 20)->default('Pending');
             $table->foreignId('verified_by')->nullable()->constrained('users', 'id');
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('verified_at')->nullable();
+            $table->timestamps();
+            $table->timestamp('verified_at')->nullable(); 
         });
     }
 
