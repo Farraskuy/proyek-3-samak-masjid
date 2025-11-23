@@ -8,7 +8,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Donasi\ZISController;
 use App\Http\Controllers\PostinganController;
-use App\Http\Controllers\PostinganController;
 use App\Http\Controllers\ManagementController;
 use App\Http\Controllers\LostFoundController;
 use App\Http\Controllers\KeuanganController;
@@ -129,6 +128,7 @@ Route::post('donasi/store', [ZISController::class, 'storeKonfirmasi'])->name('do
 // Other Pages
 Route::get('/layanan/barang-hilang', [LostFoundController::class, 'index'])->name('layanan.barang-hilang');
 Route::get('/tentang-kami', [StaticPageController::class, 'showAboutUs'])->name('client.tentang-kami');
+Route::get('/laporan-keuangan', [KeuanganController::class, 'clientIndex'])->name('client.keuangan');
 
 // Public Form Routes (client)
 Route::get('/form/{slug}', [FormBuilderController::class, 'show'])->name('form.show');
@@ -172,7 +172,6 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/galeri', [GaleriController::class, 'index'])->name('galeri');
     Route::get('/kegiatan', [KegiatanController::class, 'index'])->name('kegiatan');
     Route::get('/donasi/verifikasi', [DonasiController::class, 'index'])->name('donasi.verifikasi');
-    Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan');
     Route::get('/kajian', [KajianController::class, 'index'])->name('kajian');
     Route::get('/pengguna', [PenggunaController::class, 'index'])->name('pengguna');
 
@@ -209,6 +208,11 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/donasi/verifikasi', [DonationConfirmationController::class, 'index'])->name('donasi.index');
     Route::post('/donasi/{id}/approve', [DonationConfirmationController::class, 'approve'])->name('donasi.approve');
     Route::post('/donasi/{id}/reject', [DonationConfirmationController::class, 'reject'])->name('donasi.reject');
+
+    // Keuangan
+    Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan');
+    Route::post('/keuangan', [KeuanganController::class, 'store'])->name('keuangan.store');
+    Route::delete('/keuangan/{id}', [KeuanganController::class, 'destroy'])->name('keuangan.destroy');
 });
 
 // Temporary/Test route
