@@ -22,6 +22,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FormBuilderController;
 use App\Http\Controllers\StaticPageController;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\JadwalKegiatan\JadwalKegiatanController;
+use App\Http\Controllers\JadwalKegiatan\AdminKegiatanController;
 use App\Http\Controllers\Donasi\Admin\BankController;
 use App\Http\Controllers\Donasi\Admin\DonationConfirmationController;
 use Illuminate\Broadcasting\Broadcasters;
@@ -127,6 +129,12 @@ Route::post('donasi/store', [ZISController::class, 'storeKonfirmasi'])->name('do
 
 // Other Pages
 Route::get('/layanan/barang-hilang', [LostFoundController::class, 'index'])->name('layanan.barang-hilang');
+// Jadwal Kegiatan (client)
+Route::get('/jadwal-kegiatan', [JadwalKegiatanController::class, 'index'])->name('jadwal.index');
+Route::get('/jadwal-kegiatan/data', [JadwalKegiatanController::class, 'getData'])->name('jadwal.data');
+Route::get('/jadwal-kegiatan/by-date', [JadwalKegiatanController::class, 'getEventByDate']);
+Route::get('/jadwal-kegiatan/{id}', [JadwalKegiatanController::class, 'show'])->name('jadwal.detail');
+
 Route::get('/tentang-kami', [StaticPageController::class, 'showAboutUs'])->name('client.tentang-kami');
 Route::get('/laporan-keuangan', [KeuanganController::class, 'clientIndex'])->name('client.keuangan');
 
@@ -167,6 +175,16 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/barang-hilang/{id}/edit', [LostFoundController::class, 'edit'])->name('barang-hilang.edit');
     Route::put('/barang-hilang/{id}', [LostFoundController::class, 'update'])->name('barang-hilang.update');
     Route::delete('/barang-hilang/{id}', [LostFoundController::class, 'destroy'])->name('barang-hilang.destroy');
+
+    // // Admin Jadwal Kegiatan
+    Route::prefix('jadwal-kegiatan')->name('kegiatan.')->group(function () {
+        Route::get('/', [AdminKegiatanController::class, 'index'])->name('index');
+        Route::get('/tambah', [AdminKegiatanController::class, 'create'])->name('create');
+        Route::post('/tambah', [AdminKegiatanController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [AdminKegiatanController::class, 'edit'])->name('edit');
+        Route::put('/edit/{id}', [AdminKegiatanController::class, 'update'])->name('update');
+        Route::delete('/delete/{id}', [AdminKegiatanController::class, 'destroy'])->name('destroy');
+    });
 
     // Admin feature indexes (sidebar)
     Route::get('/galeri', [GaleriController::class, 'index'])->name('galeri');

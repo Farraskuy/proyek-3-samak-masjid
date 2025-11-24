@@ -104,25 +104,3 @@
     </div>
 @endsection
 
-@push('scripts')
-    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.key') }}"></script>
-    <script>
-        const form = document.querySelector('form');
-        const btn = document.querySelector('.btn-submit');
-        const spinner = btn.querySelector('#spinner');
-
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            btn.disabled = true;
-            spinner.classList.remove('d-none');
-            grecaptcha.ready(function() {
-                grecaptcha.execute('{{ config('services.recaptcha.key') }}', {
-                    action: 'reset_password'
-                }).then(function(token) {
-                    document.getElementById('g-recaptcha-response').value = token;
-                    form.submit();
-                });
-            });
-        });
-    </script>
-@endpush

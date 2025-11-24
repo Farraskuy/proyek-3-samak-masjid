@@ -31,13 +31,13 @@ class AuthController extends Controller
         $data = $request->validate([
             'login' => 'required',
             'password' => 'required',
-            'g-recaptcha-response' => 'required'
+            
         ]);
 
-        if (! $this->validateCaptcha($request['g-recaptcha-response'], $request->ip())) {
+        // if (! $this->validateCaptcha($request['g-recaptcha-response'], $request->ip())) {
 
-            return back()->withErrors(['error' => 'Verifikasi reCAPTCHA gagal.'])->withInput();
-        }
+        //     return back()->withErrors(['error' => 'Verifikasi reCAPTCHA gagal.'])->withInput();
+        // }
 
 
         $field = filter_var($data['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
