@@ -132,6 +132,7 @@ class PostinganController extends Controller
             'content' => $content,
             'kategori' => $validated['kategori_view'],
             'created_at' => now(),
+            'approval_status' => 'pending',
             'status' => $request->status_view,
             'user_id' => 1
         ]);
@@ -403,7 +404,7 @@ class PostinganController extends Controller
             'content' => $content ?? $post->content,
             'kategori' => $request->input('kategori_view') ?? $request->input('kategori') ?? $post->kategori,
             'approval_status' => 'pending',
-            'status' => 'not publish',
+            'status' => 'not published',
             'approved_by' => null,
             'approved_at' => null,
             'updated_at' => now()

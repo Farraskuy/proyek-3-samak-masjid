@@ -140,11 +140,10 @@
                     <div class="card-modern rounded-3 p-4 mb-4">
                         <h5 class="fw-semibold mb-3">Publikasi</h5>
 
-                        <label class="form-label fw-semibold">Status</label>
-                        <select name="status_view" class="form-select input-lg" required>
-                            <option value="published">Ajukan Publikasikan</option>
-                            <option value="draft">Simpan sebagai Draft</option>
-                        </select>
+<label class="form-label fw-semibold">Status</label>
+<select name="status_view" class="form-select input-lg" required>
+    <option value="published">Ajukan Publikasikan</option>
+</select>
 
                         <button type="submit" class="btn btn-success w-100 mt-3">
                             <i class="fas fa-save me-1"></i> Simpan Artikel
