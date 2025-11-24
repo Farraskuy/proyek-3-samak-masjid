@@ -94,7 +94,7 @@
 @section('content')
     <section class="p-3 section-wrapper">
 
-        <form action="/admin/artikel/simpan" method="POST" id="form-postingan" enctype="multipart/form-data">
+        <form action="/admin/postingan/store" method="POST" id="form-postingan" enctype="multipart/form-data">
             @csrf
 
             {{-- Header --}}
@@ -112,13 +112,13 @@
                     <div class="card-modern rounded-3 p-4 mb-4">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Judul Artikel</label>
-                            <input type="text" name="title" class="form-control input-lg"
+                            <input type="text" name="title_view" class="form-control input-lg"
                                 placeholder="Tulis judul artikel..." required>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Keterangan Singkat (Opsional)</label>
-                            <textarea type="text" name="description" class="form-control input-lg" placeholder="Tuliskan keterangan singkat..."></textarea>
+                            <textarea type="text" name="keterangan_view" class="form-control input-lg" placeholder="Tuliskan keterangan singkat..."></textarea>
                         </div>
                     </div>
 
@@ -130,7 +130,7 @@
                             <p>Tulis isi artikel di sini...</p>
                         </div>
 
-                        <input type="hidden" id="quill_content" name="content">
+                        <input type="hidden" id="quill_content" name="content_view">
                     </div>
                 </div>
 
@@ -141,7 +141,7 @@
                         <h5 class="fw-semibold mb-3">Publikasi</h5>
 
                         <label class="form-label fw-semibold">Status</label>
-                        <select name="status" class="form-select input-lg" required>
+                        <select name="status_view" class="form-select input-lg" required>
                             <option value="published">Ajukan Publikasikan</option>
                             <option value="draft">Simpan sebagai Draft</option>
                         </select>
@@ -155,11 +155,11 @@
                     <div class="card-modern rounded-3 p-4 mb-4">
                         <h5 class="fw-semibold mb-3">Kategori</h5>
 
-                        <select name="kategori" class="form-select input-lg" required>
+                        <select name="kategori_view" class="form-select input-lg" required>
                             <option value="" disabled selected>Pilih kategori...</option>
-                            <option value="artikel">Artikel Dakwah</option>
-                            <option value="berita">Berita</option>
-                            <option value="tausiyah">Tausiyah Singkat</option>
+                            <option value="Artikel">Artikel Dakwah</option>
+                            <option value="Berita">Berita</option>
+                            <option value="Tausiyah">Tausiyah Singkat</option>
                         </select>
                     </div>
 
@@ -173,7 +173,7 @@
                             <div class="small text-muted">atau klik untuk memilih</div>
                         </label>
 
-                        <input type="file" name="image" id="file-input" accept="image/*" class="d-none">
+                        <input type="file" name="image_view" id="file-input" accept="image/*" class="d-none">
 
                         <div id="image-preview-container" class="mt-3">
                             <img id="image-preview" src="#" alt="Preview">
@@ -264,8 +264,7 @@
             const container = document.getElementById("image-preview-container");
             const removeBtn = document.getElementById("remove-image-btn");
 
-            uploader.addEventListener("click", () => input.click());
-
+  
             uploader.addEventListener("dragover", e => {
                 e.preventDefault();
                 uploader.classList.add("on-drag");

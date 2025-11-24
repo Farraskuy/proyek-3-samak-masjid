@@ -117,6 +117,7 @@ Route::prefix('admin/postingan')->name('postingan.admin.')->group(function () {
     Route::get('/approval', [PostinganController::class, 'approvalIndex'])->name('approval.index');
     Route::get('/approval/{id}', [PostinganController::class, 'approvalShow'])->name('approval.show');
     Route::post('/approval/{id}', [PostinganController::class, 'approvalUpdate'])->name('approval.update');
+    Route::post('/store', [PostinganController::class, 'store'])->name('store');
 });
 
 // Donation

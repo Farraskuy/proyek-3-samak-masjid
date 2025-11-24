@@ -106,7 +106,7 @@ class PostinganController extends Controller
             'title_view' => 'required|string|max:255',
             'keterangan_view' => 'required|string',
             'kategori_view' => 'required|string',
-            'image_view' => 'nullable|image|max:2048',
+            'image_view' => 'nullable|image|max:10000',
             'content_view' => 'nullable|string'
         ]);
 
@@ -132,7 +132,7 @@ class PostinganController extends Controller
             'content' => $content,
             'kategori' => $validated['kategori_view'],
             'created_at' => now(),
-            'status' => 'not publish',
+            'status' => $request->status_view,
             'user_id' => 1
         ]);
 

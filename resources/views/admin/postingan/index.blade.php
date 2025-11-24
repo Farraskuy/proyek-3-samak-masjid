@@ -60,7 +60,7 @@
                                     </td>
                                     <td>{{ $row->created_at ?? '-' }}</td>
                                     <td class="text-nowrap">
-                                        <a href="/admin/artikel/edit/{{ $row->id }}"
+                                        <a href="/admin/postingan/edit/{{ $row->id }}"
                                             class="btn btn-light btn-sm border" aria-label="Edit">
                                             <i class="fas fa-pen text-muted"></i>
                                         </a>
