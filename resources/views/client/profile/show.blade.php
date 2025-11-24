@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('client.layout')
 
 @section('title', 'Profil Saya')
 
@@ -24,8 +24,8 @@
                     <div class="card-body text-center">
                         <div class="mb-3">
                             @if ($user->image_url)
-                                <img src="{{ asset($user->image_url) }}" alt="{{ $user->full_name }}"
-                                    class="rounded-circle" width="120" height="120" style="object-fit: cover;">
+                                <img src="{{ asset($user->image_url) }}" alt="{{ $user->full_name }}" class="rounded-circle"
+                                    width="120" height="120" style="object-fit: cover;">
                             @else
                                 <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center"
                                     style="width: 120px; height: 120px;">
@@ -88,7 +88,7 @@
                                 <div class="flex-grow-1">
                                     <div class="text-xs font-weight-bold text-primary mb-1">Total Konsultasi</div>
                                     <div class="h3 mb-0 font-weight-bold">
-                                        {{ \App\Models\Consultation::where('inputted_by_admin_id', $user->id)->count() }}
+                                        {{ \App\Models\Consultation::where('user_id', $user->id)->count() }}
                                     </div>
                                 </div>
                                 <i class="fas fa-comments fa-2x text-primary opacity-50"></i>
@@ -101,7 +101,7 @@
                                 <div class="flex-grow-1">
                                     <div class="text-xs font-weight-bold text-success mb-1">Konsultasi Terjawab</div>
                                     <div class="h3 mb-0 font-weight-bold">
-                                        {{ \App\Models\Consultation::where('inputted_by_admin_id', $user->id)->where('status', 'answered')->count() }}
+                                        {{ \App\Models\Consultation::where('user_id', $user->id)->where('status', 'answered')->count() }}
                                     </div>
                                 </div>
                                 <i class="fas fa-check-circle fa-2x text-success opacity-50"></i>
@@ -117,7 +117,7 @@
                     </div>
                     <div class="card-body">
                         <div class="row g-2">
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <a href="{{ route('client.consultations.index') }}" class="btn btn-outline-primary w-100">
                                     <i class="fas fa-history"></i> Riwayat Konsultasi
                                 </a>
@@ -126,7 +126,7 @@
                                 <a href="{{ route('client.consultations.create') }}" class="btn btn-outline-success w-100">
                                     <i class="fas fa-plus"></i> Buat Konsultasi
                                 </a>
-                            </div>
+                            </div> --}}
                             <div class="col-md-6">
                                 <a href="{{ route('client.tentang-kami') }}" class="btn btn-outline-info w-100">
                                     <i class="fas fa-info-circle"></i> Tentang Kami
@@ -192,8 +192,10 @@
                             <small class="text-muted">Minimal 8 karakter</small>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Konfirmasi Password <span class="text-danger">*</span></label>
-                            <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror"
+                            <label class="form-label fw-bold">Konfirmasi Password <span
+                                    class="text-danger">*</span></label>
+                            <input type="password"
+                                class="form-control @error('password_confirmation') is-invalid @enderror"
                                 name="password_confirmation" required minlength="8">
                             @error('password_confirmation')
                                 <div class="invalid-feedback">{{ $message }}</div>
