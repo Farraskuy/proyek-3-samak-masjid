@@ -4,23 +4,19 @@
 
 @push('styles')
 <style>
-    * {
-        font-family: 'Poppins', "Lexend", Geneva, Verdana, sans-serif;
-    }
-
     /* Pattern modern */
-    .bg-pattern {
-        background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
-        background-size: 25px 25px;
-    }
+.bg-pattern {
+    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+    background-size: 25px 25px;
+}
 
-    /* Smooth AOS */
-    [data-aos] {
-        transition-property: transform, opacity !important;
-    }
+/* Smooth AOS */
+[data-aos] {
+    transition-property: transform, opacity !important;
+}
 
-    .feature-card {
-        transition: .25s ease-in-out;
+.feature-card {
+    transition: .25s ease-in-out;
     }
 
     .feature-card:hover {

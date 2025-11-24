@@ -61,7 +61,7 @@
 
         </div>
 
-        <div class="border-top border-white border-opacity-25 mt-4 pt-4">
+        <div class="border-top border-white border-opacity-25 mt-4 py-4">
             <div class="row">
                 <div class="col text-center text-white-50">
                     <p class="mb-0">&copy; 2025 SAMAK-Masjid. All rights reserved.</p>

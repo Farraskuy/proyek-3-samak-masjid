@@ -1,133 +1,88 @@
-@extends('layouts.app')
+@extends('client.layout')
 
-@section('title', 'Preferensi')
+@section('title', 'Email Notifications')
 
 @section('content')
     <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card shadow-lg">
-                    <div class="card-header bg-primary text-white">
-                        <h4 class="mb-0">
-                            <i class="fas fa-cog"></i> Preferensi Akun
-                        </h4>
-                    </div>
-                    <div class="card-body p-4">
-                        @if (session('success'))
-                            <div class="alert alert-success alert-dismissible fade show">
-                                {{ session('success') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <!-- Header Section -->
+        <div class="row mb-5 align-items-center">
+            <div class="col-lg-9 d-flex align-items-center mx-auto">
+                <div class="position-relative me-4">
+                    <div class="rounded-circle overflow-hidden shadow-sm" style="width: 80px; height: 80px;">
+                        @if ($user->image_url)
+                            <img src="{{ asset($user->image_url) }}" alt="{{ $user->full_name }}" class="w-100 h-100"
+                                style="object-fit: cover;">
+                        @else
+                            <div class="bg-light w-100 h-100 d-flex align-items-center justify-content-center">
+                                <i class="fas fa-user fa-2x text-secondary opacity-25"></i>
                             </div>
                         @endif
-
-                        <form action="{{ route('profile.update-preferences') }}" method="POST">
-                            @csrf
-                            @method('PUT')
-
-                            <h5 class="fw-bold mb-3">Notifikasi & Komunikasi</h5>
-
-                            <div class="mb-4">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="notifications_email"
-                                        name="notifications_email" value="1">
-                                    <label class="form-check-label" for="notifications_email">
-                                        <strong>Notifikasi Email</strong>
-                                        <br>
-                                        <small class="text-muted">Terima notifikasi email untuk jawaban konsultasi, pesan baru, dan update penting lainnya</small>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="newsletter"
-                                        name="newsletter" value="1">
-                                    <label class="form-check-label" for="newsletter">
-                                        <strong>Newsletter</strong>
-                                        <br>
-                                        <small class="text-muted">Berlangganan newsletter mingguan dengan konten islami dan artikel inspiratif</small>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <hr>
-
-                            <h5 class="fw-bold mb-3">Privasi</h5>
-
-                            <div class="mb-4">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="public_profile"
-                                        name="public_profile" value="1">
-                                    <label class="form-check-label" for="public_profile">
-                                        <strong>Profil Publik</strong>
-                                        <br>
-                                        <small class="text-muted">Izinkan orang lain melihat informasi profil dasar Anda</small>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <hr>
-
-                            <h5 class="fw-bold mb-3">Lainnya</h5>
-
-                            <div class="alert alert-info" role="alert">
-                                <i class="fas fa-info-circle"></i>
-                                <strong>Data Anda:</strong>
-                                <ul class="mb-0 mt-2 small">
-                                    <li>Anda dapat mengunduh data pribadi Anda kapan saja</li>
-                                    <li>Anda memiliki hak untuk menghapus akun Anda secara permanen</li>
-                                </ul>
-                            </div>
-
-                            <div class="d-flex gap-2 mb-3">
-                                <button type="button" class="btn btn-secondary">
-                                    <i class="fas fa-download"></i> Unduh Data Saya
-                                </button>
-                                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                    data-bs-target="#deleteAccountModal">
-                                    <i class="fas fa-trash"></i> Hapus Akun
-                                </button>
-                            </div>
-
-                            <hr>
-
-                            <div class="d-flex gap-2">
-                                <a href="{{ route('profile.show') }}" class="btn btn-secondary">
-                                    <i class="fas fa-arrow-left"></i> Kembali
-                                </a>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> Simpan Preferensi
-                                </button>
-                            </div>
-                        </form>
                     </div>
+                </div>
+                <div>
+                    <h4 class="fw-bold text-dark mb-1">{{ $user->full_name }} <span class="text-muted fw-light">/
+                            Notifications</span></h4>
+                    <p class="text-muted mb-0 small">Manage your email notification preferences</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Delete Account Modal -->
-    <div class="modal fade" id="deleteAccountModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">
-                        <i class="fas fa-exclamation-triangle"></i> Hapus Akun
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="fw-bold">Apakah Anda yakin ingin menghapus akun ini?</p>
-                    <p class="text-muted small mb-0">
-                        Tindakan ini bersifat permanen dan tidak dapat dibatalkan. Semua data Anda akan dihapus selamanya.
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-danger" onclick="alert('Fitur ini akan segera tersedia')">
-                        <i class="fas fa-trash"></i> Hapus Akun
-                    </button>
-                </div>
+        <div class="row">
+            <!-- Sidebar -->
+            @include('client.profile.partials.sidebar')
+
+            <!-- Main Content -->
+            <div class="col-lg-7">
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+                        <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                <form action="{{ route('profile.update-preferences') }}" method="POST">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="mb-5">
+                        <h6 class="fw-bold text-dark mb-3">Email Activities</h6>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="notifications_email"
+                                name="notifications_email" value="1" {{ $user->notifications_email ? 'checked' : '' }}>
+                            <label class="form-check-label ms-2" for="notifications_email">
+                                <span class="d-block fw-bold text-dark">Activity emails</span>
+                                <small class="text-muted">Receive emails about your consultation answers and
+                                    messages.</small>
+                            </label>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="newsletter" name="newsletter" value="1"
+                                {{ $user->newsletter ? 'checked' : '' }}>
+                            <label class="form-check-label ms-2" for="newsletter">
+                                <span class="d-block fw-bold text-dark">Newsletter</span>
+                                <small class="text-muted">Receive weekly newsletter with islamic content.</small>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <h6 class="fw-bold text-dark mb-3">Privacy</h6>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="public_profile" name="public_profile"
+                                value="1" {{ $user->public_profile ? 'checked' : '' }}>
+                            <label class="form-check-label ms-2" for="public_profile">
+                                <span class="d-block fw-bold text-dark">Public Profile</span>
+                                <small class="text-muted">Allow others to see your basic profile information.</small>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end pt-4 border-top">
+                        <button type="submit" class="btn btn-dark rounded-pill px-4 py-2 fw-bold">Save Preferences</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

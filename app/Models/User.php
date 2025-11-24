@@ -26,6 +26,9 @@ class User extends Authenticatable
         'email',
         'email_verified_at',
         'password',
+        'notifications_email',
+        'newsletter',
+        'public_profile',
     ];
 
     /**
@@ -48,6 +51,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'notifications_email' => 'boolean',
+            'newsletter' => 'boolean',
+            'public_profile' => 'boolean',
         ];
     }
 }

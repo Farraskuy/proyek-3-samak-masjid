@@ -63,9 +63,9 @@
 @section('content')
 
 {{-- HERO SECTION --}}
-<section class="py-5 hero-animate bg-pattern"
+<section class="py-5 bg-pattern"
     style="background-color: #175C9E; height: 320px; display:flex; align-items:center;">
-    <div class="container text-center" data-aos="fade-down"data-aos-delay="100" data-aos-duration="700"> 
+    <div class="container text-center"> 
         <h1 class="display-5 fw-bold text-white mb-3">
             Barang Hilang & Ditemukan
         </h1>
@@ -78,8 +78,8 @@
 <section class="py-5">
     <div class="container">
 
-        {{-- SEARCH BAR PANJANG DI TENGAH --}}
-        <div class="d-flex justify-content-center mb-4"data-aos="fade-down"data-aos-delay="100" data-aos-duration="700">
+        {{-- SEARCH BAR --}}
+        <div class="d-flex justify-content-center mb-4">
             <form method="GET" class="w-100 d-flex shadow-sm rounded-pill px-3 py-2"
                 style="max-width: 800px; background: #ffffff; border:1px solid #e5e5e5;">
                 <input type="text" name="search" class="form-control border-0 shadow-0"
@@ -92,13 +92,13 @@
         </div>
 
         {{-- KATEGORI IKON --}}
-        <div class="d-flex justify-content-center mb-4"data-aos="fade-up"data-aos-delay="100" data-aos-duration="700">
+        <div class="d-flex justify-content-center mb-4">
             <div class="row g-3 w-100" style="max-width: 800px;">
                 <div class="col-md-2 text-center">
                     <a href="{{ route('layanan.barang-hilang') }}"
                         class="text-decoration-none text-dark">
-                        <div class="bg-light p-3 rounded-4 mb-2">
-                            <i class="fas fa-th-large fs-2 text-success"></i>
+                        <div class="bg-light p-3 rounded-4 mb-2" style="color: #175C9E">
+                            <i class="fas fa-th-large fs-2"></i>
                         </div>
                         <h6 class="fw-bold">Semua</h6>
                     </a>
@@ -113,8 +113,8 @@
                 <div class="col-md-2 text-center">
                     <a href="{{ route('layanan.barang-hilang') }}?category={{ $cat['value'] }}"
                         class="text-decoration-none text-dark">
-                        <div class="bg-light p-3 rounded-4 mb-2">
-                            <i class="fas {{ $cat['icon'] }} fs-2 text-success"></i>
+                        <div class="bg-light p-3 rounded-4 mb-2" style="color: #175C9E">
+                            <i class="fas {{ $cat['icon'] }} fs-2"></i>
                         </div>
                         <h6 class="fw-bold">{{ $cat['name'] }}</h6>
                     </a>

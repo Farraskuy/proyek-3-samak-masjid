@@ -14,14 +14,28 @@ class ProfileController extends Controller
     /**
      * Show user profile
      */
+    /**
+     * Show user profile
+     */
     public function show()
     {
         if (!Auth::check()) {
             return redirect()->route('login');
         }
 
-        $user = Auth::user();
-        return view('client.profile.show', compact('user'));
+        return redirect()->route('profile.edit');
+    }
+
+    /**
+     * Show general settings
+     */
+    public function general()
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        return redirect()->route('profile.edit');
     }
 
     /**
@@ -71,16 +85,21 @@ class ProfileController extends Controller
             }
 
             // Update user
-            $user->update([
+            $userData = [
                 'full_name' => $validated['full_name'],
                 'email' => $validated['email'],
-                'phone_number' => $validated['phone_number'] ?? $user->phone_number,
-                'image_url' => $validated['image_url'] ?? $user->image_url,
-            ]);
+                'phone_number' => $validated['phone_number'],
+            ];
+
+            if (isset($validated['image_url'])) {
+                $userData['image_url'] = $validated['image_url'];
+            }
+
+            $user->update($userData);
 
             DB::commit();
 
-            return redirect()->route('profile.show')
+            return redirect()->route('profile.edit')
                 ->with('success', 'Profil berhasil diperbarui');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -141,20 +160,27 @@ class ProfileController extends Controller
 
         $user = Auth::user();
 
-        $validated = $request->validate([
-            'notifications_email' => 'boolean',
-            'newsletter' => 'boolean',
-            'public_profile' => 'boolean',
-        ]);
-
-        // Store preferences in a metadata field or create preferences table
-        // For now, storing as user attributes or meta
+        // Checkboxes send '1' if checked, nothing if unchecked.
+        // We can simply check for their presence.
         $user->update([
-            'notifications_email' => $validated['notifications_email'] ?? true,
-            'newsletter' => $validated['newsletter'] ?? false,
+            'notifications_email' => $request->has('notifications_email'),
+            'newsletter' => $request->has('newsletter'),
+            'public_profile' => $request->has('public_profile'),
         ]);
 
         return back()->with('success', 'Preferensi berhasil diperbarui');
+    }
+    /**
+     * Show change password form
+     */
+    public function password()
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        $user = Auth::user();
+        return view('client.profile.password', compact('user'));
     }
 }
 

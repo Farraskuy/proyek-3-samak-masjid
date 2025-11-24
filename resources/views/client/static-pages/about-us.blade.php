@@ -5,15 +5,20 @@
 @section('content')
     <div class="min-vh-100 d-flex flex-column">
         <!-- Hero Section -->
-        <section class="py-5" style="background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);">
-            <div class="container">
-                <h1 class="text-white fw-bold mb-3">{{ $page->title }}</h1>
-                <p class="text-white-50 lead">{{ $page->description }}</p>
+        <section class="py-5 bg-pattern" style="background-color: #175C9E; height: 320px; display:flex; align-items:center;">
+            <div class="container text-center">
+                <h1 class="display-5 fw-bold text-white mb-3">
+                    {{ $page->title }}
+                </h1>
+                <p class="text-white-50 lead">
+                    {{ $page->description }}
+                </p>
             </div>
         </section>
 
+
         <!-- Featured Image -->
-        @if($page->featured_image_url)
+        @if ($page->featured_image_url)
             <section class="py-4">
                 <div class="container">
                     <img src="{{ asset('storage/' . $page->featured_image_url) }}" alt="{{ $page->title }}"

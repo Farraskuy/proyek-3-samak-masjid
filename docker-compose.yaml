@@ -9,7 +9,7 @@ services:
     depends_on:
       - db
     env_file:
-      # - .env.example
+      # - .env
       - .env.production
     volumes:
       - storage:/usr/share/nginx/html/storage:rw

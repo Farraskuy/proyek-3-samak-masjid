@@ -50,7 +50,7 @@
                         </li>
 
                         <li>
-                            <a class="dropdown-item py-2" href="#">
+                            <a class="dropdown-item py-2" href="{{ route('profile.show') }}">
                                 <div class="d-flex align-items-center">
                                     <div class="bg-light rounded-circle d-flex justify-content-center align-items-center me-3"
                                         style="height: 35px; width: 35px;">
@@ -65,15 +65,31 @@
                         </li>
 
                         <li>
-                            <a class="dropdown-item py-2" href="#">
+                            <a class="dropdown-item py-2" href="{{ route('profile.preferences') }}">
                                 <div class="d-flex align-items-center">
                                     <div class="bg-light rounded-circle d-flex justify-content-center align-items-center me-3"
                                         style="height: 35px; width: 35px;">
                                         <i class="fas fa-bell text-warning"></i>
                                     </div>
                                     <div>
-                                        <div class="fw-medium">Notifikasi</div>
-                                        <small class="text-muted">Lihat pemberitahuan terbaru</small>
+                                        <div class="fw-medium">Notifikasi & Preferensi</div>
+                                        <small class="text-muted">Atur notifikasi</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item py-2" href="{{ route('client.consultations.history') }}">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-light rounded-circle d-flex justify-content-center align-items-center me-3"
+                                        style="height: 35px; width: 35px;">
+                                        <i class="fas fa-history text-info"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-medium">Riwayat Konsultasi</div>
+                                        <small class="text-muted">Lihat konsultasi saya</small>
                                     </div>
                                 </div>
                             </a>
@@ -172,7 +188,7 @@
 
                 <li class="nav-item">
                     <a class="nav-link nav-min {{ request()->is('tentang-kami*') ? 'active' : '' }}"
-                        href="javascript:void(0)">
+                        href="{{ route('client.tentang-kami') }}">
                         Tentang Kami
                     </a>
                 </li>

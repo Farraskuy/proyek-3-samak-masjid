@@ -24,7 +24,7 @@ class Consultation extends Model
         'conclusion',
         'status',
         'is_anonymous',
-        'inputted_by_admin_id',
+        'user_id',
         'answered_by_ustadz_id',
         'created_at',
         'answered_at',
@@ -37,21 +37,50 @@ class Consultation extends Model
         'answered_at' => 'datetime',
         'closed_at' => 'datetime',
         'published_at' => 'datetime',
+        'is_anonymous' => 'boolean',
     ];
 
-    public function inputter()
+    // Scopes
+    public function scopePending($query)
     {
-        return $this->belongsTo(User::class, 'inputted_by_admin_id', 'id');
+        return $query->where('status', 'pending');
     }
 
-    public function answerer()
+    public function scopeActive($query)
     {
-        return $this->belongsTo(User::class, 'answered_by_ustadz_id', 'id');
+        return $query->where('status', 'active');
+    }
+
+    public function scopeClosed($query)
+    {
+        return $query->where('status', 'closed');
+    }
+
+    // Relationships
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function ustadz()
+    {
+        return $this->belongsTo(User::class, 'answered_by_ustadz_id');
     }
 
     public function messages()
     {
         return $this->hasMany(ConsultationMessage::class, 'consultation_id', 'id');
+    }
+
+    // Deprecated relationships (kept for backward compatibility if needed, but better to remove)
+    public function inputter()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function answerer()
+    {
+        return $this->belongsTo(User::class, 'answered_by_ustadz_id');
     }
 }
 
