@@ -4,10 +4,6 @@
 
 @push('styles')
 <style>
-    * {
-        font-family: 'Poppins', "Lexend", Geneva, Verdana, sans-serif;
-    }
-
     .bg-pattern {
         background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
         background-size: 25px 25px;

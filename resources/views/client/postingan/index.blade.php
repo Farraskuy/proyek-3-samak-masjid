@@ -102,7 +102,7 @@
 @section('content')
 
     {{-- HERO --}}
-    <section class="py-5 hero-animate bg-pattern"
+    <section class="py-5 bg-pattern"
         style="background-color:#175C9E; height:300px; display:flex; align-items:center;">
         <div class="container text-center">
             <h1 class="display-5 fw-bold text-white">Berita & Postingan</h1>
