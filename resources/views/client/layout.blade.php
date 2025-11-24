@@ -50,6 +50,11 @@
 
 
     <style>
+    * {
+            font-family: 'Poppins', "Lexend", Geneva, Verdana, sans-serif;
+        }
+
+
         .dropdown-menu .dropdown-item {
             transition: 0.2s ease;
         }
@@ -130,7 +135,7 @@
 <body>
     @include('components.navbar')
 
-    <main class="grow">
+    <main class="grow" style="min-height: 60vh;">
         @yield('content')
     </main>
 
