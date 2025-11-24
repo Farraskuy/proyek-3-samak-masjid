@@ -31,13 +31,12 @@ class AuthController extends Controller
         $data = $request->validate([
             'login' => 'required',
             'password' => 'required',
-            
+            'g-recaptcha-response' => 'required'
         ]);
 
-        // if (! $this->validateCaptcha($request['g-recaptcha-response'], $request->ip())) {
-
-        //     return back()->withErrors(['error' => 'Verifikasi reCAPTCHA gagal.'])->withInput();
-        // }
+        if (!$this->validateCaptcha($request['g-recaptcha-response'], $request->ip())) {
+            return back()->withErrors(['error' => 'Verifikasi reCAPTCHA gagal.'])->withInput();
+        }
 
 
         $field = filter_var($data['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
@@ -49,6 +48,7 @@ class AuthController extends Controller
             if (Auth::user()->role == 'admin' || Auth::user()->role == 'super admin') {
                 return redirect()->intended('/admin');
             }
+
             return redirect()->intended('/');
         }
 
@@ -69,15 +69,15 @@ class AuthController extends Controller
     {
         $data = $request->validate([
             'full_name' => 'required|string|max:255',
-            'username'  => 'required|alpha_dash|max:32|unique:users,username',
-            'email'     => 'required|email|max:255|unique:users,email',
+            'username' => 'required|alpha_dash|max:32|unique:users,username',
+            'email' => 'required|email|max:255|unique:users,email',
             'phone_number' => 'required|string|max:20|unique:users,phone_number',
-            'password'  => 'required|min:8',
+            'password' => 'required|min:8',
             'password_confirmation' => 'required|same:password',
             'g-recaptcha-response' => 'required'
         ]);
 
-        if (! $this->validateCaptcha($request['g-recaptcha-response'], $request->ip())) {
+        if (!$this->validateCaptcha($request['g-recaptcha-response'], $request->ip())) {
             return back()->withErrors(['error' => 'Verifikasi reCAPTCHA gagal.'])->withInput();
         }
 
@@ -93,12 +93,12 @@ class AuthController extends Controller
         RateLimiter::hit($key, 60); // 1 menit
 
         $user = User::create([
-            'full_name'     => $data['full_name'],
-            'username'      => $data['username'],
-            'email'         => $data['email'],
-            'phone_number'  => $data['phone_number'],
-            'password'      => Hash::make($data['password']),
-            'role'          => 'jamaah',
+            'full_name' => $data['full_name'],
+            'username' => $data['username'],
+            'email' => $data['email'],
+            'phone_number' => $data['phone_number'],
+            'password' => Hash::make($data['password']),
+            'role' => 'jamaah',
         ]);
 
         Otp::where('destination', $user->email)->delete();
@@ -113,19 +113,19 @@ class AuthController extends Controller
         $code = rand(111111, 999999);
 
         Otp::create([
-            'user_id'     => $user->id,
+            'user_id' => $user->id,
             'destination' => $user->email,
-            'type'        => 'email',
-            'code'        => Hash::make($code),
-            'attempts'    => 0,
-            'expires_at'  => now()->addMinutes(10),
+            'type' => 'email',
+            'code' => Hash::make($code),
+            'attempts' => 0,
+            'expires_at' => now()->addMinutes(10),
         ]);
 
         Mail::to($user->email)->queue(new OtpMail($code, $user->email));
 
         return view('auth.otp-sent', [
             'destination' => $user->email,
-            'type'        => 'email',
+            'type' => 'email',
         ]);
     }
 
@@ -165,9 +165,68 @@ class AuthController extends Controller
 
 
     /**
-     * SEND / RESEND OTP
+     * SEND OTP
      */
     public function sendOtp(Request $request)
+    {
+        $data = $request->validate([
+            'destination' => 'required',
+            // 'g-recaptcha-response' => 'required', // Temporarily disabled for profile verification flow or handle conditionally
+        ]);
+
+        $destination = $data['destination'];
+
+        // Check if return URL is in request (e.g. from hidden input) or session
+        if ($request->has('return_url')) {
+            session(['otp_return_url' => $request->return_url]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | SPAM PROTECTION (Rate Limit)
+        |--------------------------------------------------------------------------
+        */
+
+        $spamKey = "otp:send:" . sha1($destination . '|' . $request->ip());
+
+        if (RateLimiter::tooManyAttempts($spamKey, 3)) {
+            $wait = RateLimiter::availableIn($spamKey);
+            return back()->withErrors([
+                'error' => "Terlalu banyak permintaan OTP. Coba lagi dalam {$wait} detik."
+            ]);
+        }
+
+        RateLimiter::hit($spamKey, 60); // reset per 1 menit
+
+        // OTP REPLACE (hapus OTP lama dan buat baru)
+        Otp::where('destination', $destination)->delete();
+
+        $code = rand(111111, 999999);
+
+        Otp::create([
+            'destination' => $destination,
+            'user_id' => null,
+            'type' => 'email',
+            'code' => Hash::make($code),
+            'attempts' => 0,
+            'expires_at' => now()->addMinutes(10)
+        ]);
+
+        // Kirim OTP via Email
+        try {
+            Mail::to($destination)->queue(new OtpMail($code, $destination));
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Gagal mengirim email OTP.']);
+        }
+
+        return redirect()->route('auth.showVerifyForm', ['destination' => $destination])
+            ->with('success', 'OTP telah dikirim ke ' . $destination);
+    }
+
+    /**
+     * ReSEND
+     */
+    public function reSendOtp(Request $request)
     {
         $data = $request->validate([
             'destination' => 'required|email',
@@ -175,7 +234,7 @@ class AuthController extends Controller
             'hp_field' => 'nullable|prohibited'
         ]);
 
-        if (! $this->validateCaptcha($request['g-recaptcha-response'], $request->ip())) {
+        if (!$this->validateCaptcha($request['g-recaptcha-response'], $request->ip())) {
             return back()->withErrors(['error' => 'Verifikasi reCAPTCHA gagal.'])->withInput();
         }
 
@@ -183,10 +242,6 @@ class AuthController extends Controller
         |--------------------------------------------------------------------------
         | SPAM PROTECTION (Rate Limit)
         |--------------------------------------------------------------------------
-        |
-        | Mencegah user meminta OTP terlalu sering.
-        | Limit: 3 OTP per menit per email+IP.
-        |
         */
 
         $spamKey = "otp:send:" . sha1($data['destination'] . '|' . $request->ip());
@@ -200,31 +255,23 @@ class AuthController extends Controller
 
         RateLimiter::hit($spamKey, 60); // reset per 1 menit
 
-        /*
-        |--------------------------------------------------------------------------
-        | OTP REPLACE (hapus OTP lama dan buat baru)
-        |--------------------------------------------------------------------------
-        */
-
+        // OTP REPLACE (hapus OTP lama dan buat baru)
         Otp::where('destination', $data['destination'])->delete();
 
         $code = rand(111111, 999999);
 
         Otp::create([
             'destination' => $data['destination'],
-            'user_id'     => null,
-            'type'        => 'email',
-            'code'        => Hash::make($code),
-            'attempts'    => 0,
-            'expires_at'  => now()->addMinutes(10)
+            'user_id' => null,
+            'type' => 'email',
+            'code' => Hash::make($code),
+            'attempts' => 0,
+            'expires_at' => now()->addMinutes(10)
         ]);
 
         Mail::to($data['destination'])->queue(new OtpMail($code, $data['destination']));
 
-        return view('auth.otp-sent', [
-            'destination' => $data['destination'],
-            'type' => 'email'
-        ]);
+        return redirect()->back()->with('success', 'OTP berhasil dikirim kembali.');
     }
 
     /**
@@ -234,11 +281,11 @@ class AuthController extends Controller
     {
         $data = $request->validate([
             'destination' => 'required|email',
-            'code'        => 'required|numeric',
+            'code' => 'required|numeric',
             'g-recaptcha-response' => 'required',
         ]);
 
-        if (! $this->validateCaptcha($request['g-recaptcha-response'], $request->ip())) {
+        if (!$this->validateCaptcha($request['g-recaptcha-response'], $request->ip())) {
             return back()->withErrors(['error' => 'Verifikasi reCAPTCHA gagal.'])->withInput();
         }
 
@@ -249,9 +296,6 @@ class AuthController extends Controller
         |--------------------------------------------------------------------------
         | BRUTE FORCE PROTECTION
         |--------------------------------------------------------------------------
-        |
-        | Jika user salah OTP lebih dari 5x → blok 30 menit
-        |
         */
 
         $blockKey = "otp:block:" . $email;
@@ -270,7 +314,7 @@ class AuthController extends Controller
 
         $otp = Otp::where('destination', $email)->first();
 
-        if (! $otp) {
+        if (!$otp) {
             return back()->withErrors(['code' => 'OTP tidak ditemukan.']);
         }
 
@@ -285,7 +329,7 @@ class AuthController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        if (! Hash::check($inputCode, $otp->code)) {
+        if (!Hash::check($inputCode, $otp->code)) {
             $otp->increment('attempts');
 
             if ($otp->attempts >= 5) {
@@ -305,12 +349,29 @@ class AuthController extends Controller
         $otp->delete();
 
         $user = User::where('email', $email)->first();
+
         if ($user) {
-            $user->email_verified_at = now();
-            $user->save();
+            // Mark email as verified
+            if (!$user->email_verified_at) {
+                $user->email_verified_at = now();
+                $user->save();
+            }
+
+            // If user is already logged in (e.g. verifying from profile)
+            if (Auth::check()) {
+                $returnUrl = session('otp_return_url');
+                if ($returnUrl) {
+                    session()->forget('otp_return_url');
+                    return redirect($returnUrl)->with('success', 'Email berhasil diverifikasi.');
+                }
+                return redirect()->route('admin.profile.index')->with('success', 'Email berhasil diverifikasi.');
+            }
+
+            // If not logged in, login the user
             Auth::login($user);
+            return redirect('/')->with('success', 'Verifikasi email berhasil!');
         }
 
-        return redirect('/')->with('success', 'Verifikasi email berhasil!');
+        return redirect()->route('home')->with('success', 'Verifikasi berhasil! Silakan login.');
     }
 }

@@ -36,7 +36,8 @@
                 </div>
                 <div>
                     <h2 class="fw-semibold text-white">Menghubungkan Umat, Memakmurkan Masjid.</h2>
-                    <p class="fw-medium" style="color:lightgray;">Samak Masjid hadir untuk mendukung transparansi dan efisiensi Dewan Kemakmuran
+                    <p class="fw-medium" style="color:lightgray;">Samak Masjid hadir untuk mendukung transparansi dan
+                        efisiensi Dewan Kemakmuran
                         Masjid (DKM) dalam mengelola
                         amanah umat dan melayani jamaah.</p>
                 </div>
@@ -57,6 +58,10 @@
                         {{ session('error') }}
                     </div>
                 @endif
+
+                @error('g-recaptcha-response')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                @enderror
 
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
@@ -104,3 +109,25 @@
     </div>
 @endsection
 
+@push('scripts')
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.key') }}"></script>
+    <script>
+        const form = document.querySelector('form');
+        const btn = document.querySelector('.btn-submit');
+        const spinner = btn.querySelector('#spinner');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            btn.disabled = true;
+            spinner.classList.remove('d-none');
+            grecaptcha.ready(function() {
+                grecaptcha.execute('{{ config('services.recaptcha.key') }}', {
+                    action: 'reset_password'
+                }).then(function(token) {
+                    document.getElementById('g-recaptcha-response').value = token;
+                    form.submit();
+                });
+            });
+        });
+    </script>
+@endpush
