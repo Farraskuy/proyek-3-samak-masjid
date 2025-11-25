@@ -29,7 +29,18 @@ class ZISController extends Controller
     public function konfirmasi()
     {
         $banks = BankAccount::where('is_active', true)->get();
-        return view('client.donasi.konfirmasi', compact('banks'));
+
+        $riwayat = [];
+
+        if (Auth::check()) {
+            $riwayat = DonationConfirmation::where('user_id', Auth::id())
+                        ->with('destinationAccount')
+                        ->orderBy('created_at', 'desc')
+                        ->take(5)
+                        ->get();
+        }
+
+        return view('client.donasi.konfirmasi', compact('banks', 'riwayat'));
     }
 
     public function storeKonfirmasi(Request $request)

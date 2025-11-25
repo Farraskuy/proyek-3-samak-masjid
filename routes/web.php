@@ -233,6 +233,11 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('/donasi/{id}/approve', [DonationConfirmationController::class, 'approve'])->name('donasi.approve');
     Route::post('/donasi/{id}/reject', [DonationConfirmationController::class, 'reject'])->name('donasi.reject');
 
+    //Keuangan
+    Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan');
+    Route::post('/keuangan', [KeuanganController::class, 'store'])->name('keuangan.store');
+    Route::delete('/keuangan/{id}', [KeuanganController::class, 'destroy'])->name('keuangan.destroy');
+
     // Admin Profile
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [AdminProfileController::class, 'index'])->name('index');
