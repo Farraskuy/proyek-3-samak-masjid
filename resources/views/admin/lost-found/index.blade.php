@@ -4,11 +4,12 @@
 
 @section('content')
     <section class="p-3">
-        <h4 class="fw-semibold">Manajemen Barang Hilang & Ditemukan</h4>
-        <a href="{{ route('admin.barang-hilang.tambah') }}" class="btn btn-sm btn-success fw-semibold mb-3">
-            <i class="fas fa-plus me-1"></i>Tambah Data
-        </a>
-
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-semibold mb-0">Manajemen Barang Hilang & Ditemukan</h4>
+            <a href="{{ route('admin.barang-hilang.tambah') }}" class="btn btn-success fw-semibold">
+                <i class="fas fa-plus me-1"></i> Tambah Data
+            </a>
+        </div>
         <div class="row g-0 gap-3">
             <form method="get" id="form_filter" class="col rounded-3 bg-white p-3 pt-0 form-filter"
                 style="height: fit-content">
@@ -23,7 +24,7 @@
 
                 <div class="bg-white position-sticky pt-3 pb-2" style="top: 61px; z-index: 1">
                     <div class="d-flex gap-2 justify-content-end mb-2">
-                        <input type="text" class="form-control form-control-sm" placeholder="Cari barang"
+                        <input type="text" class="form-control" placeholder="Cari barang"
                             value="{{ request()->query('keyword', '') }}" name="keyword">
                         <select class="form-select fs-14px h-100 w-auto" style="line-height: 1.7" name="sorted_by">
                             <option value="">Urutkan berdasarkan</option>
@@ -31,14 +32,22 @@
                             <option value="date">Tanggal</option>
                             <option value="status">Status</option>
                         </select>
-                        <div class="btn-group" role="group" aria-label="Order">
-                            <button type="button" class="btn btn-outline-secondary"
-                                onclick="document.getElementById('ordered_by_asc').checked = true; this.form.submit();">Asc</button>
-                            <button type="button" class="btn btn-outline-secondary"
-                                onclick="document.getElementById('ordered_by_desc').checked = true; this.form.submit();">Desc</button>
+
+                        {{-- Sort Toggle --}}
+                        <div class="sort-toggle">
+                            <input type="radio" name="ordered_by" value="asc" id="ordered_by_asc"
+                                {{ request('ordered_by') == 'asc' ? 'checked' : '' }} onchange="this.form.submit()" hidden>
+                            <label for="ordered_by_asc" class="btn btn-outline-secondary" title="Urutkan A-Z">
+                                <i class="fas fa-sort-alpha-down"></i>
+                            </label>
+
+                            <input type="radio" name="ordered_by" value="desc" id="ordered_by_desc"
+                                {{ request('ordered_by', 'desc') == 'desc' ? 'checked' : '' }} onchange="this.form.submit()"
+                                hidden>
+                            <label for="ordered_by_desc" class="btn btn-outline-secondary" title="Urutkan Z-A">
+                                <i class="fas fa-sort-alpha-up"></i>
+                            </label>
                         </div>
-                        <input type="radio" name="ordered_by" value="asc" id="ordered_by_asc" hidden>
-                        <input type="radio" name="ordered_by" value="desc" id="ordered_by_desc" hidden checked>
                     </div>
                 </div>
 
@@ -67,10 +76,8 @@
 
                                             @if ($firstPhoto)
                                                 <img src="{{ asset('storage/' . $firstPhoto->image_url) }}"
-                                                    alt="{{ $item->item_name }}"
-                                                    class="rounded"
-                                                    width="40" height="40"
-                                                    style="object-fit: cover;">
+                                                    alt="{{ $item->item_name }}" class="rounded" width="40"
+                                                    height="40" style="object-fit: cover;">
                                             @else
                                                 <div class="bg-light d-flex align-items-center justify-content-center rounded"
                                                     style="width: 40px; height: 40px;">
@@ -80,17 +87,18 @@
 
                                             <div>
                                                 <div class="fw-semibold">{{ $item->item_name ?? '-' }}</div>
-                                                <small class="text-muted">{{ Str::limit($item->description ?? '', 35) }}</small>
+                                                <small
+                                                    class="text-muted">{{ Str::limit($item->description ?? '', 35) }}</small>
                                             </div>
                                         </div>
                                     </td>
                                     <td>{{ $item->location_found ?? '-' }}</td>
                                     <td>
                                         @php
-                                            $statusClass = match($item->status) {
+                                            $statusClass = match ($item->status) {
                                                 'Tersedia' => 'badge-success',
                                                 'Diambil' => 'badge-secondary',
-                                                default => 'badge-warning'
+                                                default => 'badge-warning',
                                             };
                                         @endphp
                                         <span class="badge rounded-pill {{ $statusClass }} text-white">
@@ -156,4 +164,13 @@
             </form>
         </div>
     </section>
+
+    @push('styles')
+        <style>
+            /* Hide unselected sort labels */
+            .sort-toggle input[type="radio"]:not(:checked)+label {
+                display: none;
+            }
+        </style>
+    @endpush
 @endsection

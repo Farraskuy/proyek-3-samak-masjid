@@ -102,11 +102,11 @@
 @section('content')
 
     {{-- HERO --}}
-    <section class="py-5 bg-pattern"
-        style="background-color:#175C9E; height:300px; display:flex; align-items:center;">
+    <section class="py-5 bg-pattern" style="background-color:#175C9E; height:320px; display:flex; align-items:center;">
         <div class="container text-center">
-            <h1 class="display-5 fw-bold text-white">Berita & Postingan</h1>
-            <p class="text-white-50 lead">Temukan kabar terbaru dan artikel dakwah masjid kampus.</p>
+            <h1 class="display-5 fw-bold text-white mb-3" data-aos="fade-up" data-aos-duration="900">Berita & Postingan</h1>
+            <p class="text-white-50 lead mb-0 col-lg-8 mx-auto" data-aos="fade-up" data-aos-duration="1100"
+                data-aos-delay="200">Temukan kabar terbaru dan artikel dakwah masjid kampus.</p>
         </div>
     </section>
 
@@ -212,4 +212,3 @@
     </section>
 
 @endsection
-

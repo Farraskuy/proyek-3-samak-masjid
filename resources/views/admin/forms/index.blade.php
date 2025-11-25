@@ -5,13 +5,13 @@
 @section('content')
     <section class="p-3">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="fw-semibold">Form Builder & Generator</h4>
-            <a href="{{ route('admin.forms.create') }}" class="btn btn-sm btn-success fw-semibold">
-                <i class="fas fa-plus"></i> Buat Form Baru
+            <h4 class="fw-semibold mb-0">Form Builder & Generator</h4>
+            <a href="{{ route('admin.forms.create') }}" class="btn btn-success fw-semibold">
+                <i class="fas fa-plus me-1"></i> Buat Form Baru
             </a>
         </div>
 
-        @if(session('success'))
+        @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -24,9 +24,9 @@
 
                 <div class="bg-white position-sticky pt-3 pb-2" style="top: 61px; z-index: 1">
                     <div class="d-flex gap-2 justify-content-end mb-2">
-                        <input type="text" class="form-control form-control-sm" placeholder="Cari judul form"
+                        <input type="text" class="form-control" placeholder="Cari judul form"
                             value="{{ request()->query('keyword', '') }}" name="keyword">
-                        <button type="submit" class="btn btn-sm btn-primary">Cari</button>
+                        <button type="submit" class="btn btn-primary">Cari</button>
                     </div>
                 </div>
 
@@ -62,9 +62,8 @@
                                     <td>{{ $form->created_at->format('d M Y H:i') }}</td>
                                     <td class="text-nowrap">
                                         <!-- Preview Button -->
-                                        <a href="{{ url('/form/' . $form->slug) }}"
-                                            class="btn btn-light btn-sm border" target="_blank"
-                                            title="Preview" aria-label="Preview">
+                                        <a href="{{ url('/form/' . $form->slug) }}" class="btn btn-light btn-sm border"
+                                            target="_blank" title="Preview" aria-label="Preview">
                                             <i class="fas fa-eye text-muted"></i>
                                         </a>
 
@@ -76,7 +75,8 @@
 
                                         <!-- Responses Button -->
                                         <a href="{{ route('admin.forms.responses', $form->id) }}"
-                                            class="btn btn-light btn-sm border" title="Lihat Response" aria-label="Responses">
+                                            class="btn btn-light btn-sm border" title="Lihat Response"
+                                            aria-label="Responses">
                                             <i class="fas fa-list text-muted"></i>
                                         </a>
 
@@ -151,7 +151,8 @@
                     const formTitle = this.dataset.formTitle;
 
                     document.getElementById('formTitleLabel').textContent = '"' + formTitle + '"';
-                    document.getElementById('deleteFormForm').action = '{{ route("admin.forms.destroy", ":id") }}'.replace(':id', formId);
+                    document.getElementById('deleteFormForm').action =
+                        '{{ route('admin.forms.destroy', ':id') }}'.replace(':id', formId);
 
                     new bootstrap.Modal(document.getElementById('deleteFormModal')).show();
                 });

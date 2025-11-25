@@ -38,7 +38,6 @@ class AuthController extends Controller
             return back()->withErrors(['error' => 'Verifikasi reCAPTCHA gagal.'])->withInput();
         }
 
-
         $field = filter_var($data['login'], FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
         $request->merge([$field => $data['login']]);
 
@@ -100,6 +99,8 @@ class AuthController extends Controller
             'password' => Hash::make($data['password']),
             'role' => 'jamaah',
         ]);
+
+        Auth::login($user);
 
         Otp::where('destination', $user->email)->delete();
 
@@ -171,7 +172,7 @@ class AuthController extends Controller
     {
         $data = $request->validate([
             'destination' => 'required',
-            // 'g-recaptcha-response' => 'required', // Temporarily disabled for profile verification flow or handle conditionally
+            'g-recaptcha-response' => 'required', // Temporarily disabled for profile verification flow or handle conditionally
         ]);
 
         $destination = $data['destination'];

@@ -9,6 +9,7 @@
 
     {{-- bootstrap --}}
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap/bootstrap.min.css') }}">
+    
     {{-- bootstrap js --}}
     <script src="{{ asset('assets/js/bootstrapt/bootstrap.bundle.min.js') }}"></script>
 
@@ -40,7 +41,7 @@
     {{-- Date range picker --}}
     <script type="text/javascript" src="{{ asset('assets/js') }}/moment.min.js"></script>
     <script type="text/javascript" src="{{ asset('assets/js') }}/daterangepicker.js"></script>
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css') }}/daterangepicker.css" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css') }}/daterangepicker.css"/>
 
     {{-- Chart js --}}
     <script src="{{ asset('assets/js') }}/chart.umd.min.js"></script>

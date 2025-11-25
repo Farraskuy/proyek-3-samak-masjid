@@ -1,9 +1,7 @@
 <nav id="navbar-samak"
     class="navbar navbar-expand-xl navbar-light bg-white shadow-sm py-2 sticky-top border-bottom d-flex flex-column">
 
-    <!-- =======================
-         TOP NAVBAR (Brand + User)
-    ======================== -->
+    <!-- ======================= TOP NAVBAR ======================== -->
     <div class="container d-flex align-items-center justify-content-between w-100">
 
         <!-- Brand -->
@@ -123,19 +121,23 @@
 
             @guest
                 <a href="{{ route('login') }}"
-                    class="btn btn-outline-light text-black ms-2 px-3 py-1 rounded-pill border-2 d-flex align-items-center"
+                    class="btn btn-outline-light fw-medium text-black ms-2 px-3 py-1 rounded-pill border-2 d-flex align-items-center"
                     style="height: 38px; font-size: 0.875rem;">
                     <i class="fas fa-sign-in-alt me-2"></i>
                     <span class="d-none d-md-inline">Masuk</span>
+                </a>
+                <a href="{{ route('register') }}"
+                    class="btn btn-outline-light fw-medium text-black ms-2 px-3 py-1 rounded-pill border-2 d-flex align-items-center text-white"
+                    style="height: 38px; font-size: 0.875rem; background-color: #CE9138;">
+                    <i class="fas fa-user-plus me-2"></i>
+                    <span class="d-none d-md-inline">Daftar</span>
                 </a>
             @endguest
 
         </div>
     </div>
 
-    <!-- =======================
-         BOTTOM NAVBAR (Menu)
-    ======================== -->
+    <!-- ======================= BOTTOM NAVBAR (Menu) ======================== -->
     <div class="container w-100">
         <div class="collapse navbar-collapse mt-2" id="menuNavbar">
 

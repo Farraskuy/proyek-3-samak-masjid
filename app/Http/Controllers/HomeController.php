@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Postingan;
 
+use App\Models\JadwalKegiatan;
+
 class HomeController extends Controller
 {
     public function index()
@@ -14,6 +16,15 @@ class HomeController extends Controller
             ->limit(4)
             ->get();
 
-        return view('client.home', ['posts' => $posts]);
+        $events = JadwalKegiatan::with('tamuUndangan')
+            ->where('start_time', '>=', now())
+            ->orderBy('start_time', 'asc')
+            ->limit(3)
+            ->get();
+
+        return view('client.home', [
+            'posts' => $posts,
+            'events' => $events
+        ]);
     }
 }

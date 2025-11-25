@@ -4,11 +4,22 @@
 
 @section('content')
     <section class="p-3">
-        <h4 class="fw-semibold">Daftar Postingan (Menunggu Approval)</h4>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-semibold mb-0">Daftar Postingan (Menunggu Approval)</h4>
+        </div>
 
         <div class="row g-0 gap-3">
-            <form method="get" id="form_filter" class="col rounded-3 bg-white p-3 pt-0 form-filter" style="height: fit-content">
+            <form method="get" id="form_filter" class="col rounded-3 bg-white p-3 pt-0 form-filter"
+                style="height: fit-content">
                 <div class="alert-container"></div>
+
+                <div class="bg-white position-sticky pt-3 pb-2" style="top: 61px; z-index: 1">
+                    <div class="d-flex gap-2 justify-content-end mb-2">
+                        <input type="text" class="form-control" placeholder="Cari"
+                            value="{{ request()->query('keyword', '') }}" name="keyword">
+                        <button type="submit" class="btn btn-primary">Cari</button>
+                    </div>
+                </div>
 
                 <div class="table-responsive position-relative mb-3" style="min-height: 200px">
                     <table class="table table-sm table-hover fs-14px">
@@ -31,14 +42,16 @@
                                     <td>{{ optional($row->creator)->name ?? ($row->user_id ?? '-') }}</td>
                                     <td>{{ $row->created_at ?? '-' }}</td>
                                     <td class="text-nowrap">
-                                        <a href="{{ url('/admin/postingan/approval/' . ($row->id ?? $row->id)) }}" class="btn btn-primary btn-sm">Lihat Postingan</a>
+                                        <a href="{{ url('/admin/postingan/approval/' . ($row->id ?? $row->id)) }}"
+                                            class="btn btn-primary btn-sm">Lihat Postingan</a>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
                                     <td colspan="6" class="text-center">
                                         <div class="py-4">
-                                            <img src="{{ asset('assets/images/no-data.png') }}" alt="No data" style="max-width:240px; opacity: 0.5;">
+                                            <img src="{{ asset('assets/images/no-data.png') }}" alt="No data"
+                                                style="max-width:240px; opacity: 0.5;">
                                             <p>Data Tidak Ada</p>
                                         </div>
                                     </td>
@@ -57,7 +70,8 @@
                                 <option {{ request()->query('showing', 50) == 20 ? 'selected' : '' }}>20</option>
                                 <option {{ request()->query('showing', 50) == 50 ? 'selected' : '' }}>50</option>
                                 <option {{ request()->query('showing', 50) == 100 ? 'selected' : '' }}>100</option>
-                                <option value="all" {{ request()->query('showing') == 'all' ? 'selected' : '' }}>Semua</option>
+                                <option value="all" {{ request()->query('showing') == 'all' ? 'selected' : '' }}>Semua
+                                </option>
                             </select>
                             Data
                         </div>
