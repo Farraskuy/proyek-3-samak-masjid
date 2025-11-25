@@ -61,13 +61,37 @@
                 Yuk wujudkan perubahan bersama dengan berbagi keberkahan!
             </p>
 
-            <div data-aos="fade-up" data-aos-delay="400">
-                <a href="/donasi/sekarang" class="btn btn-light text-primary fw-bold px-4 py-2 rounded-pill shadow-sm">
-                    Donasi Sekarang
-                </a>
+                <div data-aos="fade-up" data-aos-delay="400">
+                    <a href="/donasi/sekarang" class="btn btn-lg btn-light text-primary fw-bold px-5 py-3 rounded-pill shadow-sm">
+                        Donasi Sekarang
+                    </a>
+                </div>
             </div>
+
         </div>
-    </section>
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="cta-box p-5 text-center mx-auto col-lg-10" 
+             data-aos="zoom-in" data-aos-duration="900">
+            
+            <div class="mb-4">
+                <i class="fas fa-receipt fa-3x text-warning mb-3"></i>
+                <h2 class="fw-bold text-dark">Sudah Melakukan Transfer?</h2>
+                <p class="lead text-muted col-lg-9 mx-auto">
+                    Upload bukti donasi kamu agar tim kami bisa memverifikasi dengan cepat, transparan, dan amanah.
+                </p>
+            </div>
+
+            <a href="/donasi/konfirmasi" class="btn btn-lg rounded-pill px-5 py-3 fw-bold shadow-sm" 
+               style="background-color: #FFC107; color: #212529; border: none;">
+                <i class="fas fa-upload me-2"></i> Upload Bukti Donasi
+            </a>
+        </div>
+    </div>
+</section>
 
     <section class="py-5 px-4 bg-white">
         <div class="container-xl">
@@ -136,30 +160,10 @@
                             </div>
                         </div>
 
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="cta-box p-5 text-center mx-auto col-lg-10" data-aos="zoom-in" data-aos-duration="900">
-
-                <div class="mb-4">
-                    <i class="fas fa-receipt fa-3x text-warning mb-3"></i>
-                    <h2 class="fw-bold text-dark">Sudah Melakukan Transfer?</h2>
-                    <p class="lead text-muted col-lg-9 mx-auto">
-                        Upload bukti donasi kamu agar tim kami bisa memverifikasi dengan cepat, transparan, dan amanah.
-                    </p>
                 </div>
-
-                <a href="/donasi/konfirmasi" class="btn btn-lg rounded-pill px-5 py-3 fw-bold shadow-sm"
-                    style="background-color: #FFC107; color: #212529; border: none;">
-                    <i class="fas fa-upload me-2"></i> Upload Bukti Donasi
-                </a>
-            </div>
+            @endforeach
         </div>
-    </section>
+    </div>
+</section>
 
 @endsection

@@ -101,6 +101,7 @@ Route::prefix('admin/postingan')->name('postingan.admin.')->group(function () {
     Route::get('/approval', [PostinganController::class, 'approvalIndex'])->name('approval.index');
     Route::get('/approval/{id}', [PostinganController::class, 'approvalShow'])->name('approval.show');
     Route::post('/approval/{id}', [PostinganController::class, 'approvalUpdate'])->name('approval.update');
+    Route::post('/store', [PostinganController::class, 'store'])->name('store');
 });
 
 
@@ -227,6 +228,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|super ad
     Route::get('/donasi/verifikasi', [DonationConfirmationController::class, 'index'])->name('donasi.index');
     Route::post('/donasi/{id}/approve', [DonationConfirmationController::class, 'approve'])->name('donasi.approve');
     Route::post('/donasi/{id}/reject', [DonationConfirmationController::class, 'reject'])->name('donasi.reject');
+
+    //Keuangan
+    Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan');
+    Route::post('/keuangan', [KeuanganController::class, 'store'])->name('keuangan.store');
+    Route::delete('/keuangan/{id}', [KeuanganController::class, 'destroy'])->name('keuangan.destroy');
 
     // Admin Profile
     Route::prefix('profile')->name('profile.')->group(function () {
