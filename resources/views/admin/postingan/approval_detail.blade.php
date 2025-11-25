@@ -11,20 +11,31 @@
                 <div class="card p-3">
                     <h5 class="fw-semibold">Preview Postingan</h5>
 
-                    <div class="mb-3">
-                        <h3>{{ $post->title }}</h3>
-                        <p class="text-muted">{{ $post->keterangan }}</p>
-                    </div>
+<div class="mb-3">
+    <div class="mb-1">
+        <span class="text-muted small">Judul:</span><br>
+        <span class="fw-bold fs-5">{{ $post->title }}</span>
+    </div>
+
+    <div class="mt-3">
+        <span class="text-muted small">Keterangan Postingan:</span><br>
+        <span class="fw-semibold">{{ $post->keterangan }}</span>
+    </div>
+</div>
 
                     @if($post->featured_image_url)
                         <div class="mb-3">
+                            <span class="text-muted small">content image</span><br>
                             <img src="{{ asset('storage/' . $post->featured_image_url) }}" alt="thumbnail" class="img-fluid rounded">
                         </div>
+
                     @endif
 
                     <div class="content-preview">
+                        <span class="text-muted small">isi content</span><br>
                         {!! $post->content !!}
                     </div>
+
                 </div>
             </div>
 

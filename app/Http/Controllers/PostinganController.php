@@ -225,11 +225,28 @@ class PostinganController extends Controller
     }
 
     // Show approval detail + preview
+
     public function approvalShow($id)
-    {
-        $post = Postingan::where('id', (int)$id)->firstOrFail();
-        return view('admin.postingan.approval_detail')->with('post', $post);
+      {
+     
+        $post = Postingan::where('id', $id)->firstOrFail();
+
+        // Tambahkan /storage/ hanya untuk tag <img>
+        $post->content = preg_replace(
+            '/<img\s+[^>]*src="(news\/[^"]+)"/i',
+            '<img src="/storage/$1"',
+            $post->content
+        );
+
+        return view('admin.postingan.approval_detail', compact('post'));
+    
+
+
     }
+
+
+
+
 
     // Handle approval action (approve/reject/revision)
     public function approvalUpdate(Request $request, $id)
@@ -439,7 +456,7 @@ class PostinganController extends Controller
         }
     }
 
-    
+
 }
 
 

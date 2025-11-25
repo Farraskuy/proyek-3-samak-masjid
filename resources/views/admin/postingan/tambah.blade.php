@@ -179,12 +179,6 @@
                             <button type="button" id="remove-image-btn">&times;</button>
                         </div>
 
-                        <div class="mt-3">
-                            <label class="form-label fw-semibold">Caption (Opsional)</label>
-                            <textarea name="image_caption" rows="2" class="form-control input-lg" placeholder="Tulis caption gambar..."></textarea>
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </form>
