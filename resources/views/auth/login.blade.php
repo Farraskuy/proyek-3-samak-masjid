@@ -127,7 +127,7 @@
                     document.getElementById('g-recaptcha-response').value = token;
                     form.submit();
                 });
-            });
+            });g
         });
     </script>
 @endpush

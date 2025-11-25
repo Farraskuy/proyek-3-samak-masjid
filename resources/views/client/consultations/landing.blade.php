@@ -182,7 +182,7 @@
                     <h3 class="fw-bold mb-2">Login Diperlukan</h3>
                     <p class="text-muted mb-4">Silakan login terlebih dahulu untuk berkonsultasi dengan Ustadz kami.</p>
                     <div class="d-grid gap-2">
-                        <a href="{{ route('login') }}" class="btn btn-primary btn-lg rounded-pill">Login Sekarang</a>
+                        <a href="{{ route('login') }}" class="fw-medium btn btn-primary btn-lg rounded-pill">Login Sekarang</a>
                         <button type="button" class="btn btn-light btn-lg rounded-pill"
                             data-bs-dismiss="modal">Batal</button>
                     </div>
@@ -243,14 +243,26 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.error) {
-                                alert(data.error);
+                                Toast.fire({
+                                    icon: 'error',
+                                    title: data.error
+                                });
                             } else if (data.success) {
-                                window.location.href = data.redirect;   
+                                Toast.fire({
+                                    icon: 'success',
+                                    title: data.success
+                                });
+                                setTimeout(() => {
+                                    window.location.href = data.redirect;
+                                }, 1000);
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            alert('Terjadi kesalahan saat mengirim pesan');
+                            Toast.fire({
+                                icon: 'error',
+                                title: 'Terjadi kesalahan saat mengirim pesan'
+                            });
                         });
                 });
             }

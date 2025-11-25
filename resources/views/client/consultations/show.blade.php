@@ -2,121 +2,105 @@
 
 @section('title', 'Chat Konsultasi')
 
+@push('styles')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+@endpush
+
 @section('content')
-    <div class="container py-5">
-        <div class="card shadow-sm border-0" style="height: 80vh;">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <div>
-                    <h5 class="mb-0 fw-bold">{{ $consultation->question_subject }}</h5>
-                    <small class="text-muted">
-                        Status: <span
-                            class="badge bg-{{ $consultation->status == 'active' ? 'success' : 'secondary' }}">{{ ucfirst($consultation->status) }}</span>
-                        @if ($consultation->ustadz)
-                            | Bersama: {{ $consultation->ustadz->full_name }}
-                        @endif
-                    </small>
-                </div>
-                <a href="{{ route('client.consultations.history') }}" class="btn btn-outline-secondary btn-sm">
-                    <i class="fas fa-arrow-left me-1"></i>Kembali
-                </a>
-            </div>
+    <div class="h-[calc(100vh-64px)] bg-gray-100 flex overflow-hidden">
+        <!-- Sidebar -->
+        <x-chat-sidebar :conversations="$conversations" :activeId="$consultation->id" />
 
-            <div class="card-body overflow-auto bg-light" id="chatContainer">
-                <!-- Initial Question -->
-                <div class="d-flex justify-content-end mb-4">
-                    <div class="card border-0 shadow-sm bg-primary text-white" style="max-width: 75%;">
-                        <div class="card-body p-3">
-                            <p class="mb-0">{{ $consultation->question_text }}</p>
-                            <small
-                                class="text-white-50 d-block text-end mt-1">{{ $consultation->created_at->format('H:i') }}</small>
-                        </div>
-                    </div>
-                </div>
-
-                @foreach ($messages as $msg)
-                    <div class="d-flex justify-content-{{ $msg->user_id == Auth::id() ? 'end' : 'start' }} mb-3">
-                        @if ($msg->user_id != Auth::id())
-                            <div class="me-2">
-                                <img src="{{ $msg->user->image_url ?? asset('assets/images/default-avatar.png') }}"
-                                    class="rounded-circle" width="35" height="35">
-                            </div>
-                        @endif
-
-                        <div class="card border-0 shadow-sm {{ $msg->user_id == Auth::id() ? 'bg-primary text-white' : 'bg-white' }}"
-                            style="max-width: 75%;">
-                            <div class="card-body p-3">
-                                @if ($msg->message_type == 'file')
-                                    <a href="{{ asset($msg->attachment_url) }}" target="_blank"
-                                        class="{{ $msg->user_id == Auth::id() ? 'text-white' : 'text-primary' }}">
-                                        <i class="fas fa-paperclip me-1"></i>Lampiran
-                                    </a>
-                                    <p class="mb-0 mt-2">{{ $msg->message }}</p>
-                                @else
-                                    <p class="mb-0">{{ $msg->message }}</p>
-                                @endif
-                                <small
-                                    class="{{ $msg->user_id == Auth::id() ? 'text-white-50' : 'text-muted' }} d-block text-end mt-1">
-                                    {{ $msg->created_at->format('H:i') }}
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-
-            @if ($consultation->status == 'active')
-                <div class="card-footer bg-white py-3">
-                    <form id="chatForm">
-                        <div class="input-group">
-                            <input type="text" class="form-control border-0 bg-light" placeholder="Tulis pesan..."
-                                name="message" required>
-                            <button class="btn btn-primary" type="submit">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            @elseif($consultation->status == 'closed')
-                <div class="card-footer bg-light text-center py-3">
-                    <p class="mb-0 text-muted">Konsultasi telah ditutup.</p>
-                    @if ($consultation->conclusion)
-                        <div class="alert alert-info mt-2 text-start">
-                            <strong>Kesimpulan:</strong> {{ $consultation->conclusion }}
-                        </div>
-                    @endif
-                </div>
-            @endif
-        </div>
+        <!-- Main Chat Area -->
+        <x-chat-area :consultation="$consultation" :messages="$messages" />
     </div>
+@endsection
 
-    @push('scripts')
-        <script>
-            const chatContainer = document.getElementById('chatContainer');
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+@push('scripts')
+    <script type="module">
+        const consultationId = {{ $consultation->id }};
+        const userId = {{ Auth::id() }};
+        const messagesContainer = document.getElementById('messages-container');
+        const chatForm = document.getElementById('chat-form');
+        const messageInput = document.getElementById('message-input');
 
-            document.getElementById('chatForm')?.addEventListener('submit', function(e) {
+        // Scroll to bottom
+        function scrollToBottom() {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        scrollToBottom();
+
+        // Listen for new messages
+        Echo.private('consultation.' + consultationId)
+            .listen('.message.sent', (e) => {
+                console.log('New message:', e);
+                appendMessage(e.message, e.user);
+                scrollToBottom();
+            });
+
+        // Append message to DOM
+        function appendMessage(message, user) {
+            const isMe = user.id === userId;
+            const alignClass = isMe ? 'flex-row-reverse' : '';
+            const bgClass = isMe ? 'bg-blue-50 border-blue-100 text-blue-900' : 'bg-white border-gray-100 text-gray-800';
+            const userInitial = user.name.charAt(0);
+            const avatarColor = user.role === 'ustadz' ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600';
+            const avatarText = user.role === 'ustadz' ? 'U' : userInitial;
+
+            const html = `
+            <div class="flex gap-4 ${alignClass}">
+                <div class="flex-shrink-0">
+                    <div class="h-8 w-8 rounded-full ${avatarColor} flex items-center justify-center font-bold text-sm">
+                        ${avatarText}
+                    </div>
+                </div>
+                <div class="flex-1 max-w-2xl">
+                    <div class="flex items-baseline justify-between ${alignClass}">
+                        <h4 class="text-sm font-bold text-gray-900">${user.name}</h4>
+                        <span class="text-xs text-gray-500 mx-2">Baru saja</span>
+                    </div>
+                    <div class="mt-1 p-4 rounded-lg shadow-sm border ${bgClass}">
+                        <p class="whitespace-pre-wrap">${message.message}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+            messagesContainer.insertAdjacentHTML('beforeend', html);
+        }
+
+        // Handle form submit
+        if (chatForm) {
+            chatForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                const input = this.querySelector('input[name="message"]');
-                const message = input.value;
+                const message = messageInput.value.trim();
+                if (!message) return;
 
-                fetch('{{ route('client.consultations.send-message', $consultation->id) }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({
-                            message: message
-                        })
+                // Optimistic UI update (optional, but good for UX)
+                // appendMessage({ message: message }, { id: userId, name: '{{ Auth::user()->name }}', role: '{{ Auth::user()->role }}' });
+                // scrollToBottom();
+
+                messageInput.value = '';
+
+                axios.post(`{{ route('client.consultations.send-message', $consultation->id) }}`, {
+                        message: message
                     })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            input.value = '';
-                            location.reload(); // Simple reload for now, ideally append DOM
-                        }
+                    .then(response => {
+                        console.log('Message sent:', response.data);
+                    })
+                    .catch(error => {
+                        console.error('Error sending message:', error);
+                        alert('Gagal mengirim pesan');
                     });
             });
-        </script>
-    @endpush
-@endsection
+
+            // Handle Enter key to submit
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    chatForm.dispatchEvent(new Event('submit'));
+                }
+            });
+        }
+    </script>
+@endpush

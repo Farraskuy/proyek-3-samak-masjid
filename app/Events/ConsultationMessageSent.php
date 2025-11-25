@@ -51,6 +51,6 @@ class ConsultationMessageSent implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'ConsultationMessageSent';
+        return 'message.sent';
     }
 }

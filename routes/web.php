@@ -4,13 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Broadcast;
-
-// Auth
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-
-// Public Controllers
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostinganController;
 use App\Http\Controllers\LostFoundController;
@@ -23,8 +19,6 @@ use App\Http\Controllers\ConsultationClientController;
 use App\Http\Controllers\ConsultationUstadzController;
 use App\Http\Controllers\Donasi\ZISController;
 use App\Http\Controllers\JadwalKegiatan\JadwalKegiatanController;
-
-// Admin
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GaleriController;
 use App\Http\Controllers\KegiatanController;
@@ -169,7 +163,7 @@ Route::middleware('auth')->prefix('konsultasi-saya')->name('client.consultations
 
 
 // =============================== ADMIN PANEL ===============================
-Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|super admin|ustadz'])->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -210,6 +204,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::post('/{id}/accept', [ConsultationUstadzController::class, 'accept'])->name('accept');
         Route::post('/{id}/reject', [ConsultationUstadzController::class, 'reject'])->name('reject');
         Route::post('/{id}/close', [ConsultationUstadzController::class, 'close'])->name('close');
+        Route::post('/{id}/pesan', [ConsultationUstadzController::class, 'sendMessage'])->name('send-message');
     });
 
     // Form Builder Admin

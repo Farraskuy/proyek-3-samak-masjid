@@ -129,7 +129,16 @@ class ConsultationClientController extends Controller
             ->whereNull('read_at')
             ->update(['read_at' => now()]);
 
-        return view('client.consultations.show', compact('consultation', 'messages'));
+        // Get history for sidebar
+        if (request()->ajax()) {
+            return view('components.chat-area', compact('consultation', 'messages'));
+        }
+
+        $conversations = Consultation::where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('client.consultations.show', compact('consultation', 'messages', 'conversations'));
     }
 
     /**
@@ -169,7 +178,7 @@ class ConsultationClientController extends Controller
             ]);
 
             // Broadcast event (Reverb)
-            // event(new \App\Events\ConsultationMessageSent($message));
+            event(new \App\Events\ConsultationMessageSent($message, Auth::user(), $id));
 
             DB::commit();
 

@@ -21,9 +21,9 @@ class ConsultationUstadzController extends Controller
 
         if (Auth::user()->role === 'ustadz') {
             // Ustadz sees pending (available to take) and their own active/closed
-            $query->where(function($q) {
+            $query->where(function ($q) {
                 $q->where('status', 'pending')
-                  ->orWhere('answered_by_ustadz_id', Auth::id());
+                    ->orWhere('answered_by_ustadz_id', Auth::id());
             });
         }
 
@@ -33,14 +33,22 @@ class ConsultationUstadzController extends Controller
 
         $consultations = $query->orderBy('created_at', 'desc')->paginate(10);
 
-        // Stats
-        $stats = [
+        // Counts for Sidebar
+        $counts = [
+            'all' => Consultation::count(),
             'pending' => Consultation::where('status', 'pending')->count(),
             'active' => Consultation::where('status', 'active')->where('answered_by_ustadz_id', Auth::id())->count(),
             'closed' => Consultation::where('status', 'closed')->where('answered_by_ustadz_id', Auth::id())->count(),
         ];
 
-        return view('admin.consultations.index', compact('consultations', 'stats', 'status'));
+        // Stats (kept for backward compatibility if needed, or remove if unused)
+        $stats = [
+            'pending' => $counts['pending'],
+            'active' => $counts['active'],
+            'closed' => $counts['closed'],
+        ];
+
+        return view('admin.consultations.index', compact('consultations', 'stats', 'status', 'counts'));
     }
 
     /**
@@ -49,17 +57,31 @@ class ConsultationUstadzController extends Controller
     public function show($id)
     {
         $consultation = Consultation::findOrFail($id);
-        
+
         // Authorization check
-        if (Auth::user()->role === 'ustadz' && 
-            $consultation->status !== 'pending' && 
-            $consultation->answered_by_ustadz_id !== Auth::id()) {
+        if (
+            Auth::user()->role === 'ustadz' &&
+            $consultation->status !== 'pending' &&
+            $consultation->answered_by_ustadz_id !== Auth::id()
+        ) {
             abort(403, 'Unauthorized');
         }
 
         $messages = $consultation->messages()->with('user')->orderBy('created_at', 'asc')->get();
 
-        return view('admin.consultations.show', compact('consultation', 'messages'));
+        // Sidebar data
+        if (request()->ajax()) {
+            return view('components.chat-area', compact('consultation', 'messages'));
+        }
+
+        $conversations = Consultation::where(function ($q) {
+            $q->where('status', 'pending')
+                ->orWhere('answered_by_ustadz_id', Auth::id());
+        })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.consultations.show', compact('consultation', 'messages', 'conversations'));
     }
 
     /**
@@ -97,7 +119,7 @@ class ConsultationUstadzController extends Controller
     public function reject(Request $request, $id)
     {
         $consultation = Consultation::findOrFail($id);
-        
+
         $request->validate(['reason' => 'required|string']);
 
         $consultation->update([
@@ -130,5 +152,53 @@ class ConsultationUstadzController extends Controller
         ]);
 
         return back()->with('success', 'Konsultasi ditutup.');
+    }
+
+    /**
+     * Send message in chat (Ustadz)
+     */
+    public function sendMessage(Request $request, $id)
+    {
+        $consultation = Consultation::findOrFail($id);
+
+        if ($consultation->answered_by_ustadz_id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        if ($consultation->status !== 'active') {
+            return response()->json(['error' => 'Konsultasi belum aktif atau sudah ditutup'], 422);
+        }
+
+        $validated = $request->validate([
+            'message' => 'required|string|max:5000',
+            'attachment' => 'nullable|file|max:5120',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $attachmentUrl = null;
+            if ($request->hasFile('attachment')) {
+                $path = $request->file('attachment')->store('consultation-attachments', 'public');
+                $attachmentUrl = 'storage/' . $path;
+            }
+
+            $message = ConsultationMessage::create([
+                'consultation_id' => $id,
+                'user_id' => Auth::id(),
+                'message' => $validated['message'],
+                'message_type' => $attachmentUrl ? 'file' : 'text',
+                'attachment_url' => $attachmentUrl,
+            ]);
+
+            // Broadcast event (Reverb)
+            event(new \App\Events\ConsultationMessageSent($message, Auth::user(), $id));
+
+            DB::commit();
+
+            return response()->json(['success' => true, 'message' => $message]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }
