@@ -388,6 +388,8 @@ class PostinganController extends Controller
 
             // Proses gambar base64 baru
             $content = $this->processQuillImages($content);
+
+            $this->deleteRemovedQuillImages($post->content, $content);
         }
 
 
@@ -416,4 +418,30 @@ class PostinganController extends Controller
 
         return redirect()->to('/admin/postingan')->with('success_post_disimpan_di_database', 'Data berhasil diupdate!');
     }
+
+
+      private function deleteRemovedQuillImages($oldContent, $newContent)
+    {
+        // Ambil semua path IMG dari konten lama (tanpa /storage/)
+        preg_match_all('/<img[^>]+src="(news\/[^"]+)"/i', $oldContent, $oldMatches);
+        $oldImages = $oldMatches[1] ?? [];
+
+        // Ambil semua path IMG dari konten baru
+        preg_match_all('/<img[^>]+src="(news\/[^"]+)"/i', $newContent, $newMatches);
+        $newImages = $newMatches[1] ?? [];
+
+        // Cari gambar yang DIHAPUS
+        $deletedImages = array_diff($oldImages, $newImages);
+
+        // Hapus filenya di storage
+        foreach ($deletedImages as $img) {
+            Storage::delete($img);
+        }
+    }
+
+    
 }
+
+
+
+
