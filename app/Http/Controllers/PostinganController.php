@@ -12,45 +12,49 @@ use Illuminate\Support\Facades\Cache;
 class PostinganController extends Controller
 {
     // Show listing page (previously HalamanPostinganController::return_resource)
-    public function index(Request $request)
-    {
-        $filter = $request->query('filter'); // ?filter=...
-        $keyword = $request->query('keyword');
-        $startDate = $request->query('start_date');
-        $endDate = $request->query('end_date');
+ public function index(Request $request)
+{
+    $filter = $request->query('filter'); 
+    $keyword = $request->query('keyword');
+    $startDate = $request->query('start_date');
+    $endDate = $request->query('end_date');
 
-        $query = Postingan::query();
+    $query = Postingan::query();
 
-        if (!empty($filter)) {
-            $query->whereRaw('LOWER(kategori) = ?', [strtolower($filter)]);
-        }
+    // Tampilkan hanya yang published
+    $query->where('status', 'published');
 
-        if (!empty($keyword)) {
-            $query->where(function ($q) use ($keyword) {
-                $q->where('title', 'like', "%{$keyword}%")->orWhere('keterangan', 'like', "%{$keyword}%");
-            });
-        }
-
-        if (!empty($startDate)) {
-            $query->whereDate('created_at', '>=', $startDate);
-        }
-
-        if (!empty($endDate)) {
-            $query->whereDate('created_at', '<=', $endDate);
-        }
-
-        $cacheKey = 'postingan.index:' . md5($request->fullUrl());
-        $data_posts = Cache::remember($cacheKey, now()->addMinutes(60), function () use ($query) {
-            return $query->orderBy('created_at', 'desc')->paginate(9);
-        });
-
-        // ensure paginator keeps query string
-        if (method_exists($data_posts, 'withQueryString')) {
-            $data_posts = $data_posts->withQueryString();
-        }
-
-        return view('client.postingan.index', ['data_posts' => $data_posts]);
+    if (!empty($filter)) {
+        $query->whereRaw('LOWER(kategori) = ?', [strtolower($filter)]);
     }
+
+    if (!empty($keyword)) {
+        $query->where(function ($q) use ($keyword) {
+            $q->where('title', 'like', "%{$keyword}%")
+              ->orWhere('keterangan', 'like', "%{$keyword}%");
+        });
+    }
+
+    if (!empty($startDate)) {
+        $query->whereDate('created_at', '>=', $startDate);
+    }
+
+    if (!empty($endDate)) {
+        $query->whereDate('created_at', '<=', $endDate);
+    }
+
+    $cacheKey = 'postingan.index:' . md5($request->fullUrl());
+    $data_posts = Cache::remember($cacheKey, now()->addMinutes(1), function () use ($query) {
+        return $query->orderBy('created_at', 'desc')->paginate(9);
+    });
+
+    if (method_exists($data_posts, 'withQueryString')) {
+        $data_posts = $data_posts->withQueryString();
+    }
+
+    return view('client.postingan.index', ['data_posts' => $data_posts]);
+}
+
 
     // Show detail page by slug (previously DetailPostinganController::return_resource)
     public function showDetail($slug_from_view)
@@ -367,7 +371,7 @@ class PostinganController extends Controller
             // Simpan gambar baru
             $image = $request->file('image_view') ?? $request->file('featured_image_url');
             $newName = uniqid() . '_' . $image->getClientOriginalName();
-            $featuredImagePath = $image->storeAs('public/news/images', $newName);
+            $featuredImagePath = $image->storeAs('news/images', $newName);
         }
 
         // 4. Handle Konten Quill (termasuk gambar base64 baru)

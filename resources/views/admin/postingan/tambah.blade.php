@@ -142,7 +142,7 @@
 
 <label class="form-label fw-semibold">Status</label>
 <select name="status_view" class="form-select input-lg" required>
-    <option value="published">Ajukan Publikasikan</option>
+    <option value="not published">Ajukan Publikasikan</option>
 </select>
 
                         <button type="submit" class="btn btn-success w-100 mt-3">

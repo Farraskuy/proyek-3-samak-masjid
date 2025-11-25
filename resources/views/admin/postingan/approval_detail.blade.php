@@ -46,7 +46,8 @@
 
                         <div class="mb-2">
                             <label for="status_pub" class="form-label">Status Publikasi</label>
-                            <select name="status" id="status_pub" class="form-select">
+                            {{-- Tabindex -1 agar tidak bisa difokuskan lewat keyboard --}}
+                            <select name="status" id="status_pub" class="form-select" tabindex="-1">
                                 <option value="published">Publish</option>
                                 <option value="not published">Not Publish</option>
                                 <option value="revisi">Revisi</option>
@@ -79,18 +80,37 @@
     <script>
         (function(){
             const decision = document.getElementById('decision_select');
+            const statusPub = document.getElementById('status_pub');
             const noteContainer = document.getElementById('note_container');
 
-            function toggleNote(){
-                if(decision.value === 'revision'){
-                    noteContainer.style.display = 'block';
-                }else{
+            function updateState(){
+                const val = decision.value;
+
+                // Kunci Status Publikasi agar tidak bisa dipilih manual
+                // Kita gunakan style pointer-events: none dan background abu-abu
+                // agar terlihat disabled TAPI nilainya tetap terkirim (beda dengan atribut disabled)
+                statusPub.style.pointerEvents = 'none';
+                statusPub.style.backgroundColor = '#e9ecef'; 
+
+                if(val === 'approve'){
+                    // Jika Setujui -> Status wajib Publish
+                    statusPub.value = 'published';
                     noteContainer.style.display = 'none';
+                } else if(val === 'reject'){
+                    // Jika Tolak -> Status wajib Not Publish
+                    statusPub.value = 'not published';
+                    noteContainer.style.display = 'none';
+                } else if(val === 'revision'){
+                    // Jika Revisi -> Status wajib Revisi & Munculkan Note
+                    statusPub.value = 'revisi';
+                    noteContainer.style.display = 'block';
                 }
             }
 
-            decision.addEventListener('change', toggleNote);
-            toggleNote();
+            decision.addEventListener('change', updateState);
+            
+            // Jalankan fungsi saat halaman pertama dimuat untuk set default awal
+            updateState();
         })();
     </script>
     @endpush

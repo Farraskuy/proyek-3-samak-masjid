@@ -6,6 +6,11 @@
     <section class="p-3">
         <h4 class="fw-semibold">Manajemen Postingan</h4>
         <a href="{{ url('admin/postingan/tambah') }}" class="btn btn-sm btn-success fw-semibold mb-3">Tambah Data</a>
+        
+        @if(optional(auth()->user())->role === 'super admin')
+         <a href="{{ url('admin/postingan/approval') }}" class="btn btn-sm btn-success fw-semibold mb-3">approval menu</a>
+        @endif
+
 
         <div class="row g-0 gap-3">
             <form method="get" id="form_filter" class="col rounded-3 bg-white p-3 pt-0 form-filter"
@@ -38,7 +43,8 @@
                                 <th>#</th>
                                 <th>Judul</th>
                                 <th>Kategori</th>
-                                <th>Status</th>
+                                <th>Status postingan</th>
+                                <th>keputusan</th>
                                 <th>Tanggal</th>
                                 <th>Aksi</th>
                             </tr>
@@ -58,6 +64,74 @@
                                                 class="badge rounded-pill text-bg-light text-danger-emphasis border border-danger-subtle">{{ $row->status }}</span>
                                         @endif
                                     </td>
+
+
+ <td>
+    @php
+        // Ambil status dan ubah ke huruf kecil agar pengecekan konsisten
+        $status = strtolower($row->approval_status ?? '');
+    @endphp
+
+    @if ($status == 'pending')
+        {{-- Pending: Kembali menjadi badge biasa (tanpa modal) --}}
+        <span class="badge rounded-pill text-bg-warning text-white border border-warning-subtle">
+            Pending
+        </span>
+
+    @elseif ($status == 'approved')
+        {{-- Approved: Hijau (Success) --}}
+        <span class="badge rounded-pill text-bg-success border border-success-subtle">
+            Approved
+        </span>
+
+    @elseif ($status == 'rejected')
+        {{-- Rejected: Merah (Danger) --}}
+        <span class="badge rounded-pill text-bg-danger border border-danger-subtle">
+            Rejected
+        </span>
+
+    @elseif ($status == 'revision')
+        {{-- 
+            Revision: Biru (Info) 
+            Sekarang Modal dipindahkan ke sini 
+        --}}
+        <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalRevision{{ $row->id }}">
+            <span class="badge rounded-pill text-bg-info text-white border border-info-subtle cursor-pointer">
+                Revision <i class="bi bi-eye ms-1"></i>
+            </span>
+        </a>
+
+        {{-- MODAL START (Khusus Revision) --}}
+        <div class="modal fade text-dark" id="modalRevision{{ $row->id }}" tabindex="-1" aria-labelledby="modalRevisionLabel{{ $row->id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalRevisionLabel{{ $row->id }}">Detail Revisi</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Catatan Revisi:</p>
+                        <div class="alert alert-warning border">
+                            {{-- Mengambil note revisi --}}
+                            <strong>{{ $row->approval_note ?? 'Tidak ada catatan revisi.' }}</strong>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- MODAL END --}}
+
+    @else
+        {{-- Default jika kosong/lainnya --}}
+        <span class="badge rounded-pill text-bg-secondary border border-secondary-subtle">
+            {{ $row->approval_status ?? '-' }}
+        </span>
+    @endif
+</td>
+
                                     <td>{{ $row->created_at ?? '-' }}</td>
                                     <td class="text-nowrap">
                                         <a href="/admin/postingan/edit/{{ $row->id }}"
@@ -67,11 +141,14 @@
 
                                         @if(optional(auth()->user())->role === 'super admin')
                                             <button type="button" class="btn btn-danger btn-sm btn-delete-article"
-                                                    data-action="{{ url('/admin/artikel/delete/'.$row->id) }}"
+                                                    data-action="{{ url('/admin/postingan/delete/'.$row->id) }}"
                                                     aria-label="Hapus">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         @endif
+
+
+
                                     </td>
                                 </tr>
                             @empty
