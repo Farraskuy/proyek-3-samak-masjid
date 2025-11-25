@@ -18,7 +18,8 @@
                                 <th>Judul</th>
                                 <th>Kategori</th>
                                 <th>Penulis</th>
-                                <th>Tanggal</th>
+                                <th>Tanggal dibuat</th>
+                                <th>Tanggal diupdate</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -30,6 +31,7 @@
                                     <td>{{ $row->kategori ?? '-' }}</td>
                                     <td>{{ optional($row->creator)->name ?? ($row->user_id ?? '-') }}</td>
                                     <td>{{ $row->created_at ?? '-' }}</td>
+                                    <td>{{ $row->updated_at?? '-' }}</td>
                                     <td class="text-nowrap">
                                         <a href="{{ url('/admin/postingan/approval/' . ($row->id ?? $row->id)) }}" class="btn btn-primary btn-sm">Lihat Postingan</a>
                                     </td>

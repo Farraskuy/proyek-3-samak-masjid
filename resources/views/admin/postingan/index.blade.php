@@ -45,7 +45,8 @@
                                 <th>Kategori</th>
                                 <th>Status postingan</th>
                                 <th>keputusan</th>
-                                <th>Tanggal</th>
+                                <th>Tanggal dibuat</th>
+                                <th>Tanggal update</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -133,6 +134,9 @@
 </td>
 
                                     <td>{{ $row->created_at ?? '-' }}</td>
+                                    <td>{{ $row->updated_at ?? '-' }}</td>
+
+
                                     <td class="text-nowrap">
                                         <a href="/admin/postingan/edit/{{ $row->id }}"
                                             class="btn btn-light btn-sm border" aria-label="Edit">
