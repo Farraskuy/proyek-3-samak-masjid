@@ -16,10 +16,10 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users', 'id');
             $table->string('title', 255);
             $table->string('slug', 270)->unique();
-            $table->text('keterangan');
+            $table->text('keterangan')->nullable();
             $table->text('content');
             $table->string('featured_image_url', 255)->nullable();
-            $table->enum('status', ['published', 'not published', 'pending', 'telah dipebaiki', 'revisi', 'draft']);
+            $table->enum('status', ['published', 'not published', 'pending', 'revisi']);
             $table->enum('kategori', ['Berita', 'Artikel', 'Tausiyah']);
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
