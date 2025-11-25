@@ -138,7 +138,7 @@ class PostinganController extends Controller
             'created_at' => now(),
             'approval_status' => 'pending',
             'status' => $request->status_view,
-            'user_id' => 1
+            'user_id' => auth()->id()
         ]);
 
         return redirect()->to('/admin/postingan')->with('success_post_disimpan_di_database', 'Data berhasil disimpan!');
@@ -283,6 +283,8 @@ class PostinganController extends Controller
             $post->status = 'revisi';
         }
 
+        $post->user_id = auth()->id();
+        
         $post->save();
 
         return redirect()->route('postingan.admin.approval.index')->with('status', 'Keputusan approval disimpan.');
