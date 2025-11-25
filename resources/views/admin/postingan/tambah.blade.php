@@ -246,7 +246,7 @@
                 hidden.value = quill.root.innerHTML;
                 if (quill.getLength() < 2) {
                     e.preventDefault();
-                    alert("Isi artikel tidak boleh kosong.");
+                    alert("konten tidak boleh kosong");
                 }
             });
 
