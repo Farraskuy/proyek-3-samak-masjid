@@ -62,16 +62,24 @@ class StaticPageController extends Controller
     public function edit($id)
     {
         $page = StaticPage::findOrFail($id);
+
+        $page->content = preg_replace(
+        '/<img\s+[^>]*src="(static-pages\/[^"]+)"/i',
+        '<img src="/storage/$1"',
+        $page->content
+        );
+
         return view('admin.static-pages.edit', compact('page'));
     }
 
     /**
      * Admin: Update static page
      */
-    public function update(Request $request, $id)
+   public function update(Request $request, $id)
     {
         $page = StaticPage::findOrFail($id);
 
+        // 1. Validasi Input
         $validated = $request->validate([
             'title' => 'required|string|max:255|unique:static_pages,title,' . $id,
             'description' => 'required|string|max:500',
@@ -79,25 +87,44 @@ class StaticPageController extends Controller
             'featured_image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        // Process featured image if uploaded
+        // 2. Proses Featured Image (Gambar Utama)
         if ($request->hasFile('featured_image_url')) {
-            // Delete old image if exists
+            // Hapus gambar lama jika ada
             if ($page->featured_image_url && Storage::exists($page->featured_image_url)) {
                 Storage::delete($page->featured_image_url);
             }
 
+            // Simpan gambar baru
             $image = $request->file('featured_image_url');
             $newName = uniqid() . '_' . $image->getClientOriginalName();
             $validated['featured_image_url'] = $image->storeAs('static-pages/images', $newName);
         }
 
-        // Process content images (from Quill editor)
-        if ($validated['content']) {
-            $validated['content'] = $this->processQuillImages($validated['content']);
+        // 3. Proses Konten (Isi Halaman / Quill)
+        // Ambil konten mentah dari request
+        $content = $request->input('content');
+
+        if ($content) {
+            // --- BAGIAN BARU: BERSIHKAN PATH ---
+            // Hapus prefix /storage/ agar di database tersimpan path relatif.
+            // Ini mencegah path menjadi rusak (double storage) saat diedit berulang kali.
+            $content = preg_replace(
+                '/src="\/storage\/(static-pages\/[^"]+)"/i',
+                'src="$1"',
+                $content
+            );
+
+            // --- PROSES GAMBAR BASE64 (Quill) ---
+            // Simpan gambar baru yang di-paste/upload langsung di editor
+            $content = $this->processQuillImages($content);
+            
+            // Masukkan konten yang sudah diproses kembali ke array validated
+            $validated['content'] = $content;
         }
 
-        $validated['updated_by_admin'] = Auth::id();
+        $validated['updated_by_admin'] = Auth::id(); // Pastikan Auth sudah di-import
 
+        // 4. Update Database
         DB::beginTransaction();
         try {
             $page->update($validated);

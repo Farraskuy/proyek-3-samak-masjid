@@ -7,7 +7,7 @@
         <h4 class="fw-semibold">Edit Halaman: {{ $page->title }}</h4>
 
         <div class="row g-0 gap-3 mt-3">
-            <form method="post" action="{{ route('admin.static-pages.update', $page->id) }}"
+            <form id="form-edit-page" method="post" action="{{ route('admin.static-pages.update', $page->id) }}"
                 class="col-12 col-lg-8 rounded-3 bg-white p-4"
                 enctype="multipart/form-data">
                 @csrf
@@ -107,9 +107,15 @@
                 }
 
                 // Update textarea before form submission
-                document.querySelector('form').addEventListener('submit', function() {
-                    contentTextarea.value = quill.root.innerHTML;
-                });
+                const editForm = document.getElementById('form-edit-page'); // Ambil form berdasarkan ID
+
+                if (editForm) {
+                    editForm.addEventListener('submit', function() {
+                        // Salin isi editor ke textarea tersembunyi
+                        contentTextarea.value = quill.root.innerHTML;
+                    });
+                }
+                
             });
 
             /*******************   untuk menampilkan preview   ***********************/
