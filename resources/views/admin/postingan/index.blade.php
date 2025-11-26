@@ -4,6 +4,7 @@
 
 @section('content')
     <section class="p-3">
+        {{-- Header & Tombol Tambah --}}
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="fw-semibold mb-0">Manajemen Postingan</h4>
             @if (optional(auth()->user())->role !== 'super admin')
@@ -13,6 +14,7 @@
             @endif
         </div>
 
+        {{-- Filter Cepat (Quick Links) --}}
         <div class="d-flex gap-2 mb-4 p-2 rounded-pill" style="background-color: rgba(0,0,0,0.05); width: fit-content;">
             <a href="{{ route('admin.postingan.index', ['status' => 'all']) }}"
                 class="btn btn-sm {{ ($status ?? 'all') == 'all' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
@@ -42,6 +44,7 @@
                 style="height: fit-content">
                 <div class="alert-container"></div>
 
+                {{-- Toolbar Pencarian & Sorting --}}
                 <div class="bg-white position-sticky pt-3 pb-2" style="top: 61px; z-index: 1">
                     <div class="d-flex gap-2 justify-content-end mb-2">
                         <input type="text" class="form-control" placeholder="Cari"
@@ -69,6 +72,7 @@
                 </div>
 
 
+                {{-- Tabel Data --}}
                 <div class="table-responsive position-relative mb-3" style="min-height: 200px">
                     <table class="table table-sm table-hover fs-14px">
                         <thead>
@@ -77,7 +81,8 @@
                                 <th>Judul</th>
                                 <th>Kategori</th>
                                 <th>Status postingan</th>
-                                <th>keputusan</th>
+                                <th>Keputusan</th>
+                                <th>Revisi Msg</th> {{-- KOLOM BARU --}}
                                 <th>Tanggal dibuat</th>
                                 <th>Tanggal update</th>
                                 <th>Aksi</th>
@@ -89,17 +94,17 @@
                                     <td>{{ ($data->firstItem() ?? 0) + $index }}</td>
                                     <td>{{ $row->title ?? '-' }}</td>
                                     <td>{{ $row->kategori ?? '-' }}</td>
+                                    
+                                    {{-- Status Postingan (Draft/Published etc) --}}
                                     <td>
                                         @if (strtolower($row->status ?? '') == 'published')
                                             <span class="badge rounded-pill text-bg-success">{{ $row->status }}</span>
                                         @elseif(strtolower($row->status ?? '') == 'not published')
-                                            <span
-                                                class="badge rounded-pill text-bg-light text-danger-emphasis border border-danger-subtle">{{ $row->status }}</span>
+                                            <span class="badge rounded-pill text-bg-light text-danger-emphasis border border-danger-subtle">{{ $row->status }}</span>
                                         @elseif(strtolower($row->status ?? '') == 'pending')
                                             <span class="badge rounded-pill text-bg-warning">{{ $row->status }}</span>
                                         @elseif(strtolower($row->status ?? '') == 'revisi')
-                                            <span
-                                                class="badge rounded-pill text-bg-info text-white">{{ $row->status }}</span>
+                                            <span class="badge rounded-pill text-bg-info text-white">{{ $row->status }}</span>
                                         @elseif (strtolower($row->status ?? '') == 'draft')
                                             <span class="badge rounded-pill text-bg-secondary">{{ $row->status }}</span>
                                         @else
@@ -107,44 +112,53 @@
                                         @endif
                                     </td>
 
-
+                                    {{-- Keputusan (Approved/Rejected/Revision) --}}
                                     <td>
                                         @php
-                                            // Ambil status dan ubah ke huruf kecil agar pengecekan konsisten
                                             $status = strtolower($row->approval_status ?? '');
                                         @endphp
 
                                         @if ($status == 'pending')
-                                            {{-- Pending: Kembali menjadi badge biasa (tanpa modal) --}}
                                             <span class="badge rounded-pill text-bg-warning border border-warning-subtle"> - </span>
                                         @elseif ($status == 'approved')
-                                            {{-- Approved: Hijau (Success) --}}
                                             <span class="badge rounded-pill text-bg-success border border-success-subtle">
                                                 Approved
                                             </span>
                                         @elseif ($status == 'rejected')
-                                            {{-- Rejected: Merah (Danger) --}}
                                             <span class="badge rounded-pill text-bg-danger border border-danger-subtle">
                                                 Rejected
                                             </span>
                                         @elseif ($status == 'revision')
-                                            <a href="#" class="text-decoration-none" data-bs-toggle="modal"
-                                                data-bs-target="#modalRevision{{ $row->id }}">
-                                                <span
-                                                    class="badge rounded-pill text-bg-info text-white border border-info-subtle cursor-pointer">
-                                                    Revision <i class="bi bi-eye ms-1"></i>
-                                                </span>
-                                            </a>
+                                            {{-- REVISI DISINI SEKARANG HANYA BADGE STATIS (TIDAK ADA MODAL) --}}
+                                            <span class="badge rounded-pill text-bg-info text-white border border-info-subtle">
+                                                Revision
+                                            </span>
+                                        @else
+                                            <span class="badge rounded-pill text-bg-secondary border border-secondary-subtle">
+                                                {{ $row->approval_status ?? '-' }}
+                                            </span>
+                                        @endif
+                                    </td>
 
-                                            {{-- MODAL START (Khusus Revision) --}}
+                                    {{-- Revisi Msg (Kolom Baru) --}}
+                                    <td>
+                                        @if (optional(auth()->user())->role === 'admin' && strtolower($row->approval_status ?? '') === 'revision')
+                                            
+                                            {{-- Tombol Detail Revisi --}}
+                                            <button type="button" class="btn btn-info btn-sm text-white py-0 px-2" style="font-size: 0.75rem;" 
+                                                data-bs-toggle="modal" data-bs-target="#modalRevision{{ $row->id }}">
+                                                Detail Revisi
+                                            </button>
+
+                                            {{-- MODAL REVISI (Dipindah ke sini) --}}
                                             <div class="modal fade text-dark" id="modalRevision{{ $row->id }}"
                                                 tabindex="-1" aria-labelledby="modalRevisionLabel{{ $row->id }}"
                                                 aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
-                                                            <h5 class="modal-title"
-                                                                id="modalRevisionLabel{{ $row->id }}">Detail Revisi
+                                                            <h5 class="modal-title" id="modalRevisionLabel{{ $row->id }}">
+                                                                Detail Revisi
                                                             </h5>
                                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                                 aria-label="Close"></button>
@@ -152,7 +166,6 @@
                                                         <div class="modal-body">
                                                             <p>Catatan Revisi:</p>
                                                             <div class="alert alert-warning border">
-                                                                {{-- Mengambil note revisi --}}
                                                                 <strong>{{ $row->approval_note ?? 'Tidak ada catatan revisi.' }}</strong>
                                                             </div>
                                                         </div>
@@ -164,20 +177,19 @@
                                                 </div>
                                             </div>
                                             {{-- MODAL END --}}
+
                                         @else
-                                            {{-- Default jika kosong/lainnya --}}
-                                            <span
-                                                class="badge rounded-pill text-bg-secondary border border-secondary-subtle">
-                                                {{ $row->approval_status ?? '-' }}
-                                            </span>
+                                            {{-- Jika bukan admin atau bukan revisi, tampilkan strip --}}
+                                            -
                                         @endif
                                     </td>
 
                                     <td>{{ $row->created_at ?? '-' }}</td>
                                     <td>{{ $row->updated_at ?? '-' }}</td>
 
-
+                                    {{-- Aksi --}}
                                     <td class="text-nowrap text-end">
+                                        
                                         @if (optional(auth()->user())->role === 'super admin' && $row->approval_status === 'pending')
                                             <a href="{{ route('admin.postingan.approval.show', $row->id) }}"
                                                 class="btn btn-primary btn-sm border" aria-label="Approval">
@@ -197,14 +209,11 @@
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         @endif
-
-
-
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center">
+                                    <td colspan="9" class="text-center"> {{-- colspan disesuaikan karena tambah kolom --}}
                                         <div class="py-4">
                                             <img src="{{ asset('assets/images/no-data.png') }}" alt="No data"
                                                 style="max-width:240px; opacity: 0.5;">
@@ -217,6 +226,7 @@
                     </table>
                 </div>
 
+                {{-- Pagination --}}
                 <div class="d-flex justify-content-between gap-2 flex-wrap">
                     <div class="d-flex justify-content-between showing-wrapper-bawah">
                         <div class="d-flex fs-14px align-items-center gap-1">
