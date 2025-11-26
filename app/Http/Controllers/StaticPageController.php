@@ -75,7 +75,7 @@ class StaticPageController extends Controller
     /**
      * Admin: Update static page
      */
-   public function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $page = StaticPage::findOrFail($id);
 
@@ -101,28 +101,29 @@ class StaticPageController extends Controller
         }
 
         // 3. Proses Konten (Isi Halaman / Quill)
-        // Ambil konten mentah dari request
         $content = $request->input('content');
 
         if ($content) {
-            // --- BAGIAN BARU: BERSIHKAN PATH ---
-            // Hapus prefix /storage/ agar di database tersimpan path relatif.
-            // Ini mencegah path menjadi rusak (double storage) saat diedit berulang kali.
+            // A. Bersihkan Path (Hapus /storage/ agar relative path)
             $content = preg_replace(
                 '/src="\/storage\/(static-pages\/[^"]+)"/i',
                 'src="$1"',
                 $content
             );
 
-            // --- PROSES GAMBAR BASE64 (Quill) ---
-            // Simpan gambar baru yang di-paste/upload langsung di editor
+            // B. Proses Gambar Base64 Baru (Upload fisik ke storage)
             $content = $this->processQuillImages($content);
-            
-            // Masukkan konten yang sudah diproses kembali ke array validated
+
+            // C. --- BAGIAN BARU: DELETE UNUSED IMAGES ---
+            // Bandingkan konten lama ($page->content) dengan konten baru ($content)
+            // Lakukan ini SETELAH path dibersihkan dan base64 di-upload
+            $this->deleteRemovedQuillImages($page->content, $content);
+
+            // Masukkan konten final ke array validated
             $validated['content'] = $content;
         }
 
-        $validated['updated_by_admin'] = Auth::id(); // Pastikan Auth sudah di-import
+        $validated['updated_by_admin'] = Auth::id();
 
         // 4. Update Database
         DB::beginTransaction();
@@ -178,6 +179,38 @@ class StaticPageController extends Controller
 
         return $elemen_dari_body;
     }
+
+
+
+
+
+    /**
+     * Menghapus gambar Quill yang sudah tidak ada di konten baru (Cleanup)
+     */
+    private function deleteRemovedQuillImages($oldContent, $newContent)
+    {
+        // 1. Ambil semua path IMG dari konten LAMA (Database)
+        // Regex disesuaikan dengan folder: static-pages/
+        preg_match_all('/<img[^>]+src="(static-pages\/[^"]+)"/i', $oldContent, $oldMatches);
+        $oldImages = $oldMatches[1] ?? [];
+
+        // 2. Ambil semua path IMG dari konten BARU (Input User yang sudah diproses)
+        preg_match_all('/<img[^>]+src="(static-pages\/[^"]+)"/i', $newContent, $newMatches);
+        $newImages = $newMatches[1] ?? [];
+
+        // 3. Cari gambar yang ada di LAMA tapi TIDAK ADA di BARU
+        $deletedImages = array_diff($oldImages, $newImages);
+
+        // 4. Hapus file fisik di storage
+        foreach ($deletedImages as $img) {
+            if (Storage::exists($img)) {
+                Storage::delete($img);
+            }
+        }
+    }
+
+
+    
 
     /**
      * Process content images for display (add storage prefix if needed)
