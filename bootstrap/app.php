@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
+            'restrict_super_admin' => \App\Http\Middleware\RestrictSuperAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

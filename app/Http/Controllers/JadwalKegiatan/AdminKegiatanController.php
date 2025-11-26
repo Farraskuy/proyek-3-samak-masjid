@@ -20,8 +20,10 @@ class AdminKegiatanController extends Controller
     {
         // Ambil daftar ustadz dari tabel users (misalnya role 'ustadz')
         $ustadz = \App\Models\User::where('role', 'ustadz')->get();
+        // Ambil daftar form dengan jumlah pertanyaan
+        $forms = \App\Models\Form::withCount('fields')->get();
 
-        return view('admin.kegiatan.create', compact('ustadz'));
+        return view('admin.kegiatan.create', compact('ustadz', 'forms'));
     }
 
     public function store(Request $request)
@@ -34,12 +36,40 @@ class AdminKegiatanController extends Controller
             'start_time' => 'required|date',
             'end_time' => 'required|date',
             'daftar_tamu.*' => 'nullable|string|max:255',
+            'has_registration_form' => 'nullable|boolean',
+            'registration_form_id' => 'nullable|exists:forms,id',
+            'has_closing_form' => 'nullable|boolean',
+            'closing_form_id' => 'nullable|exists:forms,id',
+            'has_pj' => 'nullable|boolean',
         ]);
 
         $posterPath = null;
 
         if ($request->hasFile('poster')) {
             $posterPath = $request->file('poster')->store('posters', 'public');
+        }
+
+        // Handle PJ Creation
+        $pjUserId = null;
+        $pjCredentials = null;
+
+        if ($request->has('has_pj') && $request->has_pj == '1') {
+            $password = \Illuminate\Support\Str::random(8); // Generate random password
+            $email = 'pj.' . \Illuminate\Support\Str::slug($request->event_name) . '.' . rand(100, 999) . '@samak.com';
+
+            $pjUser = \App\Models\User::create([
+                'name' => 'PJ - ' . $request->event_name,
+                'email' => $email,
+                'password' => \Illuminate\Support\Facades\Hash::make($password),
+                'role' => 'penanggung_jawab',
+                'email_verified_at' => now(),
+            ]);
+
+            $pjUserId = $pjUser->id;
+            $pjCredentials = [
+                'email' => $email,
+                'password' => $password
+            ];
         }
 
         // Simpan event
@@ -52,6 +82,12 @@ class AdminKegiatanController extends Controller
             'end_time' => $request->end_time,
             'is_have_tamu_undangan' => ($request->daftar_tamu != null),
             'created_by' => auth()->id(),
+            'has_registration_form' => $request->has('has_registration_form'),
+            'registration_form_id' => $request->registration_form_id,
+            'has_closing_form' => $request->has('has_closing_form'),
+            'closing_form_id' => $request->closing_form_id,
+            'has_pj' => $request->has('has_pj'),
+            'pj_user_id' => $pjUserId,
         ]);
 
         // DEBUG: tampilkan apa yang diterima request
@@ -70,16 +106,22 @@ class AdminKegiatanController extends Controller
             }
         }
 
-        return redirect()->route('admin.kegiatan')
-            ->with('success', 'Kegiatan berhasil ditambahkan!');
+        $redirect = redirect()->route('admin.kegiatan')->with('success', 'Kegiatan berhasil ditambahkan!');
+
+        if ($pjCredentials) {
+            $redirect->with('pj_credentials', $pjCredentials);
+        }
+
+        return $redirect;
     }
 
     public function edit($id)
     {
-        $event  = JadwalKegiatan::with('tamuUndangan')->findOrFail($id);
+        $event = JadwalKegiatan::with(['tamuUndangan', 'pjUser'])->findOrFail($id);
         $ustadz = \App\Models\User::where('role', 'ustadz')->get();
+        $forms = \App\Models\Form::withCount('fields')->get();
 
-        return view('admin.kegiatan.edit', compact('event', 'ustadz'));
+        return view('admin.kegiatan.edit', compact('event', 'ustadz', 'forms'));
     }
 
     public function update(Request $request, $id)
@@ -88,12 +130,17 @@ class AdminKegiatanController extends Controller
 
         $validated = $request->validate([
             'event_name' => 'required|string|max:200',
-            'theme'      => 'nullable|string|max:255',
-            'poster'     => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'location'   => 'required|string|max:100',
+            'theme' => 'nullable|string|max:255',
+            'poster' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'location' => 'required|string|max:100',
             'start_time' => 'required|date',
-            'end_time'   => 'required|date',
+            'end_time' => 'required|date',
             'daftar_tamu.*' => 'nullable|string|max:255',
+            'has_registration_form' => 'nullable|boolean',
+            'registration_form_id' => 'nullable|exists:forms,id',
+            'has_closing_form' => 'nullable|boolean',
+            'closing_form_id' => 'nullable|exists:forms,id',
+            'has_pj' => 'nullable|boolean',
         ]);
 
         // Handle poster
@@ -113,14 +160,43 @@ class AdminKegiatanController extends Controller
             $event->poster = $posterPath;
         }
 
+        // Handle PJ Creation (Only if not already exists and toggled on)
+        $pjUserId = $event->pj_user_id;
+        $pjCredentials = null;
+
+        if ($request->has('has_pj') && $request->has_pj == '1' && !$event->has_pj) {
+            $password = \Illuminate\Support\Str::random(8);
+            $email = 'pj.' . \Illuminate\Support\Str::slug($request->event_name) . '.' . rand(100, 999) . '@samak.com';
+
+            $pjUser = \App\Models\User::create([
+                'name' => 'PJ - ' . $request->event_name,
+                'email' => $email,
+                'password' => \Illuminate\Support\Facades\Hash::make($password),
+                'role' => 'penanggung_jawab',
+                'email_verified_at' => now(),
+            ]);
+
+            $pjUserId = $pjUser->id;
+            $pjCredentials = [
+                'email' => $email,
+                'password' => $password
+            ];
+        }
+
         // Update data utama
         $event->update([
             'event_name' => $request->event_name,
-            'theme'      => $request->theme,
-            'location'   => $request->location,
+            'theme' => $request->theme,
+            'location' => $request->location,
             'start_time' => $request->start_time,
-            'end_time'   => $request->end_time,
+            'end_time' => $request->end_time,
             'is_have_tamu_undangan' => !empty(array_filter($request->daftar_tamu ?? [])),
+            'has_registration_form' => $request->has('has_registration_form'),
+            'registration_form_id' => $request->registration_form_id,
+            'has_closing_form' => $request->has('has_closing_form'),
+            'closing_form_id' => $request->closing_form_id,
+            'has_pj' => $request->has('has_pj'),
+            'pj_user_id' => $pjUserId,
         ]);
 
         // Hapus tamu lama, lalu tambah yang baru
@@ -132,25 +208,30 @@ class AdminKegiatanController extends Controller
             }
         }
 
-        return redirect()->route('admin.kegiatan')
-            ->with('success', 'Kegiatan berhasil diperbarui!');
+        $redirect = redirect()->route('admin.kegiatan')->with('success', 'Kegiatan berhasil diperbarui!');
+
+        if ($pjCredentials) {
+            $redirect->with('pj_credentials', $pjCredentials);
+        }
+
+        return $redirect;
     }
 
     public function destroy($id)
-{
-    $event = JadwalKegiatan::findOrFail($id);
+    {
+        $event = JadwalKegiatan::findOrFail($id);
 
-    if ($event->poster && \Storage::disk('public')->exists($event->poster)) {
-        \Storage::disk('public')->delete($event->poster);
+        if ($event->poster && \Storage::disk('public')->exists($event->poster)) {
+            \Storage::disk('public')->delete($event->poster);
+        }
+
+        // Foreign key set null on delete handles PJ user unlinking
+
+        $event->tamuUndangan()->delete();
+        $event->delete();
+
+        return redirect()
+            ->route('admin.kegiatan')
+            ->with('success', 'Kegiatan berhasil dihapus!');
     }
-
-    $event->tamuUndangan()->delete();
-    $event->delete();
-
-    return redirect()
-        ->route('admin.kegiatan')
-        ->with('success', 'Kegiatan berhasil dihapus!');
-}
-
-
 }

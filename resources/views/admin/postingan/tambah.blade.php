@@ -6,34 +6,6 @@
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
     <style>
-        .section-wrapper {
-            max-width: 1450px;
-            margin: 0 auto;
-        }
-
-        .card-modern {
-            border: 0 !important;
-            background: #fff;
-        }
-
-        .input-lg {
-            padding: .85rem 1rem !important;
-            font-size: .95rem !important;
-        }
-
-        .btn-main {
-            background-color: #CE9138 !important;
-            color: white !important;
-            border: none !important;
-            padding: .75rem 1rem !important;
-            border-radius: .75rem !important;
-            font-weight: 600 !important;
-        }
-
-        .btn-main:hover {
-            background-color: #b88027 !important;
-        }
-
         .file-uploader {
             padding: 2rem;
             border-radius: 1rem;
@@ -77,22 +49,11 @@
             font-size: 18px;
             cursor: pointer;
         }
-
-        .ql-toolbar.ql-snow {
-            border-radius: 1rem 1rem 0 0 !important;
-            border-color: #ccc !important;
-        }
-
-        .ql-container.ql-snow {
-            border-radius: 0 0 1rem 1rem !important;
-            border-color: #ccc !important;
-            min-height: 300px !important;
-        }
     </style>
 @endpush
 
 @section('content')
-    <section class="p-3 section-wrapper">
+    <section class="p-3 container">
 
         <form action="/admin/postingan/store" method="POST" id="form-postingan" enctype="multipart/form-data">
             @csrf
@@ -109,7 +70,7 @@
                 <div class="col-lg-8">
 
                     {{-- Judul --}}
-                    <div class="card-modern rounded-3 p-4 mb-4">
+                    <div class="card bg-white border-0 rounded-3 p-4 mb-4">
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Judul Artikel</label>
                             <input type="text" name="title_view" class="form-control input-lg"
@@ -118,12 +79,13 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Keterangan Singkat (Opsional)</label>
-                            <textarea type="text" name="keterangan_view" class="form-control input-lg" placeholder="Tuliskan keterangan singkat..."></textarea>
+                            <textarea type="text" name="keterangan_view" class="form-control input-lg"
+                                placeholder="Tuliskan keterangan singkat..."></textarea>
                         </div>
                     </div>
 
                     {{-- Editor --}}
-                    <div class="card-modern rounded-3 p-4 mb-4">
+                    <div class="card bg-white border-0 rounded-3 p-4 mb-4">
                         <label class="form-label fw-semibold">Isi Konten</label>
 
                         <div id="editor" style="min-height:400px;">
@@ -137,13 +99,13 @@
                 <div class="col-lg-4">
 
                     {{-- Publikasi --}}
-                    <div class="card-modern rounded-3 p-4 mb-4">
+                    <div class="card bg-white border-0 rounded-3 p-4 mb-4">
                         <h5 class="fw-semibold mb-3">Publikasi</h5>
 
-<label class="form-label fw-semibold">Status</label>
-<select name="status_view" class="form-select input-lg" required>
-    <option value="not published">Ajukan Publikasikan</option>
-</select>
+                        <label class="form-label fw-semibold">Status</label>
+                        <select name="status_view" class="form-select form-control form-control-lg" required>
+                            <option value="not published">Ajukan Publikasikan</option>
+                        </select>
 
                         <button type="submit" class="btn btn-success w-100 mt-3">
                             <i class="fas fa-save me-1"></i> Simpan Artikel
@@ -151,10 +113,10 @@
                     </div>
 
                     {{-- Kategori --}}
-                    <div class="card-modern rounded-3 p-4 mb-4">
+                    <div class="card bg-white border-0 rounded-3 p-4 mb-4">
                         <h5 class="fw-semibold mb-3">Kategori</h5>
 
-                        <select name="kategori_view" class="form-select input-lg" required>
+                        <select name="kategori_view" class="form-select form-control form-control-lg" required>
                             <option value="" disabled selected>Pilih kategori...</option>
                             <option value="Artikel">Artikel Dakwah</option>
                             <option value="Berita">Berita</option>
@@ -163,7 +125,7 @@
                     </div>
 
                     {{-- Gambar Unggulan --}}
-                    <div class="card-modern rounded-3 p-4">
+                    <div class="card bg-white border-0 rounded-3 p-4">
                         <h5 class="fw-semibold mb-3">Gambar Unggulan</h5>
 
                         <label for="file-input" id="file-uploader" class="file-uploader">
@@ -179,8 +141,8 @@
                             <button type="button" id="remove-image-btn">&times;</button>
                         </div>
 
+                    </div>
                 </div>
-            </div>
         </form>
 
     </section>
@@ -257,7 +219,7 @@
             const container = document.getElementById("image-preview-container");
             const removeBtn = document.getElementById("remove-image-btn");
 
-  
+
             uploader.addEventListener("dragover", e => {
                 e.preventDefault();
                 uploader.classList.add("on-drag");

@@ -13,20 +13,6 @@
                         {{ $consultation->user->email ?? 'No email' }} &bull;
                         {{ $consultation->user->phone ?? 'No phone' }}
                     </div>
-                    <div class="mt-2">
-                        <ul class="nav nav-tabs border-0" style="margin-bottom: -17px;">
-                            <li class="nav-item">
-                                <a class="nav-link active border-0 border-bottom border-primary border-3 text-primary fw-semibold px-0 me-4 py-2"
-                                    href="#">Conversation</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link border-0 text-muted px-0 me-4 py-2" href="#">Profile</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link border-0 text-muted px-0 py-2" href="#">History</a>
-                            </li>
-                        </ul>
-                    </div>
                 </div>
             </div>
 

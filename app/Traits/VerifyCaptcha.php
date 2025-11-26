@@ -11,13 +11,19 @@ trait VerifyCaptcha
     public function validateCaptcha($token, $ip)
     {
         try {
-            $verify = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
-                'secret'   => config('services.recaptcha.secret'),
+            $response = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+                'secret' => config('services.recaptcha.secret'),
                 'response' => $token,
-                'remoteip' =>  $ip
+                'remoteip' => $ip
             ]);
 
-            return $verify->json()['success'] ?? false;
+            Log::info('reCAPTCHA Verification', [
+                'ip' => $ip,
+                'token_length' => strlen($token),
+                'response' => $response->json()
+            ]);
+
+            return $response->json()['success'] ?? false;
         } catch (\Exception $e) {
             Log::error('reCAPTCHA error: ' . $e->getMessage());
             return false;

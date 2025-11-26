@@ -54,7 +54,7 @@
         /* Image Preview */
         #image-preview-container {
             /* Default hidden, will be controlled by JS/PHP */
-            display: none; 
+            display: none;
             position: relative;
         }
 
@@ -95,7 +95,8 @@
     <section class="p-3 section-wrapper">
 
         {{-- Form Action Update & Method PUT --}}
-        <form action="{{ route('postingan.admin.update', $post->id) }}" method="POST" id="form-postingan" enctype="multipart/form-data">
+        <form action="{{ route('admin.postingan.update', $post->id) }}" method="POST" id="form-postingan"
+            enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -127,8 +128,7 @@
                             <label class="form-label fw-semibold">Judul Artikel</label>
                             {{-- Value diambil dari $post->title --}}
                             <input type="text" name="title" class="form-control input-lg"
-                                placeholder="Tulis judul artikel..." 
-                                value="{{ old('title', $post->title) }}" required>
+                                placeholder="Tulis judul artikel..." value="{{ old('title', $post->title) }}" required>
                         </div>
 
                         <div class="mb-3">
@@ -169,9 +169,12 @@
 
                         <select name="kategori" class="form-select input-lg" required>
                             <option value="" disabled>Pilih kategori...</option>
-                            <option value="Artikel" {{ old('kategori', $post->kategori) == 'artikel' ? 'selected' : '' }}>Artikel Dakwah</option>
-                            <option value="Berita" {{ old('kategori', $post->kategori) == 'berita' ? 'selected' : '' }}>Berita</option>
-                            <option value="Tausiyah" {{ old('kategori', $post->kategori) == 'tausiyah' ? 'selected' : '' }}>Tausiyah Singkat</option>
+                            <option value="Artikel" {{ old('kategori', $post->kategori) == 'artikel' ? 'selected' : '' }}>
+                                Artikel Dakwah</option>
+                            <option value="Berita" {{ old('kategori', $post->kategori) == 'berita' ? 'selected' : '' }}>
+                                Berita</option>
+                            <option value="Tausiyah" {{ old('kategori', $post->kategori) == 'tausiyah' ? 'selected' : '' }}>
+                                Tausiyah Singkat</option>
                         </select>
                     </div>
 
@@ -186,7 +189,8 @@
                         @endphp
 
                         {{-- Container Uploader (Disembunyikan jika sudah ada gambar) --}}
-                        <label for="file-input" id="file-uploader" class="file-uploader" style="{{ $hasImage ? 'display:none !important;' : 'display:block !important;' }}">
+                        <label for="file-input" id="file-uploader" class="file-uploader"
+                            style="{{ $hasImage ? 'display:none !important;' : 'display:block !important;' }}">
                             <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
                             <div class="fw-semibold">Drag & drop gambar</div>
                             <div class="small text-muted">atau klik untuk mengganti</div>
@@ -195,13 +199,14 @@
                         <input type="file" name="featured_image_url" id="file-input" accept="image/*" class="d-none">
 
                         {{-- Preview Container (Ditampilkan jika sudah ada gambar) --}}
-                        <div id="image-preview-container" class="mt-3" style="{{ $hasImage ? 'display:block;' : 'display:none;' }}">
+                        <div id="image-preview-container" class="mt-3"
+                            style="{{ $hasImage ? 'display:block;' : 'display:none;' }}">
                             <img id="image-preview" src="{{ $imageUrl }}" alt="Preview">
                             <button type="button" id="remove-image-btn">&times;</button>
                         </div>
 
                         <div class="mt-3">
-                           <small class="text-muted fst-italic">*Biarkan kosong jika tidak ingin mengubah gambar.</small>
+                            <small class="text-muted fst-italic">*Biarkan kosong jika tidak ingin mengubah gambar.</small>
                         </div>
                     </div>
 
@@ -222,13 +227,37 @@
             const toolbarOptions = [
                 ['bold', 'italic', 'underline', 'strike'],
                 ['blockquote', 'code-block'],
-                [{ 'header': 1 }, { 'header': 2 }],
-                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                [{ 'script': 'sub' }, { 'script': 'super' }],
-                [{ 'indent': '-1' }, { 'indent': '+1' }],
-                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                [{ 'color': [] }, { 'background': [] }],
-                [{ 'align': [] }],
+                [{
+                    'header': 1
+                }, {
+                    'header': 2
+                }],
+                [{
+                    'list': 'ordered'
+                }, {
+                    'list': 'bullet'
+                }],
+                [{
+                    'script': 'sub'
+                }, {
+                    'script': 'super'
+                }],
+                [{
+                    'indent': '-1'
+                }, {
+                    'indent': '+1'
+                }],
+                [{
+                    'header': [1, 2, 3, 4, 5, 6, false]
+                }],
+                [{
+                    'color': []
+                }, {
+                    'background': []
+                }],
+                [{
+                    'align': []
+                }],
                 ['link', 'image'],
                 ['clean']
             ];
@@ -252,7 +281,7 @@
 
             form.addEventListener("submit", function(e) {
                 hidden.value = quill.root.innerHTML;
-                
+
                 // Validasi sederhana jika kosong (kecuali tag p br bawaan quill)
                 if (quill.getText().trim().length === 0 && hidden.value.includes('<p><br></p>')) {
                     // Opsional: block submit atau biarkan

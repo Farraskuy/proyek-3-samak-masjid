@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('answer_text')->nullable();
             $table->string('status', 20)->default('draft');
             $table->boolean('is_anonymous')->default(true);
-            $table->foreignId('inputted_by_admin_id')->constrained('users', 'id');
+            $table->foreignId('user_id')->constrained('users', 'id');
             $table->foreignId('answered_by_ustadz_id')->nullable()->constrained('users', 'id');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('answered_at')->nullable();

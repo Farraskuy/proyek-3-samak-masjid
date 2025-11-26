@@ -161,17 +161,16 @@
                 </div>
             </form>
         </div>
-    @endif
-@elseif($consultation->status === 'closed')
-    <div class="p-6 bg-gray-50 border-t border-gray-200 text-center">
-        <p class="text-gray-500">Sesi konsultasi ini telah berakhir.</p>
-        @if ($consultation->conclusion)
-            <div class="mt-4 p-4 bg-white rounded-lg border border-gray-200 text-left max-w-2xl mx-auto">
-                <h4 class="font-bold text-gray-900 mb-2">Kesimpulan:</h4>
-                <p class="text-gray-700">{{ $consultation->conclusion }}</p>
-            </div>
-        @endif
-    </div>
+    @elseif($consultation->status === 'closed')
+        <div class="p-6 bg-gray-50 border-t border-gray-200 text-center">
+            <p class="text-gray-500">Sesi konsultasi ini telah berakhir.</p>
+            @if ($consultation->conclusion)
+                <div class="mt-4 p-4 bg-white rounded-lg border border-gray-200 text-left max-w-2xl mx-auto">
+                    <h4 class="font-bold text-gray-900 mb-2">Kesimpulan:</h4>
+                    <p class="text-gray-700">{{ $consultation->conclusion }}</p>
+                </div>
+            @endif
+        </div>
     @endif
 </div>
 

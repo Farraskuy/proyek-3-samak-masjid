@@ -122,12 +122,12 @@
             spinner.classList.remove('d-none');
             grecaptcha.ready(function() {
                 grecaptcha.execute('{{ config('services.recaptcha.key') }}', {
-                    action: 'reset_password'
+                    action: 'login'
                 }).then(function(token) {
                     document.getElementById('g-recaptcha-response').value = token;
                     form.submit();
                 });
-            });g
+            });
         });
     </script>
 @endpush
