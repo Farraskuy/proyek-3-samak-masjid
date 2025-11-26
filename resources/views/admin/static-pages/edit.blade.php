@@ -7,7 +7,7 @@
         <h4 class="fw-semibold">Edit Halaman: {{ $page->title }}</h4>
 
         <div class="row g-0 gap-3 mt-3">
-            <form method="post" action="{{ route('admin.static-pages.update', $page->id) }}"
+            <form id="form-edit-page" method="post" action="{{ route('admin.static-pages.update', $page->id) }}"
                 class="col-12 col-lg-8 rounded-3 bg-white p-4"
                 enctype="multipart/form-data">
                 @csrf
@@ -38,9 +38,8 @@
                     <label for="featured_image_url" class="form-label fw-semibold">Gambar Utama</label>
                     <input type="file" class="form-control @error('featured_image_url') is-invalid @enderror"
                         id="featured_image_url" name="featured_image_url" accept="image/*">
-                    @error('featured_image_url')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+
+                    <img id="preview-image" class="img-fluid rounded mt-2" style="max-height: 200px; display: none;">
 
                     @if($page->featured_image_url)
                         <div class="mt-2">
@@ -48,6 +47,10 @@
                                 class="img-fluid rounded" style="max-height: 200px;">
                         </div>
                     @endif
+
+                    @error('featured_image_url')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 {{-- Content --}}
@@ -104,10 +107,37 @@
                 }
 
                 // Update textarea before form submission
-                document.querySelector('form').addEventListener('submit', function() {
-                    contentTextarea.value = quill.root.innerHTML;
-                });
+                const editForm = document.getElementById('form-edit-page'); // Ambil form berdasarkan ID
+
+                if (editForm) {
+                    editForm.addEventListener('submit', function() {
+                        // Salin isi editor ke textarea tersembunyi
+                        contentTextarea.value = quill.root.innerHTML;
+                    });
+                }
+                
             });
+
+            /*******************   untuk menampilkan preview   ***********************/
+            document.getElementById('featured_image_url').addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                const preview = document.getElementById('preview-image');
+
+                // cari gambar lama di container yang sama
+                const container = event.target.closest('.mb-3');
+                const oldImage = container.querySelector('img:not(#preview-image)');
+
+                if (file) {
+                    preview.src = URL.createObjectURL(file);
+                    preview.style.display = 'block';
+
+                    // sembunyikan gambar lama jika ada
+                    if (oldImage) {
+                        oldImage.style.display = 'none';
+                    }
+                }
+            });
+
         </script>
     @endpush
 @endsection
