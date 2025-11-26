@@ -82,7 +82,7 @@
                                 <th>Kategori</th>
                                 <th>Status postingan</th>
                                 <th>Keputusan</th>
-                                <th>Revisi Msg</th> {{-- KOLOM BARU --}}
+                                <th>Revisi Msg</th>
                                 <th>Tanggal dibuat</th>
                                 <th>Tanggal update</th>
                                 <th>Aksi</th>
@@ -129,7 +129,6 @@
                                                 Rejected
                                             </span>
                                         @elseif ($status == 'revision')
-                                            {{-- REVISI DISINI SEKARANG HANYA BADGE STATIS (TIDAK ADA MODAL) --}}
                                             <span class="badge rounded-pill text-bg-info text-white border border-info-subtle">
                                                 Revision
                                             </span>
@@ -150,7 +149,7 @@
                                                 Detail Revisi
                                             </button>
 
-                                            {{-- MODAL REVISI (Dipindah ke sini) --}}
+                                            {{-- MODAL REVISI --}}
                                             <div class="modal fade text-dark" id="modalRevision{{ $row->id }}"
                                                 tabindex="-1" aria-labelledby="modalRevisionLabel{{ $row->id }}"
                                                 aria-hidden="true">
@@ -179,7 +178,6 @@
                                             {{-- MODAL END --}}
 
                                         @else
-                                            {{-- Jika bukan admin atau bukan revisi, tampilkan strip --}}
                                             -
                                         @endif
                                     </td>
@@ -190,6 +188,7 @@
                                     {{-- Aksi --}}
                                     <td class="text-nowrap text-end">
                                         
+                                        {{-- 1. Approval (Super Admin Only) --}}
                                         @if (optional(auth()->user())->role === 'super admin' && $row->approval_status === 'pending')
                                             <a href="{{ route('admin.postingan.approval.show', $row->id) }}"
                                                 class="btn btn-primary btn-sm border" aria-label="Approval">
@@ -197,11 +196,15 @@
                                             </a>
                                         @endif
 
-                                        <a href="/admin/postingan/edit/{{ $row->id }}"
-                                            class="btn btn-light btn-sm border" aria-label="Edit">
-                                            <i class="fas fa-pen text-muted"></i>
-                                        </a>
+                                        {{-- 2. Edit (Admin Only) --}}
+                                        @if (optional(auth()->user())->role === 'admin')
+                                            <a href="/admin/postingan/edit/{{ $row->id }}"
+                                                class="btn btn-light btn-sm border" aria-label="Edit">
+                                                <i class="fas fa-pen text-muted"></i>
+                                            </a>
+                                        @endif
 
+                                        {{-- 3. Delete (Super Admin Only) --}}
                                         @if (optional(auth()->user())->role === 'super admin')
                                             <button type="button" class="btn btn-danger btn-sm btn-delete-article"
                                                 data-action="{{ url('/admin/postingan/delete/' . $row->id) }}"
@@ -213,7 +216,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center"> {{-- colspan disesuaikan karena tambah kolom --}}
+                                    <td colspan="9" class="text-center">
                                         <div class="py-4">
                                             <img src="{{ asset('assets/images/no-data.png') }}" alt="No data"
                                                 style="max-width:240px; opacity: 0.5;">
