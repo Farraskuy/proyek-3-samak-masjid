@@ -84,7 +84,7 @@ class StaticPageController extends Controller
             'title' => 'required|string|max:255|unique:static_pages,title,' . $id,
             'description' => 'required|string|max:500',
             'content' => 'required|string',
-            'featured_image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'featured_image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096'
         ]);
 
         // 2. Proses Featured Image (Gambar Utama)
