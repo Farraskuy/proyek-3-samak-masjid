@@ -35,4 +35,11 @@ class GalleryAlbum extends Model
     {
         return $this->belongsTo(User::class, 'created_by', 'id');
     }
+
+    public function cover()
+    {
+        return $this->hasOne(GalleryPhoto::class, 'album_id', 'album_id')
+                    ->where('caption', 'Cover Album');
+    }
+    
 }

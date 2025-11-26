@@ -469,8 +469,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // PASTI BENAR: Ambil semua tanggal yang ada event, format Y-m-d, unik
-            const eventDates = @json($events->pluck('start_time')->map(fn($date) => \Carbon\Carbon::parse($date)->format('Y-m-d'))->unique()->values()->toArray());
+                    const eventDates = @json($events->pluck('start_time')->map(fn($date) => \Carbon\Carbon::parse($date)->format('Y-m-d'))->unique()->values()->toArray());
 
             const today = new Date().toISOString().split('T')[0];
 
@@ -480,8 +479,7 @@
                 dateFormat: "Y-m-d",
                 defaultDate: today,
 
-                // TITIK BIRU 100% AKURAT
-                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                        onDayCreate: function(dObj, dStr, fp, dayElem) {
                     const dateStr = flatpickr.formatDate(dayElem.dateObj, "Y-m-d");
                     if (eventDates.includes(dateStr)) {
                         dayElem.classList.add("has-event");
@@ -491,13 +489,11 @@
                 onChange: function(selectedDates, dateStr) {
                     if (!dateStr) return;
 
-                    // Loading
-                    const container = document.getElementById("event-detail-container");
+                            const container = document.getElementById("event-detail-container");
                     container.innerHTML =
                         '<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>';
 
-                    // Judul: Hari ini → "Kegiatan Hari Ini", yang lain → format Indonesia
-                    if (dateStr === today) {
+                            if (dateStr === today) {
                         document.getElementById("event-title").innerText = "Kegiatan Hari Ini";
                     } else {
                         const tanggal = new Date(dateStr);
@@ -520,11 +516,9 @@
                 }
             });
 
-            // Pastikan judul awal adalah "Kegiatan Hari Ini"
-            document.getElementById("event-title").innerText = "Kegiatan Hari Ini";
+                    document.getElementById("event-title").innerText = "Kegiatan Hari Ini";
 
-            // Trigger hari ini otomatis
-            setTimeout(() => {
+                    setTimeout(() => {
                 const fp = document.querySelector("#calendar")?._flatpickr;
                 if (fp) fp.setDate(today, true);
             }, 150);

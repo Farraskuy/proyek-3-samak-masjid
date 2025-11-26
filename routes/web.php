@@ -104,6 +104,11 @@ Route::prefix('jadwal-kegiatan')->group(function () {
     Route::get('/by-date', [JadwalKegiatanController::class, 'getEventByDate']);
     Route::get('/{id}', [JadwalKegiatanController::class, 'show'])->name('jadwal.detail');
 });
+// Gallery
+Route::prefix('galeri')->group(function () {
+    Route::get('/', [GaleriController::class, 'guestIndex'])->name('galeri.index');
+    Route::get('/{album_id}', [GaleriController::class, 'guestShow'])->name('galeri.show');
+});
 
 
 // =============================== Static Pages & Keuangan ===============================
@@ -175,7 +180,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|super ad
     Route::put('/barang-hilang/{id}', [LostFoundController::class, 'update'])->name('barang-hilang.update');
     Route::delete('/barang-hilang/{id}', [LostFoundController::class, 'destroy'])->name('barang-hilang.destroy');
 
-    // Jadwal Kegiatan
+    //  Admin Jadwal Kegiatan
     Route::prefix('jadwal-kegiatan')->name('kegiatan.')->group(function () {
         Route::get('/', [AdminKegiatanController::class, 'index'])->name('index');
         Route::get('/tambah', [AdminKegiatanController::class, 'create'])->name('create');
@@ -185,7 +190,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|super ad
         Route::delete('/delete/{id}', [AdminKegiatanController::class, 'destroy'])->name('destroy');
     });
 
-    // Sidebar Indexes
+    Route::prefix('galeri')->name('galeri.')->group(function () {
+        Route::get('/', [GaleriController::class, 'adminIndex'])->name('index');
+        Route::get('/tambah', [GaleriController::class, 'create'])->name('create');
+        Route::post('/tambah', [GaleriController::class, 'store'])->name('store');
+        Route::get('/edit/{album_id}', [GaleriController::class, 'edit'])->name('edit');
+        Route::post('/edit/{album_id}', [GaleriController::class, 'update'])->name('update');
+        Route::delete('/delete/{album_id}', [GaleriController::class, 'delete'])->name('delete');
+    });
+
+    // Admin feature indexes (sidebar)
     Route::get('/galeri', [GaleriController::class, 'index'])->name('galeri');
     Route::get('/donasi/verifikasi', [DonasiController::class, 'index'])->name('donasi.verifikasi');
     Route::get('/kajian', [KajianController::class, 'index'])->name('kajian');

@@ -93,9 +93,9 @@
                                         </a>
 
                                         <button type="button" onclick="hapusKegiatan('{{ $row->event_id }}')"
-                                            class="btn btn-danger btn-sm">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
+                                                                                class="btn btn-danger btn-sm">
+                                                                                <i class="fa-solid fa-trash"></i>
+                                                                            </button>
                                     </td>
                                 </tr>
                             @empty

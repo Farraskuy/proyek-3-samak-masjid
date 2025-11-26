@@ -71,7 +71,7 @@
                                 <p class="text-muted mt-1 mb-0"><small>Poster saat ini (kosongkan jika tidak ingin
                                         mengganti)</small></p>
 
-                                <!-- 🔥 Checkbox hapus poster lama -->
+                                <!-- Checkbox hapus poster lama -->
                                 <div class="mt-2">
                                     <input type="checkbox" name="hapus_poster" id="hapusPoster">
                                     <label for="hapusPoster" class="text-danger fw-semibold">Hapus poster saat ini</label>

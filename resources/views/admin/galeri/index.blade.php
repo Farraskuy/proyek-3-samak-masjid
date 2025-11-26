@@ -3,103 +3,162 @@
 @section('title', 'Galeri')
 
 @section('content')
-    @php
-        $columns = ['#', 'Judul', 'Tanggal', 'Aksi'];
-    @endphp
+@php
+    $columns = ['#', 'Judul', 'Tanggal', 'Aksi'];
+@endphp
 
-    <section class="p-3">
+<section class="p-3">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="fw-semibold mb-0">Galeri</h4>
+
+        <a href="{{ route('admin.galeri.create') }}" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-plus me-1"></i> Tambah Album
+        </a>
+    </div>
         </div>
 
-        <div class="row g-0 gap-3">
-            <form method="get" id="form_filter" class="col rounded-3 bg-white p-3 pt-0 form-filter"
-                style="height: fit-content">
-                <div class="alert-container"></div>
+    <div class="row g-0 gap-3">
+        <form method="get" id="form_filter" class="col rounded-3 bg-white p-3 pt-0 form-filter" style="height: fit-content">
 
-                <div class="bg-white position-sticky pt-3 pb-2" style="top: 61px; z-index: 1">
-                    <div class="d-flex gap-2 justify-content-end mb-2">
-                        <input type="text" class="form-control" placeholder="Cari"
-                            value="{{ request()->query('keyword', '') }}" name="keyword">
-                        <select class="form-select fs-14px h-100 w-auto" style="line-height: 1.7" name="sorted_by">
-                            <option value="">Urutkan berdasarkan</option>
-                        </select>
+            <div class="alert-container"></div>
 
-                        {{-- Sort Toggle --}}
-                        <div class="sort-toggle">
-                            <input type="radio" name="ordered_by" value="asc" id="ordered_by_asc"
-                                {{ request('ordered_by') == 'asc' ? 'checked' : '' }} onchange="this.form.submit()" hidden>
-                            <label for="ordered_by_asc" class="btn btn-outline-secondary" title="Urutkan A-Z">
-                                <i class="fas fa-sort-alpha-down"></i>
-                            </label>
+            <div class="bg-white position-sticky pt-3 pb-2" style="top: 61px; z-index: 1">
+                <div class="d-flex gap-2 justify-content-end mb-2">
+                    <input type="text" class="form-control form-control-sm" placeholder="Cari"
+                        value="{{ request()->query('keyword', '') }}" name="keyword">
 
-                            <input type="radio" name="ordered_by" value="desc" id="ordered_by_desc"
-                                {{ request('ordered_by', 'desc') == 'desc' ? 'checked' : '' }} onchange="this.form.submit()"
-                                hidden>
-                            <label for="ordered_by_desc" class="btn btn-outline-secondary" title="Urutkan Z-A">
-                                <i class="fas fa-sort-alpha-up"></i>
-                            </label>
-                        </div>
+                    <select class="form-select fs-14px h-100 w-auto" name="sorted_by">
+                        <option value="">Urutkan berdasarkan</option>
+                    </select>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-secondary"
+                            onclick="document.getElementById('ordered_by_asc').checked = true; this.form.submit();">Asc</button>
+                        <button type="button" class="btn btn-outline-secondary"
+                            onclick="document.getElementById('ordered_by_desc').checked = true; this.form.submit();">Desc</button>
                     </div>
+                    <input type="radio" name="ordered_by" value="asc" id="ordered_by_asc" hidden>
+                    <input type="radio" name="ordered_by" value="desc" id="ordered_by_desc" hidden checked>
                 </div>
+            </div>
 
-                <div class="table-responsive position-relative mb-3" style="min-height: 200px">
-                    <table class="table table-sm table-hover fs-14px">
-                        <thead>
+            <div class="table-responsive mb-3" style="min-height: 200px">
+                <table class="table table-sm table-hover fs-14px">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Judul Album</th>
+                            <th>Tanggal</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @forelse(($data ?? collect()) as $index => $row)
                             <tr>
-                                <th>#</th>
-                                <th>Judul</th>
-                                <th>Tanggal</th>
-                                <th>Aksi</th>
+                                <td>{{ ($data->firstItem() ?? 0) + $index }}</td>
+                                <td>{{ $row->album_name ?? '-' }}</td>
+                                <td>{{ $row->created_at?->format('d M Y') ?? '-' }}</td>
+
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+
+                                        {{-- Tombol Edit --}}
+                                        <a href="{{ route('admin.galeri.edit', $row->album_id) }}"
+                                            class="btn btn-warning btn-sm text-white">
+                                            <i class="fa-regular fa-pen-to-square"></i>
+                                        </a>
+
+                                        {{-- Tombol Delete --}}
+                                        <button type="button"
+                                            onclick="hapusAlbum('{{ $row->album_id }}')"
+                                            class="btn btn-danger btn-sm">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+
+                                    </div>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @forelse(($data ?? collect()) as $index => $row)
-                                <tr>
-                                    <td>{{ ($data->firstItem() ?? 0) + $index }}</td>
-                                    <td>{{ $row->album_name ?? '-' }}</td>
-                                    <td>{{ $row->created_at ?? '-' }}</td>
-                                    <td>-</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center">
-                                        <div class="py-4">
-                                            <img src="{{ asset('assets/images/no-data.png') }}"" alt="No data"
-                                                style="max-width:240px; opacity: 0.5;">
-                                            <p>Data Tidak Ada</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+
+                        @empty
+                            <tr>
+                                <td colspan="4" class="text-center">
+                                    <div class="py-4">
+                                        <img src="{{ asset('assets/images/no-data.png') }}"
+                                             style="max-width:240px;opacity:0.5;">
+                                        <p>Data Tidak Ada</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between gap-2 flex-wrap">
+                <div class="d-flex fs-14px align-items-center gap-1">
+                    Menampilkan
+                    <select class="form-select form-select-sm w-auto" name="showing" onchange="this.form.submit()">
+                        <option {{ request()->query('showing', 50) == 10 ? 'selected' : '' }}>10</option>
+                        <option {{ request()->query('showing', 50) == 20 ? 'selected' : '' }}>20</option>
+                        <option {{ request()->query('showing', 50) == 50 ? 'selected' : '' }}>50</option>
+                        <option {{ request()->query('showing', 50) == 100 ? 'selected' : '' }}>100</option>
+                        <option value="all" {{ request()->query('showing') == 'all' ? 'selected' : '' }}>Semua</option>
+                    </select>
+                    Data
                 </div>
 
-                <div class="d-flex justify-content-between gap-2 flex-wrap">
-                    <div class="d-flex justify-content-between showing-wrapper-bawah">
-                        <div class="d-flex fs-14px align-items-center gap-1">
-                            Menampilkan
-                            <select class="form-select form-select-sm w-auto" name="showing" onchange="this.form.submit()">
-                                <option {{ request()->query('showing', 50) == 10 ? 'selected' : '' }}>10</option>
-                                <option {{ request()->query('showing', 50) == 20 ? 'selected' : '' }}>20</option>
-                                <option {{ request()->query('showing', 50) == 50 ? 'selected' : '' }}>50</option>
-                                <option {{ request()->query('showing', 50) == 100 ? 'selected' : '' }}>100</option>
-                                <option value="all" {{ request()->query('showing') == 'all' ? 'selected' : '' }}>Semua
-                                </option>
-                            </select>
-                            Data
-                        </div>
-                    </div>
-                    <div class="paginate">
-                        @if (isset($data) && method_exists($data, 'links'))
-                            {{ $data->onEachSide(1)->links() }}
-                        @endif
-                    </div>
+                <div class="paginate">
+                    @if (isset($data) && method_exists($data, 'links'))
+                        {{ $data->onEachSide(1)->links() }}
+                    @endif
                 </div>
-            </form>
-        </div>
-    </section>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+{{-- SweetAlert Delete --}}
+<script>
+function hapusAlbum(id) {
+    Swal.fire({
+        title: 'Yakin ingin menghapus?',
+        text: "Album ini akan dihapus permanen BESERTA semua fotonya!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/galeri/delete/${id}`;
+            form.style.display = 'none';
+
+            const methodInput = document.createElement('input');
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(methodInput);
+
+            const tokenInput = document.createElement('input');
+            tokenInput.name = '_token';
+            tokenInput.value = '{{ csrf_token() }}';
+            form.appendChild(tokenInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+}
+</script>
+
 
     @push('styles')
         <style>

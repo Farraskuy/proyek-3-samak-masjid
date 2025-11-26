@@ -18,7 +18,7 @@ class AdminKegiatanController extends Controller
 
     public function create()
     {
-        // Ambil daftar ustadz dari tabel users (misalnya role 'ustadz')
+        // Ambil daftar ustadz dari tabel users
         $ustadz = \App\Models\User::where('role', 'ustadz')->get();
         // Ambil daftar form dengan jumlah pertanyaan
         $forms = \App\Models\Form::withCount('fields')->get();
