@@ -12,48 +12,48 @@ use Illuminate\Support\Facades\Cache;
 class PostinganController extends Controller
 {
     // Show listing page (previously HalamanPostinganController::return_resource)
- public function index(Request $request)
-{
-    $filter = $request->query('filter'); 
-    $keyword = $request->query('keyword');
-    $startDate = $request->query('start_date');
-    $endDate = $request->query('end_date');
+    public function index(Request $request)
+    {
+        $filter = $request->query('filter');
+        $keyword = $request->query('keyword');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
 
-    $query = Postingan::query();
+        $query = Postingan::query();
 
-    // Tampilkan hanya yang published
-    $query->where('status', 'published');
+        // Tampilkan hanya yang published
+        $query->where('status', 'published');
 
-    if (!empty($filter)) {
-        $query->whereRaw('LOWER(kategori) = ?', [strtolower($filter)]);
-    }
+        if (!empty($filter)) {
+            $query->whereRaw('LOWER(kategori) = ?', [strtolower($filter)]);
+        }
 
-    if (!empty($keyword)) {
-        $query->where(function ($q) use ($keyword) {
-            $q->where('title', 'like', "%{$keyword}%")
-              ->orWhere('keterangan', 'like', "%{$keyword}%");
+        if (!empty($keyword)) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('title', 'like', "%{$keyword}%")
+                    ->orWhere('keterangan', 'like', "%{$keyword}%");
+            });
+        }
+
+        if (!empty($startDate)) {
+            $query->whereDate('created_at', '>=', $startDate);
+        }
+
+        if (!empty($endDate)) {
+            $query->whereDate('created_at', '<=', $endDate);
+        }
+
+        $cacheKey = 'postingan.index:' . md5($request->fullUrl());
+        $data_posts = Cache::remember($cacheKey, now()->addMinutes(1), function () use ($query) {
+            return $query->orderBy('created_at', 'desc')->paginate(9);
         });
+
+        if (method_exists($data_posts, 'withQueryString')) {
+            $data_posts = $data_posts->withQueryString();
+        }
+
+        return view('client.postingan.index', ['data_posts' => $data_posts]);
     }
-
-    if (!empty($startDate)) {
-        $query->whereDate('created_at', '>=', $startDate);
-    }
-
-    if (!empty($endDate)) {
-        $query->whereDate('created_at', '<=', $endDate);
-    }
-
-    $cacheKey = 'postingan.index:' . md5($request->fullUrl());
-    $data_posts = Cache::remember($cacheKey, now()->addMinutes(1), function () use ($query) {
-        return $query->orderBy('created_at', 'desc')->paginate(9);
-    });
-
-    if (method_exists($data_posts, 'withQueryString')) {
-        $data_posts = $data_posts->withQueryString();
-    }
-
-    return view('client.postingan.index', ['data_posts' => $data_posts]);
-}
 
 
     // Show detail page by slug (previously DetailPostinganController::return_resource)
@@ -141,7 +141,7 @@ class PostinganController extends Controller
             'user_id' => auth()->id()
         ]);
 
-        return redirect()->to('/admin/postingan')->with('success_post_disimpan_di_database', 'Data berhasil disimpan!');
+        return redirect()->to('/admin/postingan')->with('success', 'Data berhasil disimpan!');
     }
 
     // Process base64 images in Quill content and store them (from AddPostinganController::processQuillImages)
@@ -186,6 +186,7 @@ class PostinganController extends Controller
     {
         $perPage = $request->query('showing', 50);
         $keyword = $request->query('keyword', '');
+        $status = $request->query('status', 'all');
 
         $query = Postingan::orderBy('created_at', 'desc');
 
@@ -198,6 +199,11 @@ class PostinganController extends Controller
             });
         }
 
+        // Add status filter
+        if ($status !== 'all') {
+            $query->where('approval_status', $status);
+        }
+
         if ($perPage === 'all') {
             $post = $query->get();
         } else {
@@ -205,14 +211,16 @@ class PostinganController extends Controller
             $post = $query->paginate($perPage)->withQueryString();
         }
 
-        return view('admin.postingan.index')->with('data', $post);
+        return view('admin.postingan.index')->with(['data' => $post, 'status' => $status]);
     }
 
     // Approval index for super-admin: list postingans awaiting approval
     public function approvalIndex(Request $request)
     {
         $perPage = $request->query('showing', 50);
-        $query = Postingan::where('approval_status', 'pending')->orderBy('created_at', 'desc');
+        $status = $request->query('status', 'pending'); // Default to pending
+
+        $query = Postingan::where('approval_status', $status)->orderBy('created_at', 'desc');
 
         if ($perPage === 'all') {
             $data = $query->get();
@@ -221,14 +229,14 @@ class PostinganController extends Controller
             $data = $query->paginate($perPage)->withQueryString();
         }
 
-        return view('admin.postingan.approval_index')->with('data', $data);
+        return view('admin.postingan.approval_index')->with(['data' => $data, 'status' => $status]);
     }
 
     // Show approval detail + preview
 
     public function approvalShow($id)
-      {
-     
+    {
+
         $post = Postingan::where('id', $id)->firstOrFail();
 
         // Tambahkan /storage/ hanya untuk tag <img>
@@ -239,7 +247,7 @@ class PostinganController extends Controller
         );
 
         return view('admin.postingan.approval_detail', compact('post'));
-    
+
 
 
     }
@@ -287,7 +295,7 @@ class PostinganController extends Controller
         
         $post->save();
 
-        return redirect()->route('postingan.admin.approval.index')->with('status', 'Keputusan approval disimpan.');
+        return redirect()->route('admin.postingan.approval.index')->with('success', 'Keputusan approval disimpan.');
     }
 
     // Delete article and associated images (previously ShowPostingan::deleteArtikel)
@@ -301,7 +309,8 @@ class PostinganController extends Controller
         $this->search_delete_featured_image($id);
         $this->search_delete_kontent_image($id);
         Postingan::where('id', (int) $id)->delete();
-        return redirect()->back()->with('status', 'Artikel berhasil dihapus');
+        
+        return redirect()->back()->with('success', 'Artikel berhasil dihapus');
     }
 
     // Delete featured image file
@@ -435,11 +444,11 @@ class PostinganController extends Controller
             'updated_at' => now()
         ]);
 
-        return redirect()->to('/admin/postingan')->with('success_post_disimpan_di_database', 'Data berhasil diupdate!');
+        return redirect()->to('/admin/postingan')->with('success', 'Data berhasil diupdate!');
     }
 
 
-      private function deleteRemovedQuillImages($oldContent, $newContent)
+    private function deleteRemovedQuillImages($oldContent, $newContent)
     {
         // Ambil semua path IMG dari konten lama (tanpa /storage/)
         preg_match_all('/<img[^>]+src="(news\/[^"]+)"/i', $oldContent, $oldMatches);

@@ -33,9 +33,9 @@
 
         {{-- 2. MODUL MANAJEMEN KONTEN (CMS) --}}
         {{-- Aktif jika path dimulai dengan admin/konten atau admin/postingan atau admin/galeri --}}
-        <li class="{{ request()->is('admin/postingan*', 'admin/halaman-statis*', 'admin/galeri*') ? 'showMenu' : '' }}">
+        <li class="{{ request()->is('admin/postingan*', 'admin/halaman-statis*', 'admin/galeri*', 'admin/postingan/approval*') ? 'showMenu' : '' }}">
             <div
-                class="nav-button {{ request()->is('admin/postingan*', 'admin/halaman-statis*', 'admin/galeri*') ? 'active' : '' }}">
+                class="nav-button {{ request()->is('admin/postingan*', 'admin/halaman-statis*', 'admin/galeri*', 'admin/postingan/approval*') ? 'active' : '' }}">
                 <div class="iocn-link" onclick="expandMenu(this)">
                     <a>
                         <i class="fa-light fa-feather-pointed"></i>
@@ -47,9 +47,14 @@
             <ul class="sub-menu">
                 <li><span class="link_name fw-semibold">Manajemen Konten</span></li>
 
-                <li class="nav-button {{ request()->is('admin/postingan*') ? 'active' : '' }}">
+                <li class="nav-button {{ request()->is('admin/postingan*') && !request()->is('admin/postingan/approval*') ? 'active' : '' }}">
                     <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/postingan') }}">
                         <span class="fa-regular fa-newspaper"></span> Artikel & Berita
+                    </a>
+                </li>
+                <li class="nav-button {{ request()->is('admin/postingan/approval*') ? 'active' : '' }}">
+                    <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/postingan/approval') }}">
+                        <span class="fa-regular fa-user-check"></span> Approval Artikel & Berita
                     </a>
                 </li>
                 <li class="nav-button {{ request()->is('admin/halaman-statis*') ? 'active' : '' }}">
@@ -67,8 +72,8 @@
 
         {{-- 3. MODUL JADWAL KEGIATAN --}}
         {{-- Aktif jika path dimulai dengan admin/kegiatan atau admin/kajian --}}
-        <li class="{{ request()->is('admin/kegiatan*', 'admin/kajian*') ? 'showMenu' : '' }}">
-            <div class="nav-button {{ request()->is('admin/kegiatan*', 'admin/kajian*') ? 'active' : '' }}">
+        <li class="{{ request()->is('admin/jadwal-kegiatan*', 'admin/kajian*') ? 'showMenu' : '' }}">
+            <div class="nav-button {{ request()->is('admin/jadwal-kegiatan*', 'admin/kajian*') ? 'active' : '' }}">
                 <div class="iocn-link" onclick="expandMenu(this)">
                     <a>
                         <i class="fa-light fa-calendar-days"></i>
@@ -79,8 +84,8 @@
             </div>
             <ul class="sub-menu">
                 <li><span class="link_name fw-semibold">Jadwal & Event</span></li>
-                <li class="nav-button {{ request()->is('admin/kegiatan*') ? 'active' : '' }}">
-                    <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/kegiatan') }}">
+                <li class="nav-button {{ request()->is('admin/jadwal-kegiatan*') ? 'active' : '' }}">
+                    <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/jadwal-kegiatan') }}">
                         <span class="fa-regular fa-list-check"></span> Manajemen Kegiatan
                     </a>
                 </li>
@@ -159,31 +164,31 @@
             </ul>
         </li>
 
-            {{-- 7. FORM BUILDER / GENERATOR --}}
-            <li class="{{ request()->is('admin/forms*') ? 'showMenu' : '' }}">
-                <div class="nav-button {{ request()->is('admin/forms*') ? 'active' : '' }}">
-                    <div class="iocn-link" onclick="expandMenu(this)">
-                        <a>
-                            <i class="fa-regular fa-clipboard-list"></i>
-                            <span class="link_name">Form Builder</span>
-                        </a>
-                        <i class='fa-regular fa-angle-down arrow'></i>
-                    </div>
+        {{-- 7. FORM BUILDER / GENERATOR --}}
+        <li class="{{ request()->is('admin/forms*') ? 'showMenu' : '' }}">
+            <div class="nav-button {{ request()->is('admin/forms*') ? 'active' : '' }}">
+                <div class="iocn-link" onclick="expandMenu(this)">
+                    <a>
+                        <i class="fa-regular fa-clipboard-list"></i>
+                        <span class="link_name">Form Builder</span>
+                    </a>
+                    <i class='fa-regular fa-angle-down arrow'></i>
                 </div>
-                <ul class="sub-menu">
-                    <li><span class="link_name fw-semibold">Form Builder</span></li>
-                    <li class="nav-button {{ request()->is('admin/forms') ? 'active' : '' }}">
-                        <a class="d-flex gap-2 fw-semibold" href="{{ route('admin.forms.index') }}">
-                            <span class="fa-regular fa-list"></span> Daftar Form
-                        </a>
-                    </li>
-                    <li class="nav-button {{ request()->is('admin/forms/create') ? 'active' : '' }}">
-                        <a class="d-flex gap-2 fw-semibold" href="{{ route('admin.forms.create') }}">
-                            <span class="fa-regular fa-plus"></span> Buat Form Baru
-                        </a>
-                    </li>
-                </ul>
-            </li>
+            </div>
+            <ul class="sub-menu">
+                <li><span class="link_name fw-semibold">Form Builder</span></li>
+                <li class="nav-button {{ request()->is('admin/forms') ? 'active' : '' }}">
+                    <a class="d-flex gap-2 fw-semibold" href="{{ route('admin.forms.index') }}">
+                        <span class="fa-regular fa-list"></span> Daftar Form
+                    </a>
+                </li>
+                <li class="nav-button {{ request()->is('admin/forms/create') ? 'active' : '' }}">
+                    <a class="d-flex gap-2 fw-semibold" href="{{ route('admin.forms.create') }}">
+                        <span class="fa-regular fa-plus"></span> Buat Form Baru
+                    </a>
+                </li>
+            </ul>
+        </li>
 
 
         {{-- BAGIAN BAWAH: PENGATURAN & KELUAR --}}

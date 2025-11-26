@@ -41,14 +41,7 @@ class ConsultationUstadzController extends Controller
             'closed' => Consultation::where('status', 'closed')->where('answered_by_ustadz_id', Auth::id())->count(),
         ];
 
-        // Stats (kept for backward compatibility if needed, or remove if unused)
-        $stats = [
-            'pending' => $counts['pending'],
-            'active' => $counts['active'],
-            'closed' => $counts['closed'],
-        ];
-
-        return view('admin.consultations.index', compact('consultations', 'stats', 'status', 'counts'));
+        return view('admin.consultations.index', compact('consultations', 'status', 'counts'));
     }
 
     /**
@@ -59,29 +52,44 @@ class ConsultationUstadzController extends Controller
         $consultation = Consultation::findOrFail($id);
 
         // Authorization check
-        if (
-            Auth::user()->role === 'ustadz' &&
-            $consultation->status !== 'pending' &&
-            $consultation->answered_by_ustadz_id !== Auth::id()
-        ) {
-            abort(403, 'Unauthorized');
+        if (Auth::user()->role === 'ustadz') {
+            if ($consultation->status !== 'pending' && $consultation->answered_by_ustadz_id !== Auth::id()) {
+                abort(403, 'Unauthorized');
+            }
         }
 
         $messages = $consultation->messages()->with('user')->orderBy('created_at', 'asc')->get();
 
-        // Sidebar data
         if (request()->ajax()) {
-            return view('components.chat-area', compact('consultation', 'messages'));
+            return view('admin.consultations.show_partial', compact('consultation', 'messages'));
         }
 
-        $conversations = Consultation::where(function ($q) {
-            $q->where('status', 'pending')
-                ->orWhere('answered_by_ustadz_id', Auth::id());
-        })
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // If not AJAX, we want to show the full page with this chat open.
+        $request = request();
+        $status = $request->query('status', 'all');
+        $query = Consultation::query();
 
-        return view('admin.consultations.show', compact('consultation', 'messages', 'conversations'));
+        if (Auth::user()->role === 'ustadz') {
+            $query->where(function ($q) {
+                $q->where('status', 'pending')
+                    ->orWhere('answered_by_ustadz_id', Auth::id());
+            });
+        }
+
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $consultations = $query->orderBy('created_at', 'desc')->paginate(10);
+
+        $counts = [
+            'all' => Consultation::count(),
+            'pending' => Consultation::where('status', 'pending')->count(),
+            'active' => Consultation::where('status', 'active')->where('answered_by_ustadz_id', Auth::id())->count(),
+            'closed' => Consultation::where('status', 'closed')->where('answered_by_ustadz_id', Auth::id())->count(),
+        ];
+
+        return view('admin.consultations.index', compact('consultations', 'status', 'counts', 'consultation', 'messages'));
     }
 
     /**

@@ -5,7 +5,27 @@
 @section('content')
     <section class="p-3">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="fw-semibold mb-0">Daftar Postingan (Menunggu Approval)</h4>
+            <h4 class="fw-semibold mb-0">Daftar Postingan ({{ ucfirst($status ?? 'Pending') }})</h4>
+        </div>
+
+        
+        <div class="d-flex gap-2 mb-4 p-2 rounded-pill" style="background-color: rgba(0,0,0,0.05); width: fit-content;">
+            <a href="{{ route('admin.postingan.approval.index', ['status' => 'pending']) }}"
+                class="btn btn-sm {{ ($status ?? 'pending') == 'pending' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                Menunggu Approval
+            </a>
+            <a href="{{ route('admin.postingan.approval.index', ['status' => 'approved']) }}"
+                class="btn btn-sm {{ ($status ?? 'pending') == 'approved' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                Disetujui
+            </a>
+            <a href="{{ route('admin.postingan.approval.index', ['status' => 'rejected']) }}"
+                class="btn btn-sm {{ ($status ?? 'pending') == 'rejected' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                Ditolak
+            </a>
+            <a href="{{ route('admin.postingan.approval.index', ['status' => 'revision']) }}"
+                class="btn btn-sm {{ ($status ?? 'pending') == 'revision' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                Revisi
+            </a>
         </div>
 
         <div class="row g-0 gap-3">
@@ -40,9 +60,9 @@
                                     <td>{{ ($data->firstItem() ?? 0) + $index }}</td>
                                     <td>{{ $row->title ?? '-' }}</td>
                                     <td>{{ $row->kategori ?? '-' }}</td>
-                                    <td>{{ optional($row->creator)->name ?? ($row->user_id ?? '-') }}</td>
+                                    <td>{{ optional($row->creator)->full_name ?? ($row->user_id ?? '-') }}</td>
                                     <td>{{ $row->created_at ?? '-' }}</td>
-                                    <td>{{ $row->updated_at?? '-' }}</td>
+                                    <td>{{ $row->updated_at ?? '-' }}</td>
                                     <td class="text-nowrap">
                                         <a href="{{ url('/admin/postingan/approval/' . ($row->id ?? $row->id)) }}"
                                             class="btn btn-primary btn-sm">Lihat Postingan</a>

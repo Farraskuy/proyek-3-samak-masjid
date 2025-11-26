@@ -86,25 +86,6 @@ Route::prefix('postingan')->name('client.')->group(function () {
     Route::get('/{slug}', [PostinganController::class, 'showDetail'])->name('berita.detail');
 });
 
-
-// =============================== News Routes (Admin) ===============================
-Route::prefix('admin/postingan')->name('postingan.admin.')->group(function () {
-    Route::get('/', [PostinganController::class, 'indexAdmin'])->name('index');
-    Route::get('/tambah', [PostinganController::class, 'create'])->name('create');
-    Route::post('/posts', [PostinganController::class, 'store'])->name('store');
-    Route::delete('/delete/{id}', [PostinganController::class, 'deleteArtikel'])->name('delete');
-
-    Route::get('/edit/{id}', [PostinganController::class, 'edit'])->name('edit');
-    Route::put('/update/{id}', [PostinganController::class, 'update'])->name('update');
-
-    // Approval
-    Route::get('/approval', [PostinganController::class, 'approvalIndex'])->name('approval.index');
-    Route::get('/approval/{id}', [PostinganController::class, 'approvalShow'])->name('approval.show');
-    Route::post('/approval/{id}', [PostinganController::class, 'approvalUpdate'])->name('approval.update');
-    Route::post('/store', [PostinganController::class, 'store'])->name('store');
-});
-
-
 // =============================== Donation (Public) ===============================
 Route::get('/donasi', [ZISController::class, 'index'])->name('donasi.informasi');
 Route::get('/donasi/sekarang', [ZISController::class, 'donasi'])->name('donasi.sekarang');
@@ -164,9 +145,27 @@ Route::middleware('auth')->prefix('konsultasi-saya')->name('client.consultations
 
 
 // =============================== ADMIN PANEL ===============================
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|super admin|ustadz'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|super admin|ustadz', 'restrict_super_admin'])->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Postingan
+    
+    Route::prefix('postingan')->name('postingan.')->group(function () {
+        Route::get('/', [PostinganController::class, 'indexAdmin'])->name('index');
+        Route::get('/tambah', [PostinganController::class, 'create'])->name('create');
+        Route::post('/posts', [PostinganController::class, 'store'])->name('store');
+        Route::delete('/delete/{id}', [PostinganController::class, 'deleteArtikel'])->name('delete');
+
+        Route::get('/edit/{id}', [PostinganController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [PostinganController::class, 'update'])->name('update');
+
+        // Approval
+        Route::get('/approval', [PostinganController::class, 'approvalIndex'])->name('approval.index');
+        Route::get('/approval/{id}', [PostinganController::class, 'approvalShow'])->name('approval.show');
+        Route::post('/approval/{id}', [PostinganController::class, 'approvalUpdate'])->name('approval.update');
+        Route::post('/store', [PostinganController::class, 'store'])->name('store');
+    });
 
     // Lost Found
     Route::get('/barang-hilang', [LostFoundController::class, 'adminIndex'])->name('barang-hilang');
@@ -188,7 +187,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|super ad
 
     // Sidebar Indexes
     Route::get('/galeri', [GaleriController::class, 'index'])->name('galeri');
-    Route::get('/kegiatan', [KegiatanController::class, 'index'])->name('kegiatan');
     Route::get('/donasi/verifikasi', [DonasiController::class, 'index'])->name('donasi.verifikasi');
     Route::get('/kajian', [KajianController::class, 'index'])->name('kajian');
     Route::get('/pengguna', [PenggunaController::class, 'index'])->name('pengguna');

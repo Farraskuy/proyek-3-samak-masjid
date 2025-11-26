@@ -25,6 +25,12 @@ class JadwalKegiatan extends Model
         'created_by',
         'created_at',
         'is_have_tamu_undangan',
+        'has_registration_form',
+        'registration_form_id',
+        'has_closing_form',
+        'closing_form_id',
+        'has_pj',
+        'pj_user_id',
     ];
 
     // Relasi ke user yang membuat kegiatan (admin pembuat)
@@ -37,5 +43,23 @@ class JadwalKegiatan extends Model
     public function tamuUndangan()
     {
         return $this->hasMany(\App\Models\EventTamu::class, 'event_id', 'event_id');
+    }
+
+    // Relasi ke form pendaftaran
+    public function registrationForm()
+    {
+        return $this->belongsTo(Form::class, 'registration_form_id');
+    }
+
+    // Relasi ke form penutupan/kuisioner
+    public function closingForm()
+    {
+        return $this->belongsTo(Form::class, 'closing_form_id');
+    }
+
+    // Relasi ke penanggung jawab
+    public function pjUser()
+    {
+        return $this->belongsTo(User::class, 'pj_user_id');
     }
 }

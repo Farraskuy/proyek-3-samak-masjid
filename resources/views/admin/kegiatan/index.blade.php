@@ -16,6 +16,26 @@
             </a>
         </div>
 
+        @if (session('pj_credentials'))
+            <div class="alert alert-success border-0 shadow-sm mb-4">
+                <h5 class="alert-heading fw-bold"><i class="fas fa-check-circle me-2"></i> Akun Penanggung Jawab Berhasil
+                    Dibuat!</h5>
+                <p>Silakan catat kredensial berikut karena tidak akan ditampilkan lagi:</p>
+                <hr>
+                <div class="d-flex gap-4">
+                    <div>
+                        <small class="text-muted d-block uppercase tracking-wide font-bold">Email</small>
+                        <span class="fw-bold fs-5">{{ session('pj_credentials')['email'] }}</span>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block uppercase tracking-wide font-bold">Password</small>
+                        <span
+                            class="fw-bold fs-5 font-monospace bg-light px-2 rounded">{{ session('pj_credentials')['password'] }}</span>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <div class="row g-0 gap-3">
             <form method="get" id="form_filter" class="col rounded-3 bg-white p-3 pt-0 form-filter"
                 style="height: fit-content">
