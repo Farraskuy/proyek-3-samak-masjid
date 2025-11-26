@@ -72,28 +72,7 @@
     </div>
 </section>
 
-<section class="py-5 bg-light">
-    <div class="container">
-        <div class="cta-box p-5 text-center mx-auto col-lg-10" 
-             data-aos="zoom-in" data-aos-duration="900">
-            
-            <div class="mb-4">
-                <i class="fas fa-receipt fa-3x text-warning mb-3"></i>
-                <h2 class="fw-bold text-dark">Sudah Melakukan Transfer?</h2>
-                <p class="lead text-muted col-lg-9 mx-auto">
-                    Upload bukti donasi kamu agar tim kami bisa memverifikasi dengan cepat, transparan, dan amanah.
-                </p>
-            </div>
-
-            <a href="/donasi/konfirmasi" class="btn btn-lg rounded-pill px-5 py-3 fw-bold shadow-sm" 
-               style="background-color: #FFC107; color: #212529; border: none;">
-                <i class="fas fa-upload me-2"></i> Upload Bukti Donasi
-            </a>
-        </div>
-    </div>
-</section>
-
-    <section class="py-5 px-4 bg-white">
+<section class="py-5 px-4 bg-white">
         <div class="container-xl">
             <div class="text-center mb-5" data-aos="fade-up">
                 <h2 class="fw-bold text-dark mb-2">Manfaat Berbagi</h2>
@@ -162,6 +141,27 @@
 
                 </div>
             @endforeach
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="cta-box p-5 text-center mx-auto col-lg-10" 
+             data-aos="zoom-in" data-aos-duration="900">
+            
+            <div class="mb-4">
+                <i class="fas fa-receipt fa-3x text-warning mb-3"></i>
+                <h2 class="fw-bold text-dark">Sudah Melakukan Transfer?</h2>
+                <p class="lead text-muted col-lg-9 mx-auto">
+                    Upload bukti donasi kamu agar tim kami bisa memverifikasi dengan cepat, transparan, dan amanah.
+                </p>
+            </div>
+
+            <a href="/donasi/konfirmasi" class="btn btn-lg rounded-pill px-5 py-3 fw-bold shadow-sm" 
+               style="background-color: #FFC107; color: #212529; border: none;">
+                <i class="fas fa-upload me-2"></i> Upload Bukti Donasi
+            </a>
         </div>
     </div>
 </section>
