@@ -52,11 +52,21 @@
                         <span class="fa-regular fa-newspaper"></span> Artikel & Berita
                     </a>
                 </li>
-                <li class="nav-button {{ request()->is('admin/postingan/approval*') ? 'active' : '' }}">
-                    <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/postingan/approval') }}">
-                        <span class="fa-regular fa-user-check"></span> Approval Artikel & Berita
-                    </a>
-                </li>
+
+
+@php
+    $user = auth()->user();
+@endphp
+
+<li class="nav-button {{ request()->is('admin/postingan/approval*') ? 'active' : '' }}"
+    @if(!$user || $user->role !== 'super admin') style="display: none;" @endif>
+    <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/postingan/approval') }}">
+        <span class="fa-regular fa-user-check"></span> Approval Artikel & Berita
+    </a>
+</li>
+
+                
+                
                 <li class="nav-button {{ request()->is('admin/halaman-statis*') ? 'active' : '' }}">
                     <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/halaman-statis') }}">
                         <span class="fa-regular fa-file-lines"></span> Halaman Statis

@@ -64,7 +64,7 @@
                 <div class="card bg-white border-0 rounded-3 p-4 mb-4">
                     <h5 class="fw-semibold">Publikasi / Keputusan Approval</h5>
 
-                    <form action="{{ route('admin.postingan.approval.update', ['id' => $post->id]) }}" method="POST">
+                    <form id="approvalForm" action="{{ route('admin.postingan.approval.update', ['id' => $post->id]) }}" method="POST">
                         @csrf
 
                         <div class="mb-2">
@@ -100,7 +100,7 @@
 
                 <div class="card bg-white border-0 rounded-3 p-4">
                     <h6 class="fw-semibold">Informasi</h6>
-                    <p class="mb-1"><strong>Penulis:</strong> {{ optional($post->creator)->full_name ?? $post->user_id }}
+                    <p class="mb-1"><strong>Penulis:</strong> {{ optional($post->creator)->full_name ?? 'N/A'}}
                     </p>
                     <p class="mb-1"><strong>Kategori:</strong> {{ $post->kategori }}</p>
                     <p class="mb-1"><strong>Dibuat:</strong> {{ $post->created_at }}</p>
@@ -144,6 +144,17 @@
 
                 // Jalankan fungsi saat halaman pertama dimuat untuk set default awal
                 updateState();
+
+                        // ================== DISABLE SUBMIT BUTTON ===================
+                const form = document.getElementById('approvalForm');
+                const submitBtn = form.querySelector("button[type='submit']");
+
+                form.addEventListener('submit', function() {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Menyimpan...';
+                });
+
+
             })();
         </script>
     @endpush

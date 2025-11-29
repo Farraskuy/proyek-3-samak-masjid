@@ -108,10 +108,10 @@ class PostinganController extends Controller
     {
         $validated = $request->validate([
             'title_view' => 'required|string|max:255',
-            'keterangan_view' => 'required|string',
+            'keterangan_view' => 'nullable|string',
             'kategori_view' => 'required|string',
             'image_view' => 'nullable|image|max:10000',
-            'content_view' => 'nullable|string'
+            'content_view' => 'required|string'
         ]);
 
         $featuredImagePath = null;
@@ -287,11 +287,10 @@ class PostinganController extends Controller
         } else { // revision
             $post->approval_status = 'revision';
             $post->approval_note = $validated['note'] ?? null;
+             $post->approved_by = optional($request->user())->id ?? null;
             // mark post status as 'revisi' so admin sees it needs edits
             $post->status = 'revisi';
         }
-
-        $post->user_id = auth()->id();
         
         $post->save();
 
@@ -375,14 +374,14 @@ class PostinganController extends Controller
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
             'title_view' => 'sometimes|required|string|max:255',
-            'keterangan' => 'sometimes|required|string',
-            'keterangan_view' => 'sometimes|required|string',
+            'keterangan' => 'nullable|sometimes|string',
+            'keterangan_view' => 'nullable|sometimes|string',
             'kategori' => 'sometimes|required|string',
             'kategori_view' => 'sometimes|required|string',
             'featured_image_url' => 'sometimes|nullable',
             'image_view' => 'sometimes|nullable|image|max:2048', // Boleh null jika tidak ganti gambar
-            'content' => 'sometimes|nullable|string',
-            'content_view' => 'sometimes|nullable|string'
+            'content' => 'required|sometimes|string',
+            'content_view' => 'required|sometimes|string'
         ]);
 
         // 3. Handle Gambar Header (Featured Image)

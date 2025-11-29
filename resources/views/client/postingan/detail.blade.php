@@ -264,11 +264,11 @@
                 <div class="col-lg-4">
                     <div class="sidebar-box">
                         <h5 class="sidebar-title">Informasi Artikel</h5>
-                        <p><strong>Penulis:</strong> {{ optional($post->creator)->name }}</p>
+                        <p><strong>Penulis:</strong> {{ optional($post->creator)->full_name ?? 'N/A'}}</p>
                         <p><strong>Kategori:</strong> {{ $post->kategori }}</p>
-                        <p><strong>Tanggal:</strong> {{ $post->created_at }}</p>
+                        <p><strong>Tanggal Dibuat:</strong> {{ $post->created_at }}</p>
                         @if ($post->published_at)
-                            <p><strong>Dipublish:</strong> {{ $post->published_at }}</p>
+                            <p><strong>Tanggal Dipublish:</strong> {{ $post->published_at }}</p>
                         @endif
                     </div>
                 </div>
