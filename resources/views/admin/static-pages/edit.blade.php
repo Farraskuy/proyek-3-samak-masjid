@@ -295,7 +295,7 @@
                     // Jangan hide container preview jika aslinya memang ada gambar dari DB
                     // Tapi karena ini UI ganti gambar, kita kembalikan ke mode uploader
                     container.style.display = "none";
-                    uploader.style.display = "block !important"; 
+                   uploader.style.removeProperty("display");  
                     preview.src = "#";
                 });
             }
