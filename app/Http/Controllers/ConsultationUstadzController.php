@@ -4,23 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Consultation;
 use App\Models\ConsultationMessage;
-use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ConsultationUstadzController extends Controller
 {
-    /**
-     * Ustadz Dashboard / Index
-     */
     public function index(Request $request)
     {
         $status = $request->query('status', 'all');
         $query = Consultation::query();
 
         if (Auth::user()->role === 'ustadz') {
-            // Ustadz sees pending (available to take) and their own active/closed
             $query->where(function ($q) {
                 $q->where('status', 'pending')
                     ->orWhere('answered_by_ustadz_id', Auth::id());
@@ -33,7 +28,6 @@ class ConsultationUstadzController extends Controller
 
         $consultations = $query->orderBy('created_at', 'desc')->paginate(10);
 
-        // Counts for Sidebar
         $counts = [
             'all' => Consultation::count(),
             'pending' => Consultation::where('status', 'pending')->count(),
@@ -44,14 +38,10 @@ class ConsultationUstadzController extends Controller
         return view('admin.consultations.index', compact('consultations', 'status', 'counts'));
     }
 
-    /**
-     * Show consultation detail/chat
-     */
     public function show($id)
     {
         $consultation = Consultation::findOrFail($id);
 
-        // Authorization check
         if (Auth::user()->role === 'ustadz') {
             if ($consultation->status !== 'pending' && $consultation->answered_by_ustadz_id !== Auth::id()) {
                 abort(403, 'Unauthorized');
@@ -64,7 +54,6 @@ class ConsultationUstadzController extends Controller
             return view('admin.consultations.show_partial', compact('consultation', 'messages'));
         }
 
-        // If not AJAX, we want to show the full page with this chat open.
         $request = request();
         $status = $request->query('status', 'all');
         $query = Consultation::query();
@@ -92,9 +81,6 @@ class ConsultationUstadzController extends Controller
         return view('admin.consultations.index', compact('consultations', 'status', 'counts', 'consultation', 'messages'));
     }
 
-    /**
-     * Accept Consultation
-     */
     public function accept($id)
     {
         $consultation = Consultation::findOrFail($id);
@@ -103,7 +89,6 @@ class ConsultationUstadzController extends Controller
             return back()->with('error', 'Konsultasi tidak tersedia');
         }
 
-        // Check limit (max 5 active)
         $activeCount = Consultation::where('answered_by_ustadz_id', Auth::id())
             ->where('status', 'active')
             ->count();
@@ -121,13 +106,9 @@ class ConsultationUstadzController extends Controller
         return back()->with('success', 'Konsultasi diterima. Silakan mulai chat.');
     }
 
-    /**
-     * Reject Consultation
-     */
     public function reject(Request $request, $id)
     {
         $consultation = Consultation::findOrFail($id);
-
         $request->validate(['reason' => 'required|string']);
 
         $consultation->update([
@@ -140,9 +121,6 @@ class ConsultationUstadzController extends Controller
         return back()->with('success', 'Konsultasi ditolak.');
     }
 
-    /**
-     * Close Consultation
-     */
     public function close(Request $request, $id)
     {
         $consultation = Consultation::findOrFail($id);
@@ -162,9 +140,6 @@ class ConsultationUstadzController extends Controller
         return back()->with('success', 'Konsultasi ditutup.');
     }
 
-    /**
-     * Send message in chat (Ustadz)
-     */
     public function sendMessage(Request $request, $id)
     {
         $consultation = Consultation::findOrFail($id);
@@ -198,9 +173,7 @@ class ConsultationUstadzController extends Controller
                 'attachment_url' => $attachmentUrl,
             ]);
 
-            // Broadcast event (Reverb)
             event(new \App\Events\ConsultationMessageSent($message, Auth::user(), $id));
-
             DB::commit();
 
             return response()->json(['success' => true, 'message' => $message]);

@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Digital Masjid')</title>
 
     {{-- Bootstrap CSS --}}
@@ -50,7 +51,7 @@
 
 
     <style>
-    * {
+        * {
             font-family: 'Poppins', "Lexend", Geneva, Verdana, sans-serif;
         }
 
@@ -158,33 +159,45 @@
 
     {{-- Global image fallback handler: centralize fallback behavior for the client views --}}
     <script>
-        (function(){
-            function handleWrapper(wrapper){
+        (function() {
+            function handleWrapper(wrapper) {
                 var img = wrapper.querySelector('img');
                 var icon = wrapper.querySelector('.fallback-icon');
 
-                function show(){ if(img) img.style.display='none'; if(icon) icon.style.display='block'; }
-                function hide(){ if(icon) icon.style.display='none'; if(img) img.style.display='block'; }
+                function show() {
+                    if (img) img.style.display = 'none';
+                    if (icon) icon.style.display = 'block';
+                }
 
-                if(!img){
-                    if(icon) icon.style.display='block';
+                function hide() {
+                    if (icon) icon.style.display = 'none';
+                    if (img) img.style.display = 'block';
+                }
+
+                if (!img) {
+                    if (icon) icon.style.display = 'block';
                     return;
                 }
 
                 var src = img.getAttribute('src') || '';
-                if(!src.trim()){
+                if (!src.trim()) {
                     show();
                     return;
                 }
 
                 img.addEventListener('error', show);
-                img.addEventListener('load', function(){ if(img.naturalWidth>1) hide(); else show(); });
+                img.addEventListener('load', function() {
+                    if (img.naturalWidth > 1) hide();
+                    else show();
+                });
 
                 // safety check if image already failed before listeners
-                setTimeout(function(){ if(img && img.naturalWidth===0) show(); }, 300);
+                setTimeout(function() {
+                    if (img && img.naturalWidth === 0) show();
+                }, 300);
             }
 
-            function initFallbacks(){
+            function initFallbacks() {
                 // generic thumbnail wrappers
                 document.querySelectorAll('.card-thumbnail-wrapper').forEach(handleWrapper);
 
@@ -193,12 +206,14 @@
 
                 // hero image (optional): hide if fails, leaving skeleton
                 var hero = document.querySelector('.hero-wrapper img.hero-image');
-                if(hero){
-                    hero.addEventListener('error', function(){ this.style.display='none'; });
+                if (hero) {
+                    hero.addEventListener('error', function() {
+                        this.style.display = 'none';
+                    });
                 }
             }
 
-            if(document.readyState === 'loading'){
+            if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', initFallbacks);
             } else {
                 initFallbacks();
@@ -208,40 +223,40 @@
 
     {{-- Auto Show Alerts --}}
     <script>
-        @if (session('success'))
-            Toast.fire({
-                icon: 'success',
-                title: @json(session('success'))
-            });
+        @if(session('success'))
+        Toast.fire({
+            icon: 'success',
+            title: @json(session('success'))
+        });
         @endif
 
-        @if (session('error'))
-            Toast.fire({
-                icon: 'error',
-                title: @json(session('error'))
-            });
+        @if(session('error'))
+        Toast.fire({
+            icon: 'error',
+            title: @json(session('error'))
+        });
         @endif
 
-        @if (session('warning'))
-            Toast.fire({
-                icon: 'warning',
-                title: @json(session('warning'))
-            });
+        @if(session('warning'))
+        Toast.fire({
+            icon: 'warning',
+            title: @json(session('warning'))
+        });
         @endif
 
-        @if (session('info'))
-            Toast.fire({
-                icon: 'info',
-                title: @json(session('info'))
-            });
+        @if(session('info'))
+        Toast.fire({
+            icon: 'info',
+            title: @json(session('info'))
+        });
         @endif
 
         // Jika ada error validasi (multiple errors)
-        @if ($errors->any())
-            Toast.fire({
-                icon: 'error',
-                title: @json($errors->first()) // tampilkan error pertama
-            });
+        @if(isset($errors) && $errors -> any())
+        Toast.fire({
+            icon: 'error',
+            title: @json($errors -> first())
+        });
         @endif
     </script>
 

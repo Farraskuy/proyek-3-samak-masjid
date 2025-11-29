@@ -182,7 +182,7 @@ class ConsultationClientController extends Controller
 
             DB::commit();
 
-            return response()->json(['success' => true, 'message' => $message]);
+            return response()->json(['success' => true, 'message' => $message->message,]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
