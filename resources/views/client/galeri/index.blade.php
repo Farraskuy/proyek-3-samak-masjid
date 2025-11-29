@@ -3,35 +3,20 @@
 @section('content')
 
 <!-- HERO SECTION -->
-<section class="hero-section d-flex align-items-center position-relative overflow-hidden"
-    style="background: linear-gradient(135deg, #175C9E 0%, #1a4d7a 100%); min-height: 400px;">
-
-    <div class="container position-relative" style="z-index: 2;">
-        <div class="row align-items-center justify-content-center text-center py-5">
-            <div class="col-lg-8">
-                <h1 class="display-3 fw-bold mb-4 text-white"
-                    data-aos="fade-down" data-aos-duration="900">
-                    Galeri <span style="color: #F6C948;">Kita</span>
-                </h1>
-            </div>
+    <section class="py-5 bg-pattern" style="background-color: #175C9E; height: 320px; display: flex; align-items: center;">
+        <div class="container text-center">
+            <h1 class="display-5 fw-bold text-white mb-3" data-aos="fade-up" data-aos-duration="900">
+                Galeri <span style="color: #F6C948;">Kita</span>
+            </h1>
+            <p class="lead text-white-50 mb-0 col-lg-8 mx-auto" data-aos="fade-up" data-aos-duration="1100"
+                data-aos-delay="200">
+                Jelajahi momen-momen berharga yang telah kami dokumentasikan
+            </p>
         </div>
-    </div>
-</section>
+    </section>
 
 <!-- MAIN CONTENT -->
 <div class="container py-5">
-
-    <!-- Section Title -->
-    @if($albums->count() > 0)
-    <div class="text-center mb-5" data-aos="fade-up">
-        <h2 class="fw-bold mb-2" style="color: #175C9E;">
-            Koleksi Album Kami
-        </h2>
-        <p class="text-muted">
-            Jelajahi momen-momen berharga yang telah kami dokumentasikan
-        </p>
-    </div>
-    @endif
 
     <!-- Albums Grid -->
     <div class="row g-4">
