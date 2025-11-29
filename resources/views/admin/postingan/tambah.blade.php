@@ -204,13 +204,31 @@
             const form = document.getElementById("form-postingan");
             const hidden = document.getElementById("quill_content");
 
-            form.addEventListener("submit", function(e) {
-                hidden.value = quill.root.innerHTML;
-                if (quill.getLength() < 2) {
-                    e.preventDefault();
-                    alert("konten tidak boleh kosong");
-                }
-            });
+/* ======================== SUBMIT HANDLER =========================*/
+
+form.addEventListener("submit", function(e) {
+
+    // Kirim isi Quill ke input hidden
+    hidden.value = quill.root.innerHTML;
+
+    // Cek konten kosong
+    if (quill.getLength() < 2) {
+        e.preventDefault();
+        alert("Konten tidak boleh kosong");
+        return;
+    }
+
+    // ===================== DISABLE SUBMIT BUTTON ======================
+
+    // Cari semua tombol submit di dalam form
+    const submitButtons = form.querySelectorAll("button[type='submit']");
+
+    submitButtons.forEach(btn => {
+        btn.disabled = true; 
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Menyimpan...';
+    });
+});
+
 
             /* ========================  IMAGE UPLOADER =========================*/
             const uploader = document.getElementById("file-uploader");

@@ -164,12 +164,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|super ad
 
         Route::get('/edit/{id}', [PostinganController::class, 'edit'])->name('edit');
         Route::put('/update/{id}', [PostinganController::class, 'update'])->name('update');
+         Route::post('/store', [PostinganController::class, 'store'])->name('store');
 
-        // Approval
-        Route::get('/approval', [PostinganController::class, 'approvalIndex'])->name('approval.index');
-        Route::get('/approval/{id}', [PostinganController::class, 'approvalShow'])->name('approval.show');
-        Route::post('/approval/{id}', [PostinganController::class, 'approvalUpdate'])->name('approval.update');
-        Route::post('/store', [PostinganController::class, 'store'])->name('store');
+                Route::middleware(['role:super admin'])->group(function () {
+            Route::get('/approval', [PostinganController::class, 'approvalIndex'])->name('approval.index');
+            Route::get('/approval/{id}', [PostinganController::class, 'approvalShow'])->name('approval.show');
+            Route::post('/approval/{id}', [PostinganController::class, 'approvalUpdate'])->name('approval.update');
+            
+        });
     });
 
     // Lost Found

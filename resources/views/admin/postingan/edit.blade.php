@@ -280,15 +280,28 @@
             const hidden = document.getElementById("quill_content");
 
             form.addEventListener("submit", function(e) {
+
+                // Kirim content quill
                 hidden.value = quill.root.innerHTML;
 
-                // Validasi sederhana jika kosong (kecuali tag p br bawaan quill)
+                // Validasi konten jika mau
                 if (quill.getText().trim().length === 0 && hidden.value.includes('<p><br></p>')) {
-                    // Opsional: block submit atau biarkan
                     // e.preventDefault();
                     // alert("Konten tidak boleh kosong!");
+                    // return;
                 }
+
+                // ===================== DISABLE SUBMIT BUTTON ======================
+
+                const submitButtons = form.querySelectorAll("button[type='submit']");
+
+                submitButtons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Updating...';
+                });
+
             });
+
 
             /* ========================  IMAGE UPLOADER =========================*/
             const uploader = document.getElementById("file-uploader");

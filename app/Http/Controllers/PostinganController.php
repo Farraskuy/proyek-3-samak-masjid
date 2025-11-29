@@ -380,8 +380,8 @@ class PostinganController extends Controller
             'kategori_view' => 'sometimes|required|string',
             'featured_image_url' => 'sometimes|nullable',
             'image_view' => 'sometimes|nullable|image|max:2048', // Boleh null jika tidak ganti gambar
-            'content' => 'sometimes|nullable|string',
-            'content_view' => 'sometimes|nullable|string'
+            'content' => 'required|sometimes|string',
+            'content_view' => 'required|sometimes|string'
         ]);
 
         // 3. Handle Gambar Header (Featured Image)
