@@ -287,11 +287,10 @@ class PostinganController extends Controller
         } else { // revision
             $post->approval_status = 'revision';
             $post->approval_note = $validated['note'] ?? null;
+             $post->approved_by = optional($request->user())->id ?? null;
             // mark post status as 'revisi' so admin sees it needs edits
             $post->status = 'revisi';
         }
-
-        $post->user_id = auth()->id();
         
         $post->save();
 

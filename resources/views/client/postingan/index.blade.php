@@ -187,7 +187,8 @@
 
                                         {{-- Footer --}}
                                         <div class="mt-auto pt-3">
-                                            <small class="text-muted">{{ optional($post->creator)->name ?? 'Admin' }} •
+                                              
+                                            <small class="text-muted">{{ optional($post->creator)->full_name ?? 'N/a' }} •
                                                 {{ $post->created_at->format('d M Y') }}</small><br>
                                             <span class="fw-semibold" style="color:#175C9E;">
                                                 Baca Selengkapnya <i class="fas fa-arrow-right ms-1"></i>

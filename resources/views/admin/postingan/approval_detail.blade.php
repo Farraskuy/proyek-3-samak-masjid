@@ -100,7 +100,7 @@
 
                 <div class="card bg-white border-0 rounded-3 p-4">
                     <h6 class="fw-semibold">Informasi</h6>
-                    <p class="mb-1"><strong>Penulis:</strong> {{ optional($post->creator)->full_name ?? $post->user_id }}
+                    <p class="mb-1"><strong>Penulis:</strong> {{ optional($post->creator)->full_name ?? 'N/A'}}
                     </p>
                     <p class="mb-1"><strong>Kategori:</strong> {{ $post->kategori }}</p>
                     <p class="mb-1"><strong>Dibuat:</strong> {{ $post->created_at }}</p>
