@@ -218,6 +218,7 @@
                         @php
                             $recommendations = \App\Models\Postingan::where('kategori', $post->kategori)
                                 ->where('id', '!=', $post->id)
+                                ->where('status','=','published')
                                 ->orderBy('created_at', 'desc')
                                 ->limit(3)
                                 ->get();

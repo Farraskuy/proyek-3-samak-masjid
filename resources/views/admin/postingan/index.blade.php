@@ -82,7 +82,9 @@
                                 <th>Kategori</th>
                                 <th>Status postingan</th>
                                 <th>Keputusan</th>
-                                <th>Revisi Msg</th>
+                                @if (optional(auth()->user())->role === 'admin')
+                                <th>pesan revisi</th>
+                                @endif
                                 <th>Tanggal dibuat</th>
                                 <th>Tanggal update</th>
                                 <th>Aksi</th>
@@ -119,7 +121,7 @@
                                         @endphp
 
                                         @if ($status == 'pending')
-                                            <span class="badge rounded-pill text-bg-warning border border-warning-subtle"> - </span>
+                                            <span class="badge rounded-pill text-bg-warning border border-warning-subtle"> Pending </span>
                                         @elseif ($status == 'approved')
                                             <span class="badge rounded-pill text-bg-success border border-success-subtle">
                                                 Approved
@@ -140,48 +142,45 @@
                                     </td>
 
                                     {{-- Revisi Msg (Kolom Baru) --}}
-                                    <td>
-                                        @if (optional(auth()->user())->role === 'admin' && strtolower($row->approval_status ?? '') === 'revision')
-                                            
-                                            {{-- Tombol Detail Revisi --}}
-                                            <button type="button" class="btn btn-info btn-sm text-white py-0 px-2" style="font-size: 0.75rem;" 
-                                                data-bs-toggle="modal" data-bs-target="#modalRevision{{ $row->id }}">
-                                                Detail Revisi
-                                            </button>
+                                    @if (optional(auth()->user())->role === 'admin' )
+                                        <td>
+                                            @if (strtolower($row->approval_status ?? '') === 'revision')
+                                                
+                                                {{-- Tombol Detail Revisi --}}
+                                                <button type="button" class="btn btn-info btn-sm text-white py-0 px-2" style="font-size: 0.75rem;" 
+                                                    data-bs-toggle="modal" data-bs-target="#modalRevision{{ $row->id }}">
+                                                    Detail Revisi
+                                                </button>
 
-                                            {{-- MODAL REVISI --}}
-                                            <div class="modal fade text-dark" id="modalRevision{{ $row->id }}"
-                                                tabindex="-1" aria-labelledby="modalRevisionLabel{{ $row->id }}"
-                                                aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="modalRevisionLabel{{ $row->id }}">
-                                                                Detail Revisi
-                                                            </h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                                aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <p>Catatan Revisi:</p>
-                                                            <div class="alert alert-warning border">
-                                                                <strong>{{ $row->approval_note ?? 'Tidak ada catatan revisi.' }}</strong>
+                                                {{-- MODAL REVISI --}}
+                                                <div class="modal fade text-dark" id="modalRevision{{ $row->id }}"
+                                                    tabindex="-1" aria-labelledby="modalRevisionLabel{{ $row->id }}"
+                                                    aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="modalRevisionLabel{{ $row->id }}">
+                                                                    Detail Revisi
+                                                                </h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                    aria-label="Close"></button>
                                                             </div>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary"
-                                                                data-bs-dismiss="modal">Tutup</button>
+                                                            <div class="modal-body">
+                                                                <p>Catatan Revisi:</p>
+                                                                <div class="alert alert-warning border">
+                                                                    <strong>{{ $row->approval_note ?? 'Tidak ada catatan revisi.' }}</strong>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            {{-- MODAL END --}}
-
-                                        @else
+                                                {{-- MODAL END --}}
+                                            @else
                                             -
+                                            @endif
+                                        </td>
                                         @endif
-                                    </td>
-
+                                        
                                     <td>{{ $row->created_at ?? '-' }}</td>
                                     <td>{{ $row->updated_at ?? '-' }}</td>
 

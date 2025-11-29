@@ -244,7 +244,7 @@
         <div class="container">
             <div class="d-flex justify-content-between align-items-center mb-4" data-aos="fade-up">
                 <h2 class="fw-bold">Kabar Terbaru</h2>
-                <a href="/admin/posts" class="fw-semibold text-decoration-none" style="color:#175C9E">
+                <a href="/postingan" class="fw-semibold text-decoration-none" style="color:#175C9E">
                     Lihat Semua <i class="fas fa-arrow-right-long ms-1"></i>
                 </a>
             </div>
