@@ -10,14 +10,11 @@
 <section class="p-3">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="fw-semibold mb-0">Galeri</h4>
-
+        <h4 class="fw-semibold mb-0">Galeri</h4>
         <a href="{{ route('admin.galeri.create') }}" class="btn btn-primary btn-sm">
             <i class="fa-solid fa-plus me-1"></i> Tambah Album
         </a>
     </div>
-        </div>
 
     <div class="row g-0 gap-3">
         <form method="get" id="form_filter" class="col rounded-3 bg-white p-3 pt-0 form-filter" style="height: fit-content">
@@ -86,7 +83,7 @@
                             <tr>
                                 <td colspan="4" class="text-center">
                                     <div class="py-4">
-                                        <img src="{{ asset('assets/images/no-data.png') }}"
+                                        <img src="{{ asset('assets/images/no-data.png') }}" alt="Tidak ada data"
                                              style="max-width:240px;opacity:0.5;">
                                         <p>Data Tidak Ada</p>
                                     </div>
@@ -102,10 +99,10 @@
                 <div class="d-flex fs-14px align-items-center gap-1">
                     Menampilkan
                     <select class="form-select form-select-sm w-auto" name="showing" onchange="this.form.submit()">
-                        <option {{ request()->query('showing', 50) == 10 ? 'selected' : '' }}>10</option>
-                        <option {{ request()->query('showing', 50) == 20 ? 'selected' : '' }}>20</option>
-                        <option {{ request()->query('showing', 50) == 50 ? 'selected' : '' }}>50</option>
-                        <option {{ request()->query('showing', 50) == 100 ? 'selected' : '' }}>100</option>
+                        <option value="10" {{ request()->query('showing', 50) == 10 ? 'selected' : '' }}>10</option>
+                        <option value="20" {{ request()->query('showing', 50) == 20 ? 'selected' : '' }}>20</option>
+                        <option value="50" {{ request()->query('showing', 50) == 50 ? 'selected' : '' }}>50</option>
+                        <option value="100" {{ request()->query('showing', 50) == 100 ? 'selected' : '' }}>100</option>
                         <option value="all" {{ request()->query('showing') == 'all' ? 'selected' : '' }}>Semua</option>
                     </select>
                     Data
@@ -122,7 +119,7 @@
     </div>
 </section>
 
-{{-- SweetAlert Delete --}}
+@push('scripts')
 <script>
 function hapusAlbum(id) {
     Swal.fire({
@@ -158,6 +155,7 @@ function hapusAlbum(id) {
     });
 }
 </script>
+@endpush
 
 
     @push('styles')
@@ -168,4 +166,5 @@ function hapusAlbum(id) {
             }
         </style>
     @endpush
+
 @endsection

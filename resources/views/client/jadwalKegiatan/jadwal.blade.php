@@ -9,7 +9,7 @@
             </h1>
             <p class="lead text-white-50 mb-0 col-lg-8 mx-auto" data-aos="fade-up" data-aos-duration="1100"
                 data-aos-delay="200">
-                Informasi agenda kegiatan dan kajian rutin di Masjid Kampus.
+                Informasi agenda kegiatan dan kajian rutin di Masjid
             </p>
         </div>
     </section>

@@ -3,16 +3,17 @@
 @section('content')
 
 <!-- HERO SECTION -->
-<section class="hero-section d-flex align-items-center position-relative overflow-hidden"
-    style="background: linear-gradient(135deg, #175C9E 0%, #1a4d7a 100%); min-height: 300px;">
-
-    <div class="container text-center py-5">
-        <h1 class="display-3 fw-bold mb-4 text-white"
-            data-aos="fade-down" data-aos-duration="900">
-            Detail <span style="color: #F6C948;">Album</span>
-        </h1>
-    </div>
-</section>
+    <section class="py-5 bg-pattern" style="background-color: #175C9E; height: 320px; display: flex; align-items: center;">
+        <div class="container text-center">
+            <h1 class="display-5 fw-bold text-white mb-3" data-aos="fade-up" data-aos-duration="900">
+                Galeri <span style="color: #F6C948;">Kita</span>
+            </h1>
+            <p class="lead text-white-50 mb-0 col-lg-8 mx-auto" data-aos="fade-up" data-aos-duration="1100"
+                data-aos-delay="200">
+                Jelajahi momen-momen berharga yang telah kami dokumentasikan
+            </p>
+        </div>
+    </section>
 
 <!-- MAIN CONTENT -->
 <div class="container py-5">
@@ -127,11 +128,13 @@
     position: relative;
 }
 
-/* Foto di dalam Frame */
+/* Lightbox Content */
 .lightbox-content {
     max-width: 90%;
     max-height: 100%;
-    object-fit: contain; /* Foto menyesuaikan bingkai */
+    object-fit: contain; 
+    width: auto; 
+    height: auto; 
     border-radius: 10px;
     transition: opacity 0.2s ease;
 }
@@ -157,6 +160,24 @@
     margin-top: 10px;
     font-size: 18px;
     opacity: 0.85;
+    background: rgba(0, 0, 0, 0.6); 
+    padding: 10px 15px; 
+    border-radius: 8px; 
+    display: inline-block; 
+    font-family: 'Poppins', sans-serif; 
+    animation: fadeIn 0.5s ease; 
+}
+
+/* Animasi Fade-In */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Navigation Arrows */
