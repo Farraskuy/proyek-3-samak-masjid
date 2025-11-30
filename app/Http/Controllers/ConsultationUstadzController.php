@@ -124,20 +124,25 @@ class ConsultationUstadzController extends Controller
     public function close(Request $request, $id)
     {
         $consultation = Consultation::findOrFail($id);
-
         if ($consultation->answered_by_ustadz_id !== Auth::id()) {
             abort(403);
         }
 
-        $request->validate(['conclusion' => 'required|string']);
-
         $consultation->update([
             'status' => 'closed',
-            'conclusion' => $request->conclusion,
+            'conclusion' => 'Konsultasi selesai oleh ustadz.',
             'closed_at' => now(),
         ]);
 
-        return back()->with('success', 'Konsultasi ditutup.');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Konsultasi berhasil ditutup.',
+                'redirect' => route('admin.consultations.index', ['status' => 'closed'])
+            ]);
+        }
+
+        return redirect()->route('admin.consultations.index', ['status' => 'closed']);
     }
 
     public function sendMessage(Request $request, $id)
