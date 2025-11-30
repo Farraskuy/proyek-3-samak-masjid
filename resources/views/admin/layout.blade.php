@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -30,6 +29,8 @@
     {{-- style --}}
     <link rel="stylesheet" href="{{ asset('assets/css/admin.css') }}">
 
+    <script src="https://js.pusher.com/8.3.0/pusher.min.js"></script>
+    
     <script>
         const baseurl = '{{ url(' / ') }}';
         const csrf = '{{ csrf_token() }}';
@@ -48,24 +49,6 @@
     <script src="{{ asset('assets/js') }}/chart.umd.min.js"></script>
 
     {{-- Sweet Alert --}}
-    <script src="{{ asset('assets/js') }}/sweetalert2.js"></script>
-    <script>
-        const Toast = Swal.mixin({
-            toast: true,
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 5000,
-            width: '33em',
-            timerProgressBar: true,
-            didOpen: (toast) => {
-                toast.onmouseenter = Swal.stopTimer;
-                toast.onmouseleave = Swal.resumeTimer;
-            },
-            customClass: {
-                htmlContainer: 'my-0',
-            }
-        });
-    </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         const Toast = Swal.mixin({

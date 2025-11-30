@@ -25,6 +25,7 @@
         font-family: 'Poppins', sans-serif;
     }
 
+    /* Sidebar Sederhana */
     .chat-sidebar {
         width: 300px;
         background-color: var(--chat-sidebar-bg);
@@ -42,6 +43,7 @@
 
     .conversation-item {
         padding: 1rem 1.25rem;
+        cursor: pointer;
         background-color: var(--chat-active);
         border-left: 3px solid var(--chat-primary);
     }
@@ -60,6 +62,7 @@
         text-overflow: ellipsis;
     }
 
+    /* Chat Area */
     .chat-main {
         flex: 1;
         display: flex;
@@ -89,35 +92,18 @@
         display: flex;
         gap: 1rem;
         max-width: 75%;
-        align-items: flex-start;
-        /* rata atas */
+        align-items: flex-end;
+    }
+
+    .avatar-circle {
+        font-size: 0.9rem;
+        text-align: center;
+        line-height: 40px;
     }
 
     .message-wrapper.sent {
         align-self: flex-end;
         flex-direction: row-reverse;
-    }
-
-    .avatar-circle {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        font-weight: bold;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-    }
-
-    .avatar-circle.sent {
-        background-color: #3b82f6;
-        color: white;
-    }
-
-    .avatar-circle.received {
-        background-color: #e2e8f0;
-        color: #1e293b;
     }
 
     .message-bubble {
@@ -197,7 +183,7 @@
 @section('content')
 <div class="container-fluid p-0">
     <div class="chat-container">
-        <!-- Sidebar -->
+        <!-- Sidebar Konsultasi (Hanya Satu Item) -->
         <div class="chat-sidebar">
             <div class="sidebar-header">
                 <h5 class="mb-0">Konsultasi</h5>
@@ -221,7 +207,9 @@
         <!-- Chat Area -->
         <div class="chat-main">
             <div class="chat-header">
-                <h5 class="mb-0">{{ $consultation->question_subject }}</h5>
+                <h5 class="mb-0">
+                    {{ $consultation->question_subject }}
+                </h5>
             </div>
 
             <div class="chat-messages" id="chatMessages">
@@ -229,12 +217,20 @@
                 @php
                 $isSelf = $message->user_id === Auth::id();
                 $user = $message->user;
-                $initial = strtoupper(substr($user->name ?? $user->email, 0, 1));
                 @endphp
                 <div class="message-wrapper {{ $isSelf ? 'sent' : 'received' }}">
-                    <div class="avatar-circle {{ $isSelf ? 'sent' : 'received' }}">
-                        {{ $initial }}
+                    @if(!$isSelf)
+                    <div class="avatar-circle d-flex align-items-center justify-content-center"
+                        style="width: 40px; height: 40px; border-radius: 50%; background-color: #e2e8f0; font-weight: bold; color: #1e293b;">
+                        {{ strtoupper(substr($user->name ?? $user->email, 0, 1)) }}
                     </div>
+                    @else
+                    <div class="avatar-circle d-flex align-items-center justify-content-center"
+                        style="width: 40px; height: 40px; border-radius: 50%; background-color: #3b82f6; font-weight: bold; color: white;">
+                        U
+                    </div>
+                    @endif
+
                     <div class="message-bubble">
                         @if($message->message_type === 'file')
                         <a href="{{ $message->attachment_url }}" target="_blank" class="{{ $isSelf ? 'text-white' : 'text-primary' }}">
@@ -270,25 +266,21 @@
         // Scroll ke bawah saat halaman dimuat
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
-        // Handle submit
+        // Handle submit form
         chatForm.addEventListener('submit', function(e) {
             e.preventDefault();
+
             const message = messageInput.value.trim();
             if (!message) return;
 
             const formData = new FormData(this);
-            const url = this.action;
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-            if (!csrfToken) {
-                alert('CSRF token tidak ditemukan. Silakan reload halaman.');
-                return;
-            }
+            const url = this.getAttribute('action');
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
             fetch(url, {
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': csrfToken,
+                        'X-CSRF-TOKEN': token,
                         'Accept': 'application/json'
                     },
                     body: formData
@@ -296,23 +288,22 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Buat elemen pesan baru
                         const newMessage = document.createElement('div');
                         newMessage.className = 'message-wrapper sent';
 
                         newMessage.innerHTML = `
-                    <div class="avatar-circle sent">U</div>
-                    <div class="message-bubble">
-                        ${data.message}
-                        <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-                    </div>
-                `;
-
+            <div class="avatar-circle">
+                U <!-- atau huruf awal nama user -->
+            </div>
+            <div class="message-bubble">
+                ${data.message}
+                <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+            </div>`;
                         chatMessages.appendChild(newMessage);
                         messageInput.value = '';
                         chatMessages.scrollTop = chatMessages.scrollHeight;
                     } else {
-                        alert('Gagal mengirim pesan: ' + (data.error || 'Kesalahan tidak diketahui'));
+                        alert('Gagal mengirim pesan: ' + (data.error || 'Unknown error'));
                     }
                 })
                 .catch(err => {
@@ -321,7 +312,7 @@
                 });
         });
 
-        // Enter untuk kirim
+        // Enter untuk kirim (tanpa Shift)
         messageInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();

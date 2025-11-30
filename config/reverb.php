@@ -37,6 +37,8 @@ return [
                 'activity_timeout' => 30,
                 'max_connections' => null,
                 'max_message_size' => 10_000,
+                'pulse_ingest_interval' => 15,
+                'telescope_ingest_interval' => 15,
             ],
         ],
     ],
