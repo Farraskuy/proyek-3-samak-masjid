@@ -21,6 +21,15 @@
                             <i class="fas fa-check me-1"></i> Terima
                         </button>
                     </form>
+                @elseif ($consultation->status == 'active' && $consultation->answered_by_ustadz_id == Auth::id())
+                    <!-- Tombol Selesai -->
+                    <button type="button" 
+                            class="btn btn-success btn-sm fw-semibold"
+                            data-bs-toggle="modal"
+                            data-bs-target="#closeConsultationModal"
+                            data-id="{{ $consultation->id }}">
+                        <i class="fas fa-check me-1"></i> Selesai
+                    </button>
                 @endif
             </div>
         </div>

@@ -4,12 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- bootstrap --}}
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap/bootstrap.min.css') }}">
-    
+
     {{-- bootstrap js --}}
     <script src="{{ asset('assets/js/bootstrapt/bootstrap.bundle.min.js') }}"></script>
 
@@ -30,7 +31,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/admin.css') }}">
 
     <script>
-        const baseurl = '{{ url('/') }}';
+        const baseurl = '{{ url(' / ') }}';
         const csrf = '{{ csrf_token() }}';
         const currenturl = '{{ url()->current() }}';
     </script>
@@ -41,7 +42,7 @@
     {{-- Date range picker --}}
     <script type="text/javascript" src="{{ asset('assets/js') }}/moment.min.js"></script>
     <script type="text/javascript" src="{{ asset('assets/js') }}/daterangepicker.js"></script>
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css') }}/daterangepicker.css"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css') }}/daterangepicker.css" />
 
     {{-- Chart js --}}
     <script src="{{ asset('assets/js') }}/chart.umd.min.js"></script>
@@ -63,6 +64,16 @@
             customClass: {
                 htmlContainer: 'my-0',
             }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
         });
     </script>
 
@@ -136,40 +147,40 @@
 
     {{-- Auto Show Alerts --}}
     <script>
-        @if (session('success'))
-            Toast.fire({
-                icon: 'success',
-                title: @json(session('success'))
-            });
+        @if(session('success'))
+        Toast.fire({
+            icon: 'success',
+            title: @json(session('success'))
+        });
         @endif
 
-        @if (session('error'))
-            Toast.fire({
-                icon: 'error',
-                title: @json(session('error'))
-            });
+        @if(session('error'))
+        Toast.fire({
+            icon: 'error',
+            title: @json(session('error'))
+        });
         @endif
 
-        @if (session('warning'))
-            Toast.fire({
-                icon: 'warning',
-                title: @json(session('warning'))
-            });
+        @if(session('warning'))
+        Toast.fire({
+            icon: 'warning',
+            title: @json(session('warning'))
+        });
         @endif
 
-        @if (session('info'))
-            Toast.fire({
-                icon: 'info',
-                title: @json(session('info'))
-            });
+        @if(session('info'))
+        Toast.fire({
+            icon: 'info',
+            title: @json(session('info'))
+        });
         @endif
 
         // Jika ada error validasi (multiple errors)
-        @if ($errors->any())
-            Toast.fire({
-                icon: 'error',
-                title: @json($errors->first()) // tampilkan error pertama
-            });
+        @if($errors -> any())
+        Toast.fire({
+            icon: 'error',
+            title: @json($errors -> first()) 
+        });
         @endif
     </script>
 
@@ -178,10 +189,10 @@
 
     <script>
         // Attach delete modal behaviour: any .btn-delete-article sets form action and shows modal
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             var deleteButtons = document.querySelectorAll('.btn-delete-article');
-            deleteButtons.forEach(function (btn) {
-                btn.addEventListener('click', function (e) {
+            deleteButtons.forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
                     var action = btn.getAttribute('data-action');
                     var form = document.getElementById('confirmDeleteForm');
                     if (form) {

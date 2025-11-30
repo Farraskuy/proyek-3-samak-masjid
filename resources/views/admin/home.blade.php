@@ -1,171 +1,402 @@
 @extends('admin.layout')
 
-@section('title', 'Dashboard | SAMAK-Kampus')
-
-@push('styles')
-    <style>
-        /* Styling dasar untuk home-item */
-        .home-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 10px 15px;
-            border-radius: 8px;
-            transition: background-color 0.2s;
-        }
-
-        .home-item:hover {
-            background-color: #e9ecef;
-            /* Hover effect */
-        }
-
-        .home-item .icon {
-            font-size: 2.2rem;
-            width: 30px;
-            /* Lebar tetap untuk ikon */
-            text-align: center;
-        }
-
-        .fs-14px {
-            font-size: 14px;
-        }
-    </style>
-@endpush
+@section('title', 'Manajemen Konsultasi')
 
 @section('content')
-    <section class="p-5 position-relative">
-        {{-- Header Background Biru Masjid --}}
-        <div class="position-absolute w-100"
-            style="height: 200px; background-color: #175C9E; z-index: -1; top: 0; left: 0; right: 0;"></div>
-
-        {{-- Informasi Sambutan --}}
-        <h1 class="fw-bold m-0 text-white">Selamat Datang di Halaman Admin,</h1>
-        <p class="fw-semibold text-white">SAMAK-Kampus (Sistem Aplikasi Masjid Kampus)</p>
-
-        {{-- Konten Utama Menu Halaman --}}
-        <div class="rounded-3 bg-white p-4 border- shadow-sm d-flex flex-wrap" style="gap: 20px;">
-
-            {{-- Bagian Kiri: Manajemen Konten & Kegiatan --}}
-            <div class="flex-grow-1" style="min-width: 300px;">
-                <p class="fw-bold mb-3 fs-14px text-primary">Konten & Kegiatan Masjid</p>
-                <div class="d-flex gap-3 mb-3 py-2 bg-light rounded-3 flex-wrap w-100">
-
-                    {{-- 1. Manajemen Artikel & Postingan (CMS) --}}
-                    <a href="{{ url('/admin/postingan') }}" class="btn text-start home-item">
-                        <i class="fa-duotone icon fa-newspaper" style="color: #007bff"></i>
-                        <div>
-                            <p class="fw-semibold m-0">Manajemen Postingan <i class="fa-regular fa-arrow-right"></i></p>
-                            <p class="m-0 text-secondary">CRUD Berita/Artikel/Tausiyah </p>
+<div class="container-fluid p-3 h-100">
+    <div class="card shadow-sm border-0 h-100 overflow-hidden" style="min-height: 85vh;">
+        <div class="row g-0 h-100">
+            <div class="col-md-2 col-lg-2 border-end h-100 bg-white d-flex flex-column py-3">
+                <h5 class="px-3 fw-bold mb-4">Konsultasi</h5>
+                <div class="space-y-2 px-3">
+                    <a href="{{ route('admin.consultations.index', ['status' => 'all']) }}"
+                        class="d-flex align-items-center justify-content-between px-3 py-2 rounded-3 text-decoration-none {{ request('status') == 'all' || !request('status') ? 'bg-dark text-white shadow-sm' : 'text-secondary hover-bg-light' }}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-inbox me-2" style="width: 20px; text-align: center;"></i>
+                            <span class="fw-medium">Semua</span>
                         </div>
+                        <span class="badge {{ request('status') == 'all' || !request('status') ? 'bg-secondary' : 'bg-light text-dark' }} rounded-pill">{{ $counts['all'] ?? 0 }}</span>
                     </a>
-
-                    {{-- 2. Halaman Statis (Tentang Kami, dll) --}}
-                    <a href="{{ url('/admin/halaman-statis') }}" class="btn text-start home-item">
-                        <i class="fa-duotone icon fa-file-lines" style="color: #6c757d"></i>
-                        <div>
-                            <p class="fw-semibold m-0">Halaman Statis <i class="fa-regular fa-arrow-right"></i></p>
-                            <p class="m-0 text-secondary">Visi Misi, Struktur DKM </p>
+                    <a href="{{ route('admin.consultations.index', ['status' => 'pending']) }}"
+                        class="d-flex align-items-center justify-content-between px-3 py-2 rounded-3 text-decoration-none {{ request('status') == 'pending' ? 'bg-dark text-white shadow-sm' : 'text-secondary hover-bg-light' }}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-clock me-2" style="width: 20px; text-align: center;"></i>
+                            <span class="fw-medium">Pending</span>
                         </div>
+                        @if (($counts['pending'] ?? 0) > 0)
+                        <span class="badge bg-danger rounded-pill">{{ $counts['pending'] ?? 0 }}</span>
+                        @else
+                        <span class="badge {{ request('status') == 'pending' ? 'bg-secondary' : 'bg-light text-dark' }} rounded-pill">0</span>
+                        @endif
                     </a>
-
-                    {{-- 3. Manajemen Galeri Foto --}}
-                    <a href="{{ url('/admin/galeri/') }}" class="btn text-start home-item">
-                        <i class="fa-duotone icon fa-images" style="color: #28a745"></i>
-                        <div>
-                            <p class="fw-semibold m-0">Galeri Foto <i class="fa-regular fa-arrow-right"></i></p>
-                            <p class="m-0 text-secondary">Publikasi foto kegiatan </p>
+                    <a href="{{ route('admin.consultations.index', ['status' => 'active']) }}"
+                        class="d-flex align-items-center justify-content-between px-3 py-2 rounded-3 text-decoration-none {{ request('status') == 'active' ? 'bg-dark text-white shadow-sm' : 'text-secondary hover-bg-light' }}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-comments me-2" style="width: 20px; text-align: center;"></i>
+                            <span class="fw-medium">Aktif</span>
                         </div>
+                        <span class="badge {{ request('status') == 'active' ? 'bg-secondary' : 'bg-light text-dark' }} rounded-pill">{{ $counts['active'] ?? 0 }}</span>
                     </a>
-
-                    {{-- 4. Manajemen Kegiatan & Kalender --}}
-                    <a href="{{ url('/admin/kegiatan') }}" class="btn text-start home-item">
-                        <i class="fa-duotone icon fa-calendar-days" style="color: #ffc107"></i>
-                        <div>
-                            <p class="fw-semibold m-0">Manajemen Kegiatan <i class="fa-regular fa-arrow-right"></i></p>
-                            <p class="m-0 text-secondary">Jadwal Kajian/Seminar </p>
+                    <a href="{{ route('admin.consultations.index', ['status' => 'closed']) }}"
+                        class="d-flex align-items-center justify-content-between px-3 py-2 rounded-3 text-decoration-none {{ request('status') == 'closed' ? 'bg-dark text-white shadow-sm' : 'text-secondary hover-bg-light' }}">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle me-2" style="width: 20px; text-align: center;"></i>
+                            <span class="fw-medium">Selesai</span>
                         </div>
+                        <span class="badge {{ request('status') == 'closed' ? 'bg-secondary' : 'bg-light text-dark' }} rounded-pill">{{ $counts['closed'] ?? 0 }}</span>
                     </a>
                 </div>
             </div>
-
-            {{-- Bagian Tengah: Keuangan (ZIS) --}}
-            <div class="flex-grow-1" style="min-width: 300px;">
-                <p class="fw-bold mb-3 fs-14px text-success">Keuangan & Transparansi (ZIS)</p>
-                <div class="d-flex gap-3 mb-3 py-2 bg-light rounded-3 flex-wrap w-100">
-
-                    {{-- 5. Verifikasi Konfirmasi Donasi --}}
-                    <a href="{{ url('/admin/donasi/verifikasi') }}" class="btn text-start home-item">
-                        <i class="fa-duotone icon fa-money-check-dollar" style="color: #198754"></i>
-                        <div>
-                            <p class="fw-semibold m-0">Verifikasi Donasi <i class="fa-regular fa-arrow-right"></i></p>
-                            <p class="m-0 text-secondary">Cek Bukti Transfer Jamaah </p>
+            <div class="col-md-4 col-lg-3 border-end h-100 d-flex flex-column bg-white">
+                <div class="p-3 border-bottom">
+                    <div class="position-relative">
+                        <i class="fas fa-search position-absolute text-muted" style="left: 12px; top: 50%; transform: translateY(-50%);"></i>
+                        <input type="text" class="form-control ps-5 rounded-pill bg-light border-0" placeholder="Cari orang...">
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <small class="text-muted fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                            {{ request('status') ? ucfirst(request('status')) : 'Semua' }} ({{ $consultations->count() }})
+                        </small>
+                    </div>
+                </div>
+                <div class="flex-grow-1 overflow-auto">
+                    <div class="list-group list-group-flush">
+                        @forelse ($consultations as $item)
+                        <div class="list-group-item list-group-item-action border-0 p-4 border-bottom cursor-pointer {{ request()->route('id') == $item->id ? 'bg-blue-50' : '' }}" onclick="loadChat({{ $item->id }}, this)">
+                            <div class="d-flex align-items-start">
+                                <div class="position-relative me-3">
+                                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold" style="width: 45px; height: 45px; font-size: 1.2rem;">
+                                        {{ substr($item->user->full_name ?? 'H', 0, 1) }}
+                                    </div>
+                                    @if ($item->status == 'pending')
+                                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                                        <span class="visually-hidden">New alerts</span>
+                                    </span>
+                                    @endif
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start mb-1">
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-0">{{ $item->question_from ?? 'Anonim' }}</h6>
+                                            <small class="text-muted" style="font-size: 0.75rem;">{{ $item->user->email ?? '-' }}</small>
+                                        </div>
+                                        <span class="text-muted small" style="font-size: 0.7rem;">{{ $item->created_at->diffForHumans() }}</span>
+                                    </div>
+                                    <p class="text-muted small mb-2 text-truncate" style="max-width: 200px;">{{ $item->question_subject }}</p>
+                                    @if ($item->status === 'pending')
+                                    <div class="d-flex gap-2 mt-2">
+                                        <form action="{{ route('admin.consultations.accept', $item->id) }}" method="POST" onsubmit="return confirm('Terima konsultasi ini?')">
+                                            @csrf
+                                            <button type="submit" class="btn btn-success btn-sm py-0 px-2" style="font-size: 0.75rem;">
+                                                <i class="fas fa-check me-1"></i> Terima
+                                            </button>
+                                        </form>
+                                        <button type="button" onclick="openRejectModal({{ $item->id }})" class="btn btn-outline-danger btn-sm py-0 px-2" style="font-size: 0.75rem;">
+                                            <i class="fas fa-times me-1"></i> Tolak
+                                        </button>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
-                    </a>
-
-                    {{-- 6. Manajemen Transaksi Keuangan (Pemasukan/Pengeluaran) --}}
-                    <a href="{{ url('/admin/keuangan') }}" class="btn text-start home-item">
-                        <i class="fa-duotone icon fa-chart-line-up" style="color: #6f42c1"></i>
-                        <div>
-                            <p class="fw-semibold m-0">Manajemen Transaksi <i class="fa-regular fa-arrow-right"></i></p>
-                            <p class="m-0 text-secondary">Input Pemasukan & Pengeluaran </p>
+                        @empty
+                        <div class="text-center p-4 text-muted">
+                            <small>Tidak ada data</small>
                         </div>
-                    </a>
-
-                    {{-- 7. Pendaftaran Kegiatan (Verifikasi Peserta) --}}
-                    <a href="{{ url('/admin/kajian/') }}" class="btn text-start home-item">
-                        <i class="fa-duotone icon fa-user-check" style="color: #dc3545"></i>
-                        <div>
-                            <p class="fw-semibold m-0">Verifikasi Pendaftar <i class="fa-regular fa-arrow-right"></i></p>
-                            <p class="m-0 text-secondary">Daftar Pendaftaran Kajian </p>
-                        </div>
-                    </a>
-
-                    {{-- 8. Manajemen Rekening Bank --}}
-                    <a href="{{ url('/admin/banks') }}" class="btn text-start home-item">
-                        <i class="fa-duotone icon fa-building-columns" style="color: #0dcaf0"></i>
-                        <div>
-                            <p class="fw-semibold m-0">Manajemen Rekening <i class="fa-regular fa-arrow-right"></i></p>
-                            <p class="m-0 text-secondary">Atur Bank Zakat & Infak </p>
-                        </div>
-                    </a>
-
+                        @endforelse
+                    </div>
                 </div>
             </div>
-
-            {{-- Bagian Kanan: Layanan & Sistem --}}
-            <div class="flex-grow-1" style="min-width: 300px;">
-                <p class="fw-bold mb-3 fs-14px text-danger">Pengguna & Layanan</p>
-                <div class="d-flex gap-3 mb-3 py-2 bg-light rounded-3 flex-wrap w-100">
-
-                    {{-- 8. Manajemen Pengguna (Admin/Super Admin) --}}
-                    <a href="{{ url('/admin/pengguna') }}" class="btn text-start home-item">
-                        <i class="fa-duotone icon fa-users-gear" style="color: darkred"></i>
-                        <div>
-                            <p class="fw-semibold m-0">Manajemen Pengguna <i class="fa-regular fa-arrow-right"></i></p>
-                            <p class="m-0 text-secondary">Kelola Akun & Role (RBAC) </p>
+            <div class="col-md-6 col-lg-7 h-100 bg-light position-relative" id="chat-area-container">
+                <div id="loading-spinner" class="position-absolute top-50 start-50 translate-middle d-none">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div id="chat-content" class="h-100">
+                    @if (isset($consultation))
+                    @include('admin.consultations.show_partial', ['consultation' => $consultation, 'messages' => $messages])
+                    @else
+                    <div class="h-100 d-flex flex-column align-items-center justify-content-center text-center p-5">
+                        <div class="mb-4">
+                            <div class="bg-white rounded-circle p-4 shadow-sm d-inline-block">
+                                <i class="fas fa-comments fa-3x text-primary opacity-50"></i>
+                            </div>
                         </div>
-                    </a>
-
-                    {{-- 9. Lost & Found (Layanan Jamaah) --}}
-                    <a href="{{ url('/admin/barang-hilang') }}" class="btn text-start home-item">
-                        <i class="fa-duotone icon fa-box-open-full" style="color: #fd7e14"></i>
-                        <div>
-                            <p class="fw-semibold m-0">Lost & Found <i class="fa-regular fa-arrow-right"></i></p>
-                            <p class="m-0 text-secondary">Kelola Laporan Barang Hilang </p>
-                        </div>
-                    </a>
-
-                    {{-- 10. Kotak Masuk Konsultasi --}}
-                    <a href="{{ url('/admin/konsultasi') }}" class="btn text-start home-item">
-                        <i class="fa-duotone icon fa-comment-dots" style="color: #6610f2"></i>
-                        <div>
-                            <p class="fw-semibold m-0">Kotak Masuk Konsultasi <i class="fa-regular fa-arrow-right"></i></p>
-                            <p class="m-0 text-secondary">Tanggapi Formulir Jamaah </p>
-                        </div>
-                    </a>
+                        <h5 class="fw-bold text-dark">Pilih Percakapan</h5>
+                        <p class="text-muted">Pilih percakapan dari daftar untuk mulai chatting.</p>
+                    </div>
+                    @endif
                 </div>
             </div>
-
         </div>
-    </section>
+    </div>
+</div>
+
+<!-- Modal Tolak -->
+<div class="modal fade" id="globalRejectModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <form id="globalRejectForm" method="POST">
+                @csrf
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Tolak Konsultasi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="fw-semibold mb-2">Alasan Penolakan</label>
+                        <textarea name="reason" class="form-control" rows="3" required placeholder="Jelaskan alasan penolakan..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">Tolak</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tutup Konsultasi-->
+<div class="modal fade" id="closeConsultationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-check-circle me-2"></i> Tutup Konsultasi</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin menutup konsultasi ini?</p>
+                <p class="text-muted">Setelah ditutup, Anda tidak bisa mengirim pesan lagi.</p>
+                <input type="hidden" id="consultationId" value="">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" id="confirmCloseBtn" class="btn btn-danger">Ya, Tutup Sekarang</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.17.0/echo.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    let echoInstance = null;
+
+    function initEcho(consultationId) {
+        if (echoInstance) {
+            echoInstance.leave(`consultation.${consultationId}`);
+        }
+        echoInstance = new Echo({
+            broadcaster: 'reverb',
+            key: "{{ env('REVERB_APP_KEY') }}",
+            wsHost: "{{ env('REVERB_HOST') }}",
+            wsPort: {{ env('REVERB_PORT') }},
+            forceTLS: false,
+            auth: {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            }
+        });
+        echoInstance.private(`consultation.${consultationId}`)
+            .listen('.message.sent', (e) => {
+                const userId = {{ Auth::id() }};
+                if (e.user.id !== userId) {
+                    appendMessageToChat(e.message, e.user);
+                    scrollToBottom();
+                }
+            });
+    }
+
+    function appendMessageToChat(message, user) {
+        const isMe = user.id === {{ Auth::id() }};
+        const time = new Date(message.created_at).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        const html = `
+            <div class="d-flex mb-3 ${isMe ? 'justify-content-end' : ''}">
+                ${!isMe ? `
+                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white fw-bold small me-2 flex-shrink-0" style="width: 32px; height: 32px;">
+                    ${user.name?.charAt(0) || 'H'}
+                </div>` : ''}
+                <div class="d-flex flex-column ${isMe ? 'align-items-end' : 'align-items-start'}" style="max-width: 70%;">
+                    <div class="d-flex align-items-baseline mb-1">
+                        ${isMe ? `
+                        <span class="text-muted small me-2" style="font-size: 0.7rem;">${time}</span>
+                        <span class="fw-bold text-white small">You</span>
+                        ` : `
+                        <span class="fw-bold text-dark small me-2">${user.name || 'Pengguna'}</span>
+                        <span class="text-muted small" style="font-size: 0.7rem;">${time}</span>
+                        `}
+                    </div>
+                    <div class="p-3 rounded-3 shadow-sm ${isMe ? 'bg-primary text-white' : 'bg-white text-dark'}">
+                        <p class="mb-0">${message.message}</p>
+                    </div>
+                </div>
+                ${isMe ? `
+                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white fw-bold small ms-2 flex-shrink-0" style="width: 32px; height: 32px;">U</div>
+                ` : ''}
+            </div>
+        `;
+        document.getElementById('adminChatContainer').insertAdjacentHTML('beforeend', html);
+    }
+
+    function scrollToBottom() {
+        const container = document.getElementById('adminChatContainer');
+        if (container) container.scrollTop = container.scrollHeight;
+    }
+
+    function loadChat(id, element) {
+        document.querySelectorAll('.list-group-item').forEach(el => {
+            el.classList.remove('bg-blue-50', 'border-start', 'border-4', 'border-primary');
+        });
+        if (element) {
+            element.classList.add('bg-blue-50', 'border-start', 'border-4', 'border-primary');
+        }
+        document.getElementById('loading-spinner').classList.remove('d-none');
+        document.getElementById('chat-content').style.opacity = '0.5';
+
+        fetch(`{{ url('/admin/konsultasi') }}/${id}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('chat-content').innerHTML = html;
+            document.getElementById('chat-content').style.opacity = '1';
+            document.getElementById('loading-spinner').classList.add('d-none');
+
+            const chatDiv = document.getElementById("adminChatContainer");
+            if (chatDiv) chatDiv.scrollTop = chatDiv.scrollHeight;
+
+            const url = new URL(window.location);
+            url.pathname = `/admin/konsultasi/${id}`;
+            window.history.pushState({}, '', url);
+            window.currentConsultationId = id;
+            initEcho(id);
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Gagal memuat chat.');
+            document.getElementById('loading-spinner').classList.add('d-none');
+            document.getElementById('chat-content').style.opacity = '1';
+        });
+    }
+
+    function openRejectModal(id) {
+        const form = document.getElementById('globalRejectForm');
+        form.action = `{{ url('/admin/konsultasi') }}/${id}/reject`;
+        const modal = new bootstrap.Modal(document.getElementById('globalRejectModal'));
+        modal.show();
+    }
+
+    // Handle modal tutup konsultasi
+    document.addEventListener('DOMContentLoaded', function () {
+        let consultationIdToClose = null;
+
+        document.getElementById('closeConsultationModal')?.addEventListener('show.bs.modal', function (e) {
+            consultationIdToClose = e.relatedTarget.getAttribute('data-id');
+            document.getElementById('consultationId').value = consultationIdToClose;
+        });
+
+        document.getElementById('confirmCloseBtn')?.addEventListener('click', function () {
+            if (!consultationIdToClose) return;
+
+            const url = `/admin/konsultasi/${consultationIdToClose}/close`;
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    bootstrap.Modal.getInstance(document.getElementById('closeConsultationModal')).hide();
+                    window.location.href = '/admin/konsultasi?status=closed';
+                } else {
+                    alert('Gagal menutup konsultasi.');
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('Terjadi kesalahan.');
+            });
+        });
+    });
+
+    // Initialize Echo if consultation is already loaded
+    @if(isset($consultation))
+    document.addEventListener('DOMContentLoaded', () => {
+        initEcho({{ $consultation->id }});
+        window.currentConsultationId = {{ $consultation->id }};
+    });
+    @endif
+    document.addEventListener('submit', function(e) {
+        if (e.target.id === 'admin-chat-form') {
+            e.preventDefault();
+            const input = e.target.querySelector('textarea[name="message"]');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const consultationId = window.currentConsultationId || {{ $consultation->id ?? 0 }};
+            axios.post(`/admin/konsultasi/${consultationId}/pesan`, {
+                    message: message,
+                    _token: '{{ csrf_token() }}'
+                })
+                .then(response => {
+                    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const html = `
+                        <div class="d-flex mb-3 justify-content-end">
+                            <div class="d-flex flex-column align-items-end" style="max-width: 70%;">
+                                <div class="d-flex align-items-baseline mb-1">
+                                    <span class="text-muted small me-2" style="font-size: 0.7rem;">${time}</span>
+                                    <span class="fw-bold text-white small">You</span>
+                                </div>
+                                <div class="p-3 rounded-3 shadow-sm bg-primary text-white">
+                                    <p class="mb-0">${message}</p>
+                                </div>
+                            </div>
+                            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white fw-bold small ms-2 flex-shrink-0" style="width: 32px; height: 32px;">U</div>
+                        </div>
+                    `;
+                    document.getElementById('adminChatContainer').insertAdjacentHTML('beforeend', html);
+                    input.value = '';
+                    scrollToBottom();
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('Gagal mengirim pesan.');
+                });
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.target.name === 'message' && e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            e.target.closest('form').dispatchEvent(new Event('submit'));
+        }
+    });
+</script>
+@endpush
+
+@push('styles')
+<style>
+    .hover-bg-light:hover {
+        background-color: #f8f9fa;
+    }
+
+    .bg-blue-50 {
+        background-color: #eff6ff !important;
+    }
+</style>
+@endpush
 @endsection
