@@ -1,112 +1,58 @@
 @extends('admin.layout')
 
-@section('title', 'Edit Halaman Statis')
+@section('title', 'Tambah Halaman Statis')
 
 @push('styles')
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <style>
-        /* --- COPY STYLE DARI FITUR POSTINGAN --- */
-        .section-wrapper {
-            max-width: 1450px;
-            margin: 0 auto;
-        }
-
-        .card-modern {
-            border: 0 !important;
-            background: #fff;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-        }
-
-        .input-lg {
-            padding: .85rem 1rem !important;
-            font-size: .95rem !important;
-        }
-
+        /* --- STYLE SAMA PERSIS DENGAN EDIT --- */
+        .section-wrapper { max-width: 1450px; margin: 0 auto; }
+        .card-modern { border: 0 !important; background: #fff; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); }
+        .input-lg { padding: .85rem 1rem !important; font-size: .95rem !important; }
+        
         .btn-main {
-            background-color: #CE9138 !important;
-            color: white !important;
-            border: none !important;
-            padding: .75rem 1rem !important;
-            border-radius: .75rem !important;
-            font-weight: 600 !important;
+            background-color: #CE9138 !important; color: white !important;
+            border: none !important; padding: .75rem 1rem !important;
+            border-radius: .75rem !important; font-weight: 600 !important;
         }
 
         .file-uploader {
-            padding: 2rem;
-            border-radius: 1rem;
-            border: 2px dashed #dee2e6;
-            background: #fafafa;
-            text-align: center;
-            cursor: pointer;
-            color: #666;
-            transition: .2s ease-in-out;
-            display: block !important;
+            padding: 2rem; border-radius: 1rem; border: 2px dashed #dee2e6;
+            background: #fafafa; text-align: center; cursor: pointer;
+            color: #666; transition: .2s ease-in-out; display: block !important;
         }
-
-        .file-uploader:hover, .file-uploader.on-drag {
-            background: #f3f3f3;
-            border-color: #CE9138 !important;
-        }
+        .file-uploader:hover, .file-uploader.on-drag { background: #f3f3f3; border-color: #CE9138 !important; }
 
         /* Image Preview Styles */
-        #image-preview-container {
-            position: relative;
-        }
-
-        #image-preview {
-            width: 100%;
-            border-radius: 1rem;
-            border: 1px solid #ddd;
-            object-fit: cover;
-        }
-
+        #image-preview-container { position: relative; display: none; /* Default Hidden untuk Create */ }
+        #image-preview { width: 100%; border-radius: 1rem; border: 1px solid #ddd; object-fit: cover; }
         #remove-image-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: none;
-            background: rgba(0, 0, 0, .55);
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: absolute; top: 10px; right: 10px; width: 32px; height: 32px;
+            border-radius: 50%; border: none; background: rgba(0, 0, 0, .55);
+            color: white; font-size: 18px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
         }
 
         /* Quill Overrides */
-        .ql-toolbar.ql-snow {
-            border-radius: 1rem 1rem 0 0 !important;
-            border-color: #dee2e6 !important;
-            background-color: #f8f9fa;
-        }
-
-        .ql-container.ql-snow {
-            border-radius: 0 0 1rem 1rem !important;
-            border-color: #dee2e6 !important;
-            min-height: 400px !important;
-            font-size: 1rem;
-        }
+        .ql-toolbar.ql-snow { border-radius: 1rem 1rem 0 0 !important; border-color: #dee2e6 !important; background-color: #f8f9fa; }
+        .ql-container.ql-snow { border-radius: 0 0 1rem 1rem !important; border-color: #dee2e6 !important; min-height: 400px !important; font-size: 1rem; }
     </style>
 @endpush
 
 @section('content')
     <section class="p-3 section-wrapper">
 
-        {{-- Form Action --}}
-        <form id="form-edit-page" method="post" action="{{ route('admin.static-pages.update', $page->id) }}" enctype="multipart/form-data">
+        {{-- Form Action ke STORE (Tanpa ID) --}}
+        <form id="form-create-page" method="post" action="{{ route('admin.static-pages.store') }}" enctype="multipart/form-data">
             @csrf
-            @method('PUT')
+            {{-- Tidak perlu @method('PUT') karena Create pakai POST --}}
 
             {{-- Header Section --}}
             <div class="d-flex align-items-center gap-2 mb-4">
                 <a href="{{ route('admin.static-pages.index') }}" class="btn btn-light btn-sm rounded-4 px-3">
                     <i class="fas fa-arrow-left me-1"></i> Kembali
                 </a>
-                <h4 class="fw-bold mb-0">Edit Halaman: {{ $page->title }}</h4>
+                <h4 class="fw-bold mb-0">Tambah Halaman Statis Baru</h4>
             </div>
 
             {{-- Error Validation Alert --}}
@@ -128,18 +74,20 @@
                     <div class="card-modern rounded-3 p-4 mb-4">
                         <div class="mb-3">
                             <label for="title" class="form-label fw-semibold">Judul Halaman <span class="text-danger">*</span></label>
+                            {{-- Value pakai old() saja --}}
                             <input type="text" class="form-control input-lg @error('title') is-invalid @enderror" 
                                 id="title" name="title" 
                                 placeholder="Masukkan judul halaman" 
-                                value="{{ old('title', $page->title) }}" required>
+                                value="{{ old('title') }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="description" class="form-label fw-semibold">Deskripsi Singkat</label>
+                            <label for="description" class="form-label fw-semibold">Deskripsi Singkat </label>
+                            {{-- Value pakai old() saja --}}
                             <textarea class="form-control input-lg @error('description') is-invalid @enderror" 
                                 id="description" name="description" 
                                 placeholder="Masukkan deskripsi untuk meta description" 
-                                rows="3" >{{ old('description', $page->description) }}</textarea>
+                                rows="3" >{{ old('description') }}</textarea>
                         </div>
                     </div>
 
@@ -162,7 +110,7 @@
                     <div class="card-modern rounded-3 p-4 mb-4">
                         <h5 class="fw-semibold mb-3">Aksi</h5>
                         <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold btn-main">
-                            <i class="fas fa-save me-1"></i> Simpan Perubahan
+                            <i class="fas fa-paper-plane me-1"></i> Terbitkan Halaman
                         </button>
                     </div>
 
@@ -170,27 +118,18 @@
                     <div class="card-modern rounded-3 p-4">
                         <h5 class="fw-semibold mb-3">Gambar Utama</h5>
 
-                        @php
-                            // Cek apakah ada gambar lama
-                            // Asumsi backend mengirim full URL atau Anda menggunakan accessor
-                            // Jika menggunakan path relative storage, gunakan asset('storage/'...)
-                            $hasImage = !empty($page->featured_image_url);
-                            $imageUrl = $hasImage ? asset('storage/' . $page->featured_image_url) : '#';
-                        @endphp
-
-                        {{-- 1. Uploader Area (Muncul jika belum ada gambar) --}}
-                        <label for="featured_image_url" id="file-uploader" class="file-uploader" 
-                               style="{{ $hasImage ? 'display:none !important;' : 'display:block !important;' }}">
+                        {{-- 1. Uploader Area (Default Muncul) --}}
+                        <label for="featured_image_url" id="file-uploader" class="file-uploader">
                             <i class="fas fa-image fa-2x mb-2"></i>
                             <div class="fw-semibold">Upload Gambar</div>
                             <div class="small text-muted">Klik atau drag file kesini</div>
                         </label>
 
-                        <input type="file" class="d-none" id="featured_image_url" name="featured_image_url" accept="image/*">
+                        <input type="file" class="d-none" id="featured_image_url" name="featured_image_url" accept="image/*" >
 
-                        {{-- 2. Preview Area (Muncul jika ada gambar) --}}
-                        <div id="image-preview-container" class="mt-2" style="{{ $hasImage ? 'display:block;' : 'display:none;' }}">
-                            <img id="image-preview" src="{{ $imageUrl }}" alt="Preview Image">
+                        {{-- 2. Preview Area (Default Hidden) --}}
+                        <div id="image-preview-container" class="mt-2">
+                            <img id="image-preview" src="#" alt="Preview Image">
                             <button type="button" id="remove-image-btn" title="Ganti Gambar">&times;</button>
                         </div>
                         
@@ -211,59 +150,58 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             
-            /* ================= 1. CONFIG QUILL (SAMA SEPERTI POSTINGAN) ================= */
+            /* ================= 1. CONFIG QUILL ================= */
             const toolbarOptions = [
                 ['bold', 'italic', 'underline', 'strike'],
                 ['blockquote', 'code-block'],
                 [{ 'header': 1 }, { 'header': 2 }],
                 [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                [{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
-                [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
-                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],         // Custom dropdown header
-                [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+                [{ 'script': 'sub' }, { 'script': 'super' }],
+                [{ 'indent': '-1' }, { 'indent': '+1' }],
+                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                [{ 'color': [] }, { 'background': [] }],
                 [{ 'align': [] }],
                 ['link', 'image'],
-                ['clean']                                         // remove formatting button
+                ['clean']
             ];
 
             const quill = new Quill('#editor-content', {
                 theme: 'snow',
-                modules: {
-                    toolbar: toolbarOptions
-                },
+                modules: { toolbar: toolbarOptions },
                 placeholder: 'Tulis konten halaman disini...'
             });
 
-            /* ================= 2. LOAD DATA (SOLUSI BUG H1/H2) ================= */
-            // Menggunakan json_encode agar HTML tag (<h1>, <b>) terbaca sebagai string valid di JS
-            // Ini mencegah browser merender tag sebelum masuk ke editor
-            const existingContent = {!! json_encode($page->content) !!};
+            /* ================= 2. LOAD OLD DATA (JIKA VALIDASI ERROR) ================= */
+            // Mengambil data old input jika submit gagal, agar user tidak ngetik ulang
+            const oldContent = {!! json_encode(old('content')) !!};
             
-            if (existingContent) {
-                // Masukkan ke Quill. Quill akan otomatis mengubah string HTML menjadi format visual
-                quill.clipboard.dangerouslyPasteHTML(0, existingContent);
+            if (oldContent) {
+                quill.clipboard.dangerouslyPasteHTML(0, oldContent);
             }
 
             /* ================= 3. SAVE DATA SAAT SUBMIT ================= */
-            const form = document.getElementById('form-edit-page'); // Pastikan ID ini sesuai dengan <form> di atas
+            const form = document.getElementById('form-create-page');
             const hiddenInput = document.getElementById('content');
 
             if (form) {
                 form.addEventListener('submit', function(e) {
-                    // 1. Salin HTML dari Quill ke hidden input agar terkirim ke server
+                    // A. Populate hidden input (Ambil HTML dari Quill taruh di textarea sembunyi)
                     hiddenInput.value = quill.root.innerHTML;
 
-                    // 2. Cek apakah isinya kosong
+                    // B. VALIDASI MANUAL KONTEN
+                    // Kita cek apakah teks di dalam editor kosong?
+                    // quill.getText() mengambil teks polos tanpa tag HTML.
+                    // .trim() menghapus spasi kosong di awal/akhir.
                     if (quill.getText().trim().length === 0) {
-                        e.preventDefault(); 
+                        e.preventDefault(); // 1. Batalkan pengiriman form
                         
-                        // Munculkan pesan error
+                        // 2. Beri peringatan ke user
                         alert('Konten halaman tidak boleh kosong!'); 
                         
-                        // Arahkan kursor kembali ke editor
+                        // 3. (Opsional) Focus ke editor biar user langsung ngetik
                         quill.focus(); 
                         
-                        return;
+                        return; // Stop script disini
                     }
                 });
             }
@@ -275,7 +213,7 @@
             const container = document.getElementById("image-preview-container");
             const removeBtn = document.getElementById("remove-image-btn");
 
-            // Efek Drag
+            // Logic Drag & Drop
             if(uploader) {
                 uploader.addEventListener("dragover", e => {
                     e.preventDefault();
@@ -294,21 +232,19 @@
                 });
             }
 
-            // Input Change (Klik manual)
+            // Input Change
             if(input) {
                 input.addEventListener("change", () => {
                     if (input.files[0]) showPreview(input.files[0]);
                 });
             }
 
-            // Remove/Ganti Gambar Logic
+            // Remove/Reset Logic
             if(removeBtn) {
                 removeBtn.addEventListener("click", () => {
-                    input.value = ""; // Reset input file
-                    // Jangan hide container preview jika aslinya memang ada gambar dari DB
-                    // Tapi karena ini UI ganti gambar, kita kembalikan ke mode uploader
+                    input.value = ""; 
                     container.style.display = "none";
-                   uploader.style.removeProperty("display");  
+                    uploader.style.removeProperty("display"); 
                     preview.src = "#";
                 });
             }
@@ -318,7 +254,7 @@
                 reader.onload = e => {
                     preview.src = e.target.result;
                     container.style.display = "block";
-                    uploader.style.display = "none"; // Hide uploader area
+                    uploader.style.display = "none"; 
                     uploader.style.setProperty('display', 'none', 'important');
                 };
                 reader.readAsDataURL(file);

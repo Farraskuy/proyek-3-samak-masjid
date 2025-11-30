@@ -6,6 +6,11 @@
     <section class="p-3">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="fw-semibold mb-0">Manajemen Halaman Statis</h4>
+             @if (optional(auth()->user())->role === 'admin')
+                <a href="{{ route('admin.static-pages.tambah') }}" class="btn btn-success fw-semibold">
+                    <i class="fas fa-plus me-1"></i> Tambah Data
+                </a>
+            @endif
         </div>
 
         <div class="row g-0 gap-3">

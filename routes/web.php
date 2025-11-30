@@ -209,6 +209,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|super ad
 
     // Static Pages
     Route::get('/halaman-statis', [StaticPageController::class, 'indexAdmin'])->name('static-pages.index');
+    Route::get('/halaman-statis/tambah', [StaticPageController::class, 'create'])->name('static-pages.tambah');
+    Route::post('/halaman-statis/store', [StaticPageController::class, 'store'])->name('static-pages.store');
     Route::get('/halaman-statis/{id}/edit', [StaticPageController::class, 'edit'])->name('static-pages.edit');
     Route::put('/halaman-statis/{id}', [StaticPageController::class, 'update'])->name('static-pages.update');
 

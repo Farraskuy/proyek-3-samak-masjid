@@ -16,7 +16,7 @@ class StaticPageController extends Controller
      */
     public function showAboutUs()
     {
-        $page = StaticPage::where('slug', 'tentang-kami')->firstOrFail();
+        $page = StaticPage::firstOrFail();
 
         // Process images in content
         $content_html = $this->processContentImages($page->content);
@@ -82,7 +82,7 @@ class StaticPageController extends Controller
         // 1. Validasi Input
         $validated = $request->validate([
             'title' => 'required|string|max:255|unique:static_pages,title,' . $id,
-            'description' => 'required|string|max:500',
+            'description' => 'nullable|string|max:500',
             'content' => 'required|string',
             'featured_image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096'
         ]);
@@ -140,6 +140,101 @@ class StaticPageController extends Controller
                 ->with('error', 'Terjadi kesalahan saat memperbarui halaman: ' . $e->getMessage());
         }
     }
+
+
+
+
+            public function create()
+        {
+            // Cek total data di database
+            $count = StaticPage::count();
+
+            // Jika sudah ada 1 atau lebih balikin ke sebelumnya yahahaha
+            if ($count >= 1) {
+                return redirect()->route('admin.static-pages.index')
+                    ->with('error', 'Maksimal hanya boleh ada 1 Halaman Statis. Silakan edit halaman yang sudah ada.');
+            }
+
+            // Jika belum ada data, tampilkan view create tanpa mengirim variabel $page
+            return view('admin.static-pages.tambah_static-pages');
+        }
+
+        public function store(Request $request)
+        {
+            // 1. Double Check Limit (Keamanan Ekstra)
+            // Mencegah user yang mencoba bypass URL atau inspect element
+            if (StaticPage::count() >= 1) {
+                return redirect()->route('admin.static-pages.index')
+                    ->with('error', 'Kuota halaman statis sudah penuh.');
+            }
+
+            // 2. Validasi Input
+            $validated = $request->validate([
+                'title'              => 'required|string|max:255|unique:static_pages,title',
+                'description'        => 'nullable|string|max:500',
+                'content'            => 'required|string',
+                // Pada fitur Add, biasanya gambar wajib (required), tapi jika opsional ganti jadi nullable
+                'featured_image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096' 
+            ]);
+
+
+        // ==========================================================
+        // ==========================================================
+        $validated['slug'] = Str::slug($request->title);
+        // ==========================================================
+
+
+            // 3. Proses Upload Featured Image
+            if ($request->hasFile('featured_image_url')) {
+                $image = $request->file('featured_image_url');
+                $newName = uniqid() . '_' . $image->getClientOriginalName();
+                // Simpan path gambar ke array validated
+                $validated['featured_image_url'] = $image->storeAs('static-pages/images', $newName);
+            }
+
+            // 4. Proses Konten (Quill Editor)
+            $content = $request->input('content');
+            
+            if ($content) {
+                // Proses gambar Base64 yang di-paste di editor menjadi file fisik
+                // (Asumsi function processQuillImages sudah ada di class ini atau trait, seperti di method update)
+                $content = $this->processQuillImages($content);
+                
+                $validated['content'] = $content;
+            }
+
+            $validated['created_by'] = Auth::id(); // Sesuaikan dengan kolom di DB kamu (created_by / updated_by)
+
+            // 5. Simpan ke Database
+            DB::beginTransaction();
+            try {
+                StaticPage::create($validated);
+                
+                DB::commit();
+
+                return redirect()->route('admin.static-pages.index')
+                    ->with('success', 'Halaman statis berhasil dibuat!');
+                    
+            } catch (\Exception $e) {
+                DB::rollBack();
+                
+                // Hapus gambar featured jika DB gagal simpan agar tidak jadi sampah
+                if (isset($validated['featured_image_url'])) {
+                    Storage::delete($validated['featured_image_url']);
+                }
+
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            }
+        }
+
+
+
+
+
+
+
 
     /**
      * Process base64 images in Quill content and store them
