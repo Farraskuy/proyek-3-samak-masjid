@@ -134,7 +134,7 @@
                         </div>
                         
                         <div class="mt-2 text-center">
-                            <small class="text-muted fst-italic" style="font-size: 0.8rem">*Maksimal ukuran 4mb (JPG, PNG)</small>
+                            <small class="text-muted fst-italic" style="font-size: 0.8rem">*Maksimal ukuran 5mb (jpeg,png,jpg,gif,webp)</small>
                         </div>
                     </div>
 

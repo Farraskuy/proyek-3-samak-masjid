@@ -84,7 +84,7 @@ class StaticPageController extends Controller
             'title' => 'required|string|max:255|unique:static_pages,title,' . $id,
             'description' => 'nullable|string|max:500',
             'content' => 'required|string',
-            'featured_image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096'
+            'featured_image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
         ]);
 
         // 2. Proses Featured Image (Gambar Utama)
@@ -174,7 +174,7 @@ class StaticPageController extends Controller
                 'description'        => 'nullable|string|max:500',
                 'content'            => 'required|string',
                 // Pada fitur Add, biasanya gambar wajib (required), tapi jika opsional ganti jadi nullable
-                'featured_image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096' 
+                'featured_image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120' 
             ]);
 
 
