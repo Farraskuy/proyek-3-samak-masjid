@@ -16,11 +16,12 @@ class StaticPage extends Model
         'content',
         'featured_image_url',
         'updated_by_admin',
+        'updated_at',
     ];
 
     protected $casts = [
         'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        
     ];
 
     public function updatedByAdmin()

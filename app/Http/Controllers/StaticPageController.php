@@ -75,7 +75,7 @@ class StaticPageController extends Controller
     /**
      * Admin: Update static page
      */
-    public function update(Request $request, $id)
+   public function update(Request $request, $id)
     {
         $page = StaticPage::findOrFail($id);
 
@@ -111,24 +111,32 @@ class StaticPageController extends Controller
                 $content
             );
 
-            // B. Proses Gambar Base64 Baru (Upload fisik ke storage)
+            // B. Proses Gambar Base64 Baru
             $content = $this->processQuillImages($content);
 
-            // C. --- BAGIAN BARU: DELETE UNUSED IMAGES ---
-            // Bandingkan konten lama ($page->content) dengan konten baru ($content)
-            // Lakukan ini SETELAH path dibersihkan dan base64 di-upload
+            // C. Delete Unused Images
             $this->deleteRemovedQuillImages($page->content, $content);
 
-            // Masukkan konten final ke array validated
             $validated['content'] = $content;
         }
 
         $validated['updated_by_admin'] = Auth::id();
 
+        // --- BAGIAN KHUSUS TIMESTAMPS ---
+        // 1. Set created_at jadi waktu sekarang
+
+        // 2. Set updated_at jadi sekarang 
+        $validated['updated_at'] = now('Asia/Jakarta');
+
+        // 3. PENTING: Matikan fitur auto-timestamp bawaan Laravel untuk model ini sementara.
+        // Kalau ini tidak dimatikan, Laravel akan memaksa mengisi updated_at lagi saat perintah update() dijalankan.
+        $page->timestamps = false; 
+
         // 4. Update Database
         DB::beginTransaction();
         try {
             $page->update($validated);
+            
             DB::commit();
 
             return redirect()->route('admin.static-pages.index')
