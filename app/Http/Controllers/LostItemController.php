@@ -20,21 +20,12 @@ class LostItemController extends Controller
         if (!empty($keyword)) {
             $query->where(function ($q) use ($keyword) {
                 $q->where('item_name', 'like', "%{$keyword}%")
-<<<<<<< HEAD
-                  ->orWhere('description', 'like', "%{$keyword}%")
-                  ->orWhere('location_lost', 'like', "%{$keyword}%");
-=======
                     ->orWhere('description', 'like', "%{$keyword}%")
                     ->orWhere('location_lost', 'like', "%{$keyword}%");
->>>>>>> refs/remotes/origin/master
             });
         }
 
         $items = $query->paginate(10);
-<<<<<<< HEAD
-
-=======
->>>>>>> refs/remotes/origin/master
         return view('admin.lost-items.index', compact('items'));
     }
 
@@ -107,8 +98,6 @@ class LostItemController extends Controller
         return redirect()->route('admin.lost-items.index')
             ->with('success', 'Laporan barang hilang berhasil dihapus!');
     }
-<<<<<<< HEAD
-=======
 
     public function publicIndex(Request $request)
     {
@@ -135,5 +124,4 @@ class LostItemController extends Controller
 
         return view('client.layanan.laporan-kehilangan.index', compact('items', 'categories'));
     }
->>>>>>> refs/remotes/origin/master
 }
