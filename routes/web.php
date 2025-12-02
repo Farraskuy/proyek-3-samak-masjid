@@ -54,9 +54,8 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // OTP
-Route::get('/auth/send-otp/sent/{destination}', [AuthController::class, 'sentOtp'])->name('auth.sentOtp');
 Route::post('/auth/send-otp', [AuthController::class, 'sendOtp'])->name('auth.sendOtp');
-Route::post('/auth/resend-otp', [AuthController::class, 'sendOtp'])->name('auth.resendOtp');
+Route::post('/auth/resend-otp', [AuthController::class, 'reSendOtp'])->name('auth.resendOtp');
 Route::get('/auth/verify', [AuthController::class, 'showVerifyForm'])->name('auth.showVerifyForm');
 Route::post('/auth/verify', [AuthController::class, 'verifyOtp'])->name('auth.verifyOtp');
 

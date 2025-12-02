@@ -223,40 +223,40 @@
 
     {{-- Auto Show Alerts --}}
     <script>
-        @if(session('success'))
-        Toast.fire({
-            icon: 'success',
-            title: @json(session('success'))
-        });
+        @if (session('success'))
+            Toast.fire({
+                icon: 'success',
+                title: @json(session('success'))
+            });
         @endif
 
-        @if(session('error'))
-        Toast.fire({
-            icon: 'error',
-            title: @json(session('error'))
-        });
+        @if (session('error'))
+            Toast.fire({
+                icon: 'error',
+                title: @json(session('error'))
+            });
         @endif
 
-        @if(session('warning'))
-        Toast.fire({
-            icon: 'warning',
-            title: @json(session('warning'))
-        });
+        @if (session('warning'))
+            Toast.fire({
+                icon: 'warning',
+                title: @json(session('warning'))
+            });
         @endif
 
-        @if(session('info'))
-        Toast.fire({
-            icon: 'info',
-            title: @json(session('info'))
-        });
+        @if (session('info'))
+            Toast.fire({
+                icon: 'info',
+                title: @json(session('info'))
+            });
         @endif
 
         // Jika ada error validasi (multiple errors)
-        @if(isset($errors) && $errors -> any())
-        Toast.fire({
-            icon: 'error',
-            title: @json($errors -> first())
-        });
+        @if (isset($errors) && $errors->any())
+            Toast.fire({
+                icon: 'error',
+                title: @json($errors->first())
+            });
         @endif
     </script>
 
