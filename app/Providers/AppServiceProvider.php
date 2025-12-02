@@ -24,5 +24,12 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrap();
         Paginator::defaultView('vendor.pagination.client-custom');
         Paginator::defaultSimpleView('vendor.pagination.client-custom');
+
+        // Dynamic Gate for Permissions
+        \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
+            if ($user->hasPermission($ability)) {
+                return true;
+            }
+        });
     }
 }

@@ -33,176 +33,194 @@
 
         {{-- 2. MODUL MANAJEMEN KONTEN (CMS) --}}
         {{-- Aktif jika path dimulai dengan admin/konten atau admin/postingan atau admin/galeri --}}
-        <li class="{{ request()->is('admin/postingan*', 'admin/halaman-statis*', 'admin/galeri*', 'admin/postingan/approval*') ? 'showMenu' : '' }}">
-            <div
-                class="nav-button {{ request()->is('admin/postingan*', 'admin/halaman-statis*', 'admin/galeri*', 'admin/postingan/approval*') ? 'active' : '' }}">
-                <div class="iocn-link" onclick="expandMenu(this)">
-                    <a>
-                        <i class="fa-light fa-feather-pointed"></i>
-                        <span class="link_name">Manajemen Konten</span>
-                    </a>
-                    <i class='fa-regular fa-angle-down arrow'></i>
+        @if (auth()->user()->hasPermission('view_posts') ||
+                auth()->user()->hasPermission('view_pages') ||
+                auth()->user()->hasPermission('view_gallery'))
+            <li
+                class="{{ request()->is('admin/postingan*', 'admin/halaman-statis*', 'admin/galeri*', 'admin/postingan/approval*') ? 'showMenu' : '' }}">
+                <div
+                    class="nav-button {{ request()->is('admin/postingan*', 'admin/halaman-statis*', 'admin/galeri*', 'admin/postingan/approval*') ? 'active' : '' }}">
+                    <div class="iocn-link" onclick="expandMenu(this)">
+                        <a>
+                            <i class="fa-light fa-feather-pointed"></i>
+                            <span class="link_name">Manajemen Konten</span>
+                        </a>
+                        <i class='fa-regular fa-angle-down arrow'></i>
+                    </div>
                 </div>
-            </div>
-            <ul class="sub-menu">
-                <li><span class="link_name fw-semibold">Manajemen Konten</span></li>
+                <ul class="sub-menu">
+                    <li><span class="link_name fw-semibold">Manajemen Konten</span></li>
 
-                <li class="nav-button {{ request()->is('admin/postingan*') && !request()->is('admin/postingan/approval*') ? 'active' : '' }}">
-                    <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/postingan') }}">
-                        <span class="fa-regular fa-newspaper"></span> Artikel & Berita
-                    </a>
-                </li>
+                    @if (auth()->user()->hasPermission('view_posts'))
+                        <li
+                            class="nav-button {{ request()->is('admin/postingan*') && !request()->is('admin/postingan/approval*') ? 'active' : '' }}">
+                            <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/postingan') }}">
+                                <span class="fa-regular fa-newspaper"></span> Artikel & Berita
+                            </a>
+                        </li>
+                    @endif
 
+                    @if (auth()->user()->hasPermission('approve_posts'))
+                        <li class="nav-button {{ request()->is('admin/postingan/approval*') ? 'active' : '' }}">
+                            <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/postingan/approval') }}">
+                                <span class="fa-regular fa-user-check"></span> Approval Artikel & Berita
+                            </a>
+                        </li>
+                    @endif
 
-@php
-    $user = auth()->user();
-@endphp
+                    @if (auth()->user()->hasPermission('view_pages'))
+                        <li class="nav-button {{ request()->is('admin/halaman-statis*') ? 'active' : '' }}">
+                            <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/halaman-statis') }}">
+                                <span class="fa-regular fa-file-lines"></span> Halaman Statis
+                            </a>
+                        </li>
+                    @endif
 
-<li class="nav-button {{ request()->is('admin/postingan/approval*') ? 'active' : '' }}"
-    @if(!$user || $user->role !== 'super admin') style="display: none;" @endif>
-    <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/postingan/approval') }}">
-        <span class="fa-regular fa-user-check"></span> Approval Artikel & Berita
-    </a>
-</li>
-
-                
-                
-                <li class="nav-button {{ request()->is('admin/halaman-statis*') ? 'active' : '' }}">
-                    <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/halaman-statis') }}">
-                        <span class="fa-regular fa-file-lines"></span> Halaman Statis
-                    </a>
-                </li>
-                <li class="nav-button {{ request()->is('admin/galeri*') ? 'active' : '' }}">
-                    <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/galeri') }}">
-                        <span class="fa-regular fa-images"></span> Galeri Foto
-                    </a>
-                </li>
-            </ul>
-        </li>
+                    @if (auth()->user()->hasPermission('view_gallery'))
+                        <li class="nav-button {{ request()->is('admin/galeri*') ? 'active' : '' }}">
+                            <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/galeri') }}">
+                                <span class="fa-regular fa-images"></span> Galeri Foto
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
+        @endif
 
         {{-- 3. MODUL JADWAL KEGIATAN --}}
         {{-- Aktif jika path dimulai dengan admin/kegiatan atau admin/kajian --}}
-        <li class="{{ request()->is('admin/jadwal-kegiatan*', 'admin/kajian*') ? 'showMenu' : '' }}">
-            <div class="nav-button {{ request()->is('admin/jadwal-kegiatan*', 'admin/kajian*') ? 'active' : '' }}">
-                <div class="iocn-link" onclick="expandMenu(this)">
-                    <a>
-                        <i class="fa-light fa-calendar-days"></i>
-                        <span class="link_name">Jadwal & Event</span>
-                    </a>
-                    <i class='fa-regular fa-angle-down arrow'></i>
+        @if (auth()->user()->hasPermission('view_events'))
+            <li class="{{ request()->is('admin/jadwal-kegiatan*', 'admin/kajian*') ? 'showMenu' : '' }}">
+                <div class="nav-button {{ request()->is('admin/jadwal-kegiatan*', 'admin/kajian*') ? 'active' : '' }}">
+                    <div class="iocn-link" onclick="expandMenu(this)">
+                        <a>
+                            <i class="fa-light fa-calendar-days"></i>
+                            <span class="link_name">Jadwal & Event</span>
+                        </a>
+                        <i class='fa-regular fa-angle-down arrow'></i>
+                    </div>
                 </div>
-            </div>
-            <ul class="sub-menu">
-                <li><span class="link_name fw-semibold">Jadwal & Event</span></li>
-                <li class="nav-button {{ request()->is('admin/jadwal-kegiatan*') ? 'active' : '' }}">
-                    <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/jadwal-kegiatan') }}">
-                        <span class="fa-regular fa-list-check"></span> Manajemen Kegiatan
-                    </a>
-                </li>
-                <li class="nav-button {{ request()->is('admin/kajian*') ? 'active' : '' }}">
-                    <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/kajian') }}">
-                        <span class="fa-regular fa-user-check"></span> Verifikasi Pendaftar
-                    </a>
-                </li>
-            </ul>
-        </li>
+                <ul class="sub-menu">
+                    <li><span class="link_name fw-semibold">Jadwal & Event</span></li>
+                    <li class="nav-button {{ request()->is('admin/jadwal-kegiatan*') ? 'active' : '' }}">
+                        <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/jadwal-kegiatan') }}">
+                            <span class="fa-regular fa-list-check"></span> Manajemen Kegiatan
+                        </a>
+                    </li>
+                    <li class="nav-button {{ request()->is('admin/kajian*') ? 'active' : '' }}">
+                        <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/kajian') }}">
+                            <span class="fa-regular fa-user-check"></span> Verifikasi Pendaftar
+                        </a>
+                    </li>
+                    <li class="nav-button {{ request()->is('admin/forms*') ? 'active' : '' }}">
+                        <a class="d-flex gap-2 fw-semibold" href="{{ route('admin.forms.index') }}">
+                            <span class="fa-regular fa-clipboard-list"></span> Form Builder
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @endif
 
         {{-- 4. MODUL KEUANGAN (ZIS) --}}
         {{-- Aktif jika path dimulai dengan admin/keuangan atau admin/donasi --}}
-        <li class="{{ request()->is('admin/keuangan*', 'admin/donasi*') ? 'showMenu' : '' }}">
-            <div class="nav-button {{ request()->is('admin/keuangan*', 'admin/donasi*') ? 'active' : '' }}">
-                <div class="iocn-link" onclick="expandMenu(this)">
-                    <a>
-                        <i class="fa-light fa-hand-holding-dollar"></i>
-                        <span class="link_name">Keuangan (ZIS)</span>
-                    </a>
-                    <i class='fa-regular fa-angle-down arrow'></i>
+        @if (auth()->user()->hasPermission('view_finance'))
+            <li class="{{ request()->is('admin/keuangan*', 'admin/donasi*') ? 'showMenu' : '' }}">
+                <div class="nav-button {{ request()->is('admin/keuangan*', 'admin/donasi*') ? 'active' : '' }}">
+                    <div class="iocn-link" onclick="expandMenu(this)">
+                        <a>
+                            <i class="fa-light fa-hand-holding-dollar"></i>
+                            <span class="link_name">Keuangan (ZIS)</span>
+                        </a>
+                        <i class='fa-regular fa-angle-down arrow'></i>
+                    </div>
                 </div>
-            </div>
-            <ul class="sub-menu">
-                <li><span class="link_name fw-semibold">Keuangan (ZIS)</span></li>
-                <li class="nav-button {{ request()->is('admin/donasi/verifikasi*') ? 'active' : '' }}">
-                    <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/donasi/verifikasi') }}">
-                        <span class="fa-regular fa-money-check-dollar"></span> Verifikasi Donasi
-                    </a>
-                </li>
-                <li class="nav-button {{ request()->is('admin/keuangan*') ? 'active' : '' }}">
-                    <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/keuangan') }}">
-                        <span class="fa-regular fa-chart-line-up"></span> Manajemen Transaksi
-                    </a>
-                </li>
-            </ul>
-        </li>
+                <ul class="sub-menu">
+                    <li><span class="link_name fw-semibold">Keuangan (ZIS)</span></li>
+                    @if (auth()->user()->hasPermission('verify_donation'))
+                        <li class="nav-button {{ request()->is('admin/donasi/verifikasi*') ? 'active' : '' }}">
+                            <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/donasi/verifikasi') }}">
+                                <span class="fa-regular fa-money-check-dollar"></span> Verifikasi Donasi
+                            </a>
+                        </li>
+                    @endif
+                    <li class="nav-button {{ request()->is('admin/keuangan*') ? 'active' : '' }}">
+                        <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/keuangan') }}">
+                            <span class="fa-regular fa-chart-line-up"></span> Manajemen Transaksi
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @endif
 
         {{-- 5. MODUL LAYANAN JAMA'AH --}}
         {{-- Aktif jika path dimulai dengan admin/barang-hilang atau admin/konsultasi --}}
-        <li class="{{ request()->is('admin/barang-hilang*', 'admin/konsultasi*') ? 'showMenu' : '' }}">
-            <div class="nav-button {{ request()->is('admin/barang-hilang*', 'admin/konsultasi*') ? 'active' : '' }}">
-                <div class="iocn-link" onclick="expandMenu(this)">
-                    <a>
-                        <i class="fa-light fa-handshake-angle"></i>
-                        <span class="link_name">Layanan Jama'ah</span>
-                    </a>
-                    <i class='fa-regular fa-angle-down arrow'></i>
+        @if (auth()->user()->hasPermission('view_lost_items') || auth()->user()->hasPermission('view_consultations'))
+            <li class="{{ request()->is('admin/barang-hilang*', 'admin/konsultasi*') ? 'showMenu' : '' }}">
+                <div
+                    class="nav-button {{ request()->is('admin/barang-hilang*', 'admin/konsultasi*') ? 'active' : '' }}">
+                    <div class="iocn-link" onclick="expandMenu(this)">
+                        <a>
+                            <i class="fa-light fa-handshake-angle"></i>
+                            <span class="link_name">Layanan Jama'ah</span>
+                        </a>
+                        <i class='fa-regular fa-angle-down arrow'></i>
+                    </div>
                 </div>
-            </div>
-            <ul class="sub-menu">
-                <li><span class="link_name fw-semibold">Layanan Jama'ah</span></li>
-                <li class="nav-button {{ request()->is('admin/barang-hilang*') ? 'active' : '' }}">
-                    <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/barang-hilang') }}">
-                        <span class="fa-regular fa-box-open-full"></span> Lost & Found
-                    </a>
-                </li>
-                <li class="nav-button {{ request()->is('admin/konsultasi*') ? 'active' : '' }}">
-                    <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/konsultasi') }}">
-                        <span class="fa-regular fa-comment-dots"></span> Konsultasi Online
-                    </a>
-                </li>
-            </ul>
-        </li>
+                <ul class="sub-menu">
+                    <li><span class="link_name fw-semibold">Layanan Jama'ah</span></li>
+                    @if (auth()->user()->hasPermission('view_lost_items'))
+                        <li class="nav-button {{ request()->is('admin/barang-hilang*') ? 'active' : '' }}">
+                            <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/barang-hilang') }}">
+                                <span class="fa-regular fa-box-open-full"></span> Lost & Found
+                            </a>
+                        </li>
+                    @endif
+                    @if (auth()->user()->hasPermission('view_consultations'))
+                        <li class="nav-button {{ request()->is('admin/konsultasi*') ? 'active' : '' }}">
+                            <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/konsultasi') }}">
+                                <span class="fa-regular fa-comment-dots"></span> Konsultasi Online
+                            </a>
+                        </li>
+                    @endif
+                </ul>
+            </li>
+        @endif
 
         {{-- 6. MODUL MANAJEMEN PENGGUNA --}}
-        <li>
-            <div class="nav-button {{ request()->is('admin/pengguna*') ? 'active' : '' }}">
-                <a href="{{ url('/admin/pengguna') }}">
-                    <i class="fa-regular fa-users-gear"></i>
-                    <span class="link_name">Manajemen Pengguna</span>
-                </a>
-            </div>
-            <ul class="sub-menu blank">
-                <li class="fw-semibold link_name">Manajemen Pengguna</li>
-            </ul>
-        </li>
-
-        {{-- 7. FORM BUILDER / GENERATOR --}}
-        <li class="{{ request()->is('admin/forms*') ? 'showMenu' : '' }}">
-            <div class="nav-button {{ request()->is('admin/forms*') ? 'active' : '' }}">
-                <div class="iocn-link" onclick="expandMenu(this)">
-                    <a>
-                        <i class="fa-regular fa-clipboard-list"></i>
-                        <span class="link_name">Form Builder</span>
+        @if (auth()->user()->hasPermission('view_users'))
+            <li>
+                <div class="nav-button {{ request()->is('admin/users*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.users.index') }}">
+                        <i class="fa-regular fa-users-gear"></i>
+                        <span class="link_name">Manajemen Pengguna</span>
                     </a>
-                    <i class='fa-regular fa-angle-down arrow'></i>
                 </div>
-            </div>
-            <ul class="sub-menu">
-                <li><span class="link_name fw-semibold">Form Builder</span></li>
-                <li class="nav-button {{ request()->is('admin/forms') ? 'active' : '' }}">
-                    <a class="d-flex gap-2 fw-semibold" href="{{ route('admin.forms.index') }}">
-                        <span class="fa-regular fa-list"></span> Daftar Form
+                <ul class="sub-menu blank">
+                    <li class="fw-semibold link_name">Manajemen Pengguna</li>
+                </ul>
+            </li>
+        @endif
+
+        {{-- 7. MANAJEMEN ROLE --}}
+        @if (auth()->user()->hasPermission('view_roles'))
+            <li>
+                <div class="nav-button {{ request()->is('admin/roles*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.roles.index') }}">
+                        <i class="fa-regular fa-user-shield"></i>
+                        <span class="link_name">Manajemen Role</span>
                     </a>
-                </li>
-                <li class="nav-button {{ request()->is('admin/forms/create') ? 'active' : '' }}">
-                    <a class="d-flex gap-2 fw-semibold" href="{{ route('admin.forms.create') }}">
-                        <span class="fa-regular fa-plus"></span> Buat Form Baru
-                    </a>
-                </li>
-            </ul>
-        </li>
+                </div>
+                <ul class="sub-menu blank">
+                    <li class="fw-semibold link_name">Manajemen Role</li>
+                </ul>
+            </li>
+        @endif
+
+
 
 
         {{-- BAGIAN BAWAH: PENGATURAN & KELUAR --}}
-        <li class="position-absolute w-100 bg-white" style="bottom: 0">
+        {{-- <li class="position-absolute w-100 bg-white" style="bottom: 0">
             <div class="bg-white me-2">
                 <div class="nav-button {{ request()->is('admin/pengaturan*') ? 'active' : '' }}">
                     <a href="{{ url('/admin/pengaturan') }}">
@@ -220,6 +238,6 @@
             <ul class="sub-menu blank">
                 <li class="fw-semibold link_name">Pengaturan</li>
             </ul>
-        </li>
+        </li> --}}
     </ul>
 </aside>

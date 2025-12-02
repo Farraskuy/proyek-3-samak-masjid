@@ -150,107 +150,132 @@ Route::middleware('auth')->prefix('konsultasi-saya')->name('client.consultations
 
 
 // =============================== ADMIN PANEL ===============================
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|super admin|ustadz', 'restrict_super_admin'])->group(function () {
+// Protected by Auth and Permission Middleware
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Role Management
+    Route::prefix('roles')->name('roles.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\RoleController::class, 'index'])->name('index')->middleware('permission:view_roles');
+        Route::get('/create', [\App\Http\Controllers\Admin\RoleController::class, 'create'])->name('create')->middleware('permission:create_roles');
+        Route::post('/', [\App\Http\Controllers\Admin\RoleController::class, 'store'])->name('store')->middleware('permission:create_roles');
+        Route::get('/{role}/edit', [\App\Http\Controllers\Admin\RoleController::class, 'edit'])->name('edit')->middleware('permission:edit_roles');
+        Route::put('/{role}', [\App\Http\Controllers\Admin\RoleController::class, 'update'])->name('update')->middleware('permission:edit_roles');
+        Route::delete('/{role}', [\App\Http\Controllers\Admin\RoleController::class, 'destroy'])->name('destroy')->middleware('permission:delete_roles');
+    });
+
+    // Let's define it more granularly to match the pattern
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('index')->middleware('permission:view_users');
+        Route::get('/create', [\App\Http\Controllers\Admin\UserController::class, 'create'])->name('create')->middleware('permission:edit_users');
+        Route::post('/', [\App\Http\Controllers\Admin\UserController::class, 'store'])->name('store')->middleware('permission:edit_users');
+        Route::get('/{user}/edit', [\App\Http\Controllers\Admin\UserController::class, 'edit'])->name('edit')->middleware('permission:edit_users');
+        Route::put('/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('update')->middleware('permission:edit_users');
+        Route::delete('/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('destroy')->middleware('permission:delete_users');
+    });
+
     // Postingan
-    
     Route::prefix('postingan')->name('postingan.')->group(function () {
-        Route::get('/', [PostinganController::class, 'indexAdmin'])->name('index');
-        Route::get('/tambah', [PostinganController::class, 'create'])->name('create');
-        Route::post('/posts', [PostinganController::class, 'store'])->name('store');
-        Route::delete('/delete/{id}', [PostinganController::class, 'deleteArtikel'])->name('delete');
+        Route::get('/', [PostinganController::class, 'indexAdmin'])->name('index')->middleware('permission:view_posts');
+        Route::get('/tambah', [PostinganController::class, 'create'])->name('create')->middleware('permission:create_posts');
+        Route::post('/posts', [PostinganController::class, 'store'])->name('store')->middleware('permission:create_posts');
+        Route::delete('/delete/{id}', [PostinganController::class, 'deleteArtikel'])->name('delete')->middleware('permission:delete_posts');
 
-        Route::get('/edit/{id}', [PostinganController::class, 'edit'])->name('edit');
-        Route::put('/update/{id}', [PostinganController::class, 'update'])->name('update');
-         Route::post('/store', [PostinganController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [PostinganController::class, 'edit'])->name('edit')->middleware('permission:edit_posts');
+        Route::put('/update/{id}', [PostinganController::class, 'update'])->name('update')->middleware('permission:edit_posts');
+        Route::post('/store', [PostinganController::class, 'store'])->name('store')->middleware('permission:create_posts');
 
-                Route::middleware(['role:super admin'])->group(function () {
+        Route::middleware(['permission:approve_posts'])->group(function () {
             Route::get('/approval', [PostinganController::class, 'approvalIndex'])->name('approval.index');
             Route::get('/approval/{id}', [PostinganController::class, 'approvalShow'])->name('approval.show');
             Route::post('/approval/{id}', [PostinganController::class, 'approvalUpdate'])->name('approval.update');
-            
         });
     });
 
     // Lost Found
-    Route::get('/barang-hilang', [LostFoundController::class, 'adminIndex'])->name('barang-hilang');
-    Route::get('/barang-hilang/tambah', [LostFoundController::class, 'create'])->name('barang-hilang.tambah');
-    Route::post('/barang-hilang', [LostFoundController::class, 'store'])->name('barang-hilang.store');
-    Route::get('/barang-hilang/{id}/edit', [LostFoundController::class, 'edit'])->name('barang-hilang.edit');
-    Route::put('/barang-hilang/{id}', [LostFoundController::class, 'update'])->name('barang-hilang.update');
-    Route::delete('/barang-hilang/{id}', [LostFoundController::class, 'destroy'])->name('barang-hilang.destroy');
+    Route::middleware('permission:view_lost_items')->group(function () {
+        Route::get('/barang-hilang', [LostFoundController::class, 'adminIndex'])->name('barang-hilang');
+        Route::get('/barang-hilang/tambah', [LostFoundController::class, 'create'])->name('barang-hilang.tambah')->middleware('permission:create_lost_items');
+        Route::post('/barang-hilang', [LostFoundController::class, 'store'])->name('barang-hilang.store')->middleware('permission:create_lost_items');
+        Route::get('/barang-hilang/{id}/edit', [LostFoundController::class, 'edit'])->name('barang-hilang.edit')->middleware('permission:edit_lost_items');
+        Route::put('/barang-hilang/{id}', [LostFoundController::class, 'update'])->name('barang-hilang.update')->middleware('permission:edit_lost_items');
+        Route::delete('/barang-hilang/{id}', [LostFoundController::class, 'destroy'])->name('barang-hilang.destroy')->middleware('permission:delete_lost_items');
+    });
 
     //  Admin Jadwal Kegiatan
-    Route::prefix('jadwal-kegiatan')->name('kegiatan.')->group(function () {
+    Route::prefix('jadwal-kegiatan')->name('kegiatan.')->middleware('permission:view_events')->group(function () {
         Route::get('/', [AdminKegiatanController::class, 'index'])->name('index');
-        Route::get('/tambah', [AdminKegiatanController::class, 'create'])->name('create');
-        Route::post('/tambah', [AdminKegiatanController::class, 'store'])->name('store');
-        Route::get('/edit/{id}', [AdminKegiatanController::class, 'edit'])->name('edit');
-        Route::put('/edit/{id}', [AdminKegiatanController::class, 'update'])->name('update');
-        Route::delete('/delete/{id}', [AdminKegiatanController::class, 'destroy'])->name('destroy');
+        Route::get('/tambah', [AdminKegiatanController::class, 'create'])->name('create')->middleware('permission:create_events');
+        Route::post('/tambah', [AdminKegiatanController::class, 'store'])->name('store')->middleware('permission:create_events');
+        Route::get('/edit/{id}', [AdminKegiatanController::class, 'edit'])->name('edit')->middleware('permission:edit_events');
+        Route::put('/edit/{id}', [AdminKegiatanController::class, 'update'])->name('update')->middleware('permission:edit_events');
+        Route::delete('/delete/{id}', [AdminKegiatanController::class, 'destroy'])->name('destroy')->middleware('permission:delete_events');
     });
 
-    Route::prefix('galeri')->name('galeri.')->group(function () {
+    Route::prefix('galeri')->name('galeri.')->middleware('permission:view_gallery')->group(function () {
         Route::get('/', [GaleriController::class, 'adminIndex'])->name('index');
-        Route::get('/tambah', [GaleriController::class, 'create'])->name('create');
-        Route::post('/tambah', [GaleriController::class, 'store'])->name('store');
-        Route::get('/edit/{album_id}', [GaleriController::class, 'edit'])->name('edit');
-        Route::post('/edit/{album_id}', [GaleriController::class, 'update'])->name('update');
-        Route::delete('/delete/{album_id}', [GaleriController::class, 'delete'])->name('delete');
+        Route::get('/tambah', [GaleriController::class, 'create'])->name('create')->middleware('permission:create_gallery');
+        Route::post('/tambah', [GaleriController::class, 'store'])->name('store')->middleware('permission:create_gallery');
+        Route::get('/edit/{album_id}', [GaleriController::class, 'edit'])->name('edit')->middleware('permission:edit_gallery');
+        Route::post('/edit/{album_id}', [GaleriController::class, 'update'])->name('update')->middleware('permission:edit_gallery');
+        Route::delete('/delete/{album_id}', [GaleriController::class, 'delete'])->name('delete')->middleware('permission:delete_gallery');
     });
-
-    // Admin feature indexes (sidebar)
-    Route::get('/galeri', [GaleriController::class, 'index'])->name('galeri');
-    Route::get('/donasi/verifikasi', [DonasiController::class, 'index'])->name('donasi.verifikasi');
-    Route::get('/kajian', [KajianController::class, 'index'])->name('kajian');
-    Route::get('/pengguna', [PenggunaController::class, 'index'])->name('pengguna');
 
     // Static Pages
-    Route::get('/halaman-statis', [StaticPageController::class, 'indexAdmin'])->name('static-pages.index');
-    Route::get('/halaman-statis/tambah', [StaticPageController::class, 'create'])->name('static-pages.tambah');
-    Route::post('/halaman-statis/store', [StaticPageController::class, 'store'])->name('static-pages.store');
-    Route::get('/halaman-statis/{id}/edit', [StaticPageController::class, 'edit'])->name('static-pages.edit');
-    Route::put('/halaman-statis/{id}', [StaticPageController::class, 'update'])->name('static-pages.update');
+    Route::middleware('permission:view_pages')->group(function () {
+        Route::get('/halaman-statis', [StaticPageController::class, 'indexAdmin'])->name('static-pages.index');
+        Route::get('/halaman-statis/tambah', [StaticPageController::class, 'create'])->name('static-pages.tambah')->middleware('permission:edit_pages');
+        Route::post('/halaman-statis/store', [StaticPageController::class, 'store'])->name('static-pages.store')->middleware('permission:edit_pages');
+        Route::get('/halaman-statis/{id}/edit', [StaticPageController::class, 'edit'])->name('static-pages.edit')->middleware('permission:edit_pages');
+        Route::put('/halaman-statis/{id}', [StaticPageController::class, 'update'])->name('static-pages.update')->middleware('permission:edit_pages');
+    });
 
     // Konsultasi Admin/Ustadz
-    Route::prefix('konsultasi')->name('consultations.')->group(function () {
+    Route::prefix('konsultasi')->name('consultations.')->middleware('permission:view_consultations')->group(function () {
         Route::get('/', [ConsultationUstadzController::class, 'index'])->name('index');
         Route::get('/{id}', [ConsultationUstadzController::class, 'show'])->name('show');
-        Route::post('/{id}/accept', [ConsultationUstadzController::class, 'accept'])->name('accept');
-        Route::post('/{id}/reject', [ConsultationUstadzController::class, 'reject'])->name('reject');
-        Route::post('/{id}/close', [ConsultationUstadzController::class, 'close'])->name('close');
-        Route::post('/{id}/pesan', [ConsultationUstadzController::class, 'sendMessage'])->name('send-message');
+        Route::post('/{id}/accept', [ConsultationUstadzController::class, 'accept'])->name('accept')->middleware('permission:reply_consultations');
+        Route::post('/{id}/reject', [ConsultationUstadzController::class, 'reject'])->name('reject')->middleware('permission:reply_consultations');
+        Route::post('/{id}/close', [ConsultationUstadzController::class, 'close'])->name('close')->middleware('permission:reply_consultations');
+        Route::post('/{id}/pesan', [ConsultationUstadzController::class, 'sendMessage'])->name('send-message')->middleware('permission:reply_consultations');
     });
 
     // Form Builder Admin
-    Route::get('/forms', [FormBuilderController::class, 'index'])->name('forms.index');
-    Route::get('/forms/create', [FormBuilderController::class, 'create'])->name('forms.create');
-    Route::post('/forms', [FormBuilderController::class, 'store'])->name('forms.store');
-    Route::get('/forms/{id}/edit', [FormBuilderController::class, 'edit'])->name('forms.edit');
-    Route::put('/forms/{id}', [FormBuilderController::class, 'update'])->name('forms.update');
-    Route::delete('/forms/{id}', [FormBuilderController::class, 'destroy'])->name('forms.destroy');
+    Route::middleware('permission:view_events')->group(function () { // Moved to Humas/Events
+        Route::get('/forms', [FormBuilderController::class, 'index'])->name('forms.index');
+        Route::get('/forms/create', [FormBuilderController::class, 'create'])->name('forms.create');
+        Route::post('/forms', [FormBuilderController::class, 'store'])->name('forms.store');
+        Route::get('/forms/{id}/edit', [FormBuilderController::class, 'edit'])->name('forms.edit');
+        Route::put('/forms/{id}', [FormBuilderController::class, 'update'])->name('forms.update');
+        Route::delete('/forms/{id}', [FormBuilderController::class, 'destroy'])->name('forms.destroy');
+    });
 
     // Form Responses
-    Route::get('/forms/{id}/responses', [FormBuilderController::class, 'responses'])->name('forms.responses');
-    Route::get('/forms/{formId}/responses/{responseId}', [FormBuilderController::class, 'responseShow'])->name('forms.responses.show');
-    Route::delete('/forms/{formId}/responses/{responseId}', [FormBuilderController::class, 'responseDelete'])->name('forms.responses.delete');
+    Route::middleware('permission:view_events')->group(function () {
+        Route::get('/forms/{id}/responses', [FormBuilderController::class, 'responses'])->name('forms.responses');
+        Route::get('/forms/{formId}/responses/{responseId}', [FormBuilderController::class, 'responseShow'])->name('forms.responses.show');
+        Route::delete('/forms/{formId}/responses/{responseId}', [FormBuilderController::class, 'responseDelete'])->name('forms.responses.delete');
+    });
 
     // Bank
-    Route::resource('banks', BankController::class);
+    Route::resource('banks', BankController::class)->middleware('permission:view_finance');
 
     // Donasi Confirmation
-    Route::get('/donasi/verifikasi', [DonationConfirmationController::class, 'index'])->name('donasi.index');
-    Route::post('/donasi/{id}/approve', [DonationConfirmationController::class, 'approve'])->name('donasi.approve');
-    Route::post('/donasi/{id}/reject', [DonationConfirmationController::class, 'reject'])->name('donasi.reject');
+    Route::middleware('permission:verify_donation')->group(function () {
+        Route::get('/donasi/verifikasi', [DonationConfirmationController::class, 'index'])->name('donasi.index');
+        Route::post('/donasi/{id}/approve', [DonationConfirmationController::class, 'approve'])->name('donasi.approve');
+        Route::post('/donasi/{id}/reject', [DonationConfirmationController::class, 'reject'])->name('donasi.reject');
+    });
 
     //Keuangan
-    Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan');
-    Route::post('/keuangan', [KeuanganController::class, 'store'])->name('keuangan.store');
-    Route::delete('/keuangan/{id}', [KeuanganController::class, 'destroy'])->name('keuangan.destroy');
+    Route::middleware('permission:view_finance')->group(function () {
+        Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan');
+        Route::post('/keuangan', [KeuanganController::class, 'store'])->name('keuangan.store')->middleware('permission:manage_income'); // Or manage_expense
+        Route::delete('/keuangan/{id}', [KeuanganController::class, 'destroy'])->name('keuangan.destroy')->middleware('permission:manage_income');
+    });
 
-    // Admin Profile
+    // Admin Profile (Available to all authorized admins)
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [AdminProfileController::class, 'index'])->name('index');
         Route::get('/edit', [AdminProfileController::class, 'edit'])->name('edit');
