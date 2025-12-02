@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\LostAndFoundItem;
+use App\Models\FoundItem;
 use App\Models\LostItemPhoto;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -13,7 +13,7 @@ class LostFoundController extends Controller
 {
     public function index()
     {
-        $query = LostAndFoundItem::with('photos')
+        $query = FoundItem::with('photos')
             ->where('status', 'Tersedia');
 
         // Filter berdasarkan kategori (jika ada)
@@ -39,7 +39,7 @@ class LostFoundController extends Controller
     {
         $keyword = $request->query('keyword', '');
 
-        $query = LostAndFoundItem::with('user', 'photos')->latest();
+        $query = FoundItem::with('user', 'photos')->latest();
 
         // Add search filter
         if (!empty($keyword)) {
@@ -72,7 +72,7 @@ class LostFoundController extends Controller
             'category' => 'required|in:kendaraan,elektronik,aksesoris,dokumen,lain-lain',
         ]);
 
-        $item = LostAndFoundItem::create([
+        $item = FoundItem::create([
             'inputted_by_admin_id' => auth::id(),
             'item_name' => $request->item_name,
             'description' => $request->description,
@@ -96,7 +96,7 @@ class LostFoundController extends Controller
 
     public function edit($item_id)
     {
-        $item = LostAndFoundItem::with('photos')->findOrFail($item_id);
+        $item = FoundItem::with('photos')->findOrFail($item_id);
         return view('admin.lost-found.edit', compact('item'));
     }
 
@@ -111,7 +111,7 @@ class LostFoundController extends Controller
             'new_featured_images.*' => 'image|mimes:jpeg,png,jpg|max:10240',
         ]);
 
-        $item = LostAndFoundItem::findOrFail($item_id);
+        $item = FoundItem::findOrFail($item_id);
         $item->update([
             'item_name' => $request->item_name,
             'description' => $request->description,
@@ -149,7 +149,7 @@ class LostFoundController extends Controller
 
     public function destroy($item_id)
     {
-        $item = LostAndFoundItem::findOrFail($item_id);
+        $item = FoundItem::findOrFail($item_id);
 
         foreach ($item->photos as $photo) {
             Storage::disk('public')->delete($photo->image_url);
