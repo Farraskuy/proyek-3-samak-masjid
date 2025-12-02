@@ -2,30 +2,30 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use App\Models\FoundItem;
 use App\Models\User;
-use App\Models\LostItem;
 
-class LostItemPhoto extends Model
+class FoundItemPhoto extends Model
 {
     use HasFactory;
 
-    protected $table = 'lost_item_photos';
+    protected $table = 'found_item_photos';
     protected $primaryKey = 'photo_id';
 
     const UPDATED_AT = null;
 
     protected $fillable = [
-        'lost_item_id',
+        'found_item_id',
         'image_url',
         'caption',
         'uploaded_by_admin_id',
     ];
 
-    public function lostItem()
+    public function foundItem()
     {
-        return $this->belongsTo(LostItem::class, 'lost_item_id');
+        return $this->belongsTo(FoundItem::class, 'found_item_id', 'item_id');
     }
 
     public function user()

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('confirmation_id');
             $table->foreignId('user_id')->nullable()->constrained('users', 'id');
             $table->string('guest_name', 100)->nullable();
+            $table->string('donation_type', 100);
             $table->decimal('amount', 15, 2);
             $table->date('transfer_date');
             $table->foreignId('destination_account_id')->constrained('bank_accounts', 'account_id');

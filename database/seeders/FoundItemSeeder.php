@@ -5,15 +5,19 @@ namespace Database\Seeders;
 use App\Models\Role;
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use App\Models\LostAndFoundItem;
+use App\Models\FoundItem;
 
+<<<<<<<< HEAD:database/seeders/FoundItem.php
 class FoundItem extends Seeder
+========
+class FoundItemSeeder extends Seeder
+>>>>>>>> refs/remotes/origin/master:database/seeders/FoundItemSeeder.php
 {
     public function run(): void
     {
         $userId = User::where('role_id', Role::where('name', 'Sarpras')->first()->id)->first()->id;
 
-        LostAndFoundItem::insert([
+        FoundItem::insert([
             [
                 'inputted_by_user_id' => $userId,
                 'item_name' => 'Dompet Kulit Hitam',

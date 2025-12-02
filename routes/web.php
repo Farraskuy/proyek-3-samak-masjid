@@ -95,7 +95,7 @@ Route::post('/donasi/store', [ZISController::class, 'storeKonfirmasi'])->name('d
 
 
 // =============================== Lost & Found (Public) ===============================
-Route::get('/layanan/barang-hilang', [LostFoundController::class, 'index'])->name('layanan.barang-hilang');
+Route::get('/layanan/barang-hilang', [LostFoundController::class, 'publicIndex'])->name('layanan.barang-hilang');
 Route::get('/layanan/barang-ditemukan', [LostFoundController::class, 'index'])->name('layanan.barang-ditemukan');
 Route::get('/layanan/laporan-kehilangan', [LostItemController::class, 'publicIndex'])->name('layanan.laporan-kehilangan');
 
@@ -205,6 +205,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::put('/barang-hilang/{id}', [LostFoundController::class, 'update'])->name('barang-hilang.update')->middleware('permission:edit_lost_items');
         Route::delete('/barang-hilang/{id}', [LostFoundController::class, 'destroy'])->name('barang-hilang.destroy')->middleware('permission:delete_lost_items');
     });
+
+    // Barang Hilang (Laporan Jamaah → Input DKM)
+    Route::resource('lost-items', LostItemController::class)->names([
+        'index' => 'admin.lost-items.index',
+        'create' => 'admin.lost-items.create',
+        'store' => 'admin.lost-items.store',
+        'edit' => 'admin.lost-items.edit',
+        'update' => 'admin.lost-items.update',
+        'destroy' => 'admin.lost-items.destroy',
+    ]);
 
     //  Admin Jadwal Kegiatan
     Route::prefix('jadwal-kegiatan')->name('kegiatan.')->middleware('permission:view_events')->group(function () {
