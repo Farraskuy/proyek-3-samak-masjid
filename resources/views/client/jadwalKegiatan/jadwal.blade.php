@@ -77,10 +77,11 @@
                                     <!-- Poster -->
                                     <div class="col-md-3 mb-3 mb-md-0">
                                         @if ($event->poster)
-                                            <div class="position-relative">
+                                            <div class="position-relative card-thumbnail-wrapper"
+                                                style="height: 140px; border-radius: 0.5rem;">
                                                 <img src="{{ asset('storage/' . $event->poster) }}"
-                                                    class="img-fluid rounded-3 w-100"
-                                                    style="height: 140px; object-fit: cover;">
+                                                    class="img-fluid w-100 h-100" style="object-fit: cover;">
+                                                <i class="fas fa-image fallback-icon"></i>
                                                 <div class="position-absolute top-0 end-0 m-2">
                                                     <span class="badge bg-primary rounded-pill">
                                                         <i class="fas fa-calendar-day me-1"></i>
@@ -469,7 +470,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-                    const eventDates = @json($events->pluck('start_time')->map(fn($date) => \Carbon\Carbon::parse($date)->format('Y-m-d'))->unique()->values()->toArray());
+            const eventDates = @json($events->pluck('start_time')->map(fn($date) => \Carbon\Carbon::parse($date)->format('Y-m-d'))->unique()->values()->toArray());
 
             const today = new Date().toISOString().split('T')[0];
 
@@ -479,7 +480,7 @@
                 dateFormat: "Y-m-d",
                 defaultDate: today,
 
-                        onDayCreate: function(dObj, dStr, fp, dayElem) {
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
                     const dateStr = flatpickr.formatDate(dayElem.dateObj, "Y-m-d");
                     if (eventDates.includes(dateStr)) {
                         dayElem.classList.add("has-event");
@@ -489,11 +490,11 @@
                 onChange: function(selectedDates, dateStr) {
                     if (!dateStr) return;
 
-                            const container = document.getElementById("event-detail-container");
+                    const container = document.getElementById("event-detail-container");
                     container.innerHTML =
                         '<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>';
 
-                            if (dateStr === today) {
+                    if (dateStr === today) {
                         document.getElementById("event-title").innerText = "Kegiatan Hari Ini";
                     } else {
                         const tanggal = new Date(dateStr);
@@ -516,9 +517,9 @@
                 }
             });
 
-                    document.getElementById("event-title").innerText = "Kegiatan Hari Ini";
+            document.getElementById("event-title").innerText = "Kegiatan Hari Ini";
 
-                    setTimeout(() => {
+            setTimeout(() => {
                 const fp = document.querySelector("#calendar")?._flatpickr;
                 if (fp) fp.setDate(today, true);
             }, 150);
