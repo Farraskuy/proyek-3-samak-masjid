@@ -121,7 +121,8 @@
 /* Frame FIX */
 .lightbox-main {
     width: 100%;
-    height: 75vh;
+    height: auto;            
+    max-height: 85vh;        
     display: flex;
     justify-content: center;
     align-items: center;
@@ -130,13 +131,10 @@
 
 /* Lightbox Content */
 .lightbox-content {
-    max-width: 90%;
-    max-height: 100%;
-    object-fit: contain; 
-    width: auto; 
-    height: auto; 
+    max-width: 90vw;
+    max-height: 80vh;  
+    object-fit: contain;
     border-radius: 10px;
-    transition: opacity 0.2s ease;
 }
 
 /* Close Button */
