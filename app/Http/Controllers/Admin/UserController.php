@@ -27,6 +27,18 @@ class UserController extends Controller
             });
         }
 
+        if ($request->has('status') && $request->status == 'jamaah') {
+            $status = $request->status;
+            $query->whereHas('role', function ($q) {
+                $q->where('name', 'Jamaah');
+            });
+        } else {
+            $status = 'non-jamaah';
+            $query->whereDoesntHave('role', function ($q) {
+                $q->where('name', 'Jamaah');
+            });
+        }
+
         $perPage = $request->query('showing', 10);
 
         if ($perPage === 'all') {
@@ -36,7 +48,7 @@ class UserController extends Controller
             $users = $query->latest()->paginate($perPage)->withQueryString();
         }
 
-        return view('admin.users.index', compact('users'));
+        return view('admin.users.index', compact('users', 'status'));
     }
 
     /**

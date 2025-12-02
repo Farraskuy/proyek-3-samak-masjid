@@ -31,7 +31,6 @@
         }
     </style>
 @endpush
-<<<<<<< HEAD=======>>>>>>> refs/remotes/origin/master
     @section('content')
         <section class="p-5 position-relative">
             {{-- Header Background Biru Masjid --}}

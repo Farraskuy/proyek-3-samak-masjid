@@ -14,6 +14,18 @@
             @endcan
         </div>
 
+        {{-- Filter Cepat (Quick Links) --}}
+        <div class="d-flex gap-2 mb-4 p-2 rounded-pill" style="background-color: rgba(0,0,0,0.05); width: fit-content;">
+            <a href="{{ route('admin.users.index', ['status' => 'non-jamaah']) }}"
+                class="btn btn-sm {{ ($status ?? 'all') == 'non-jamaah' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                Pengguna Aplikasi
+            </a>
+            <a href="{{ route('admin.users.index', ['status' => 'jamaah']) }}"
+                class="btn btn-sm {{ ($status ?? 'all') == 'jamaah' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                Jamaah
+            </a>
+        </div>
+
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
@@ -68,24 +80,24 @@
                                     </td>
                                     <td class="text-nowrap text-end">
                                         @can('edit_users')
-                                            <a href="{{ route('admin.users.edit', $user->id) }}"
-                                                class="btn btn-light btn-sm border" aria-label="Edit">
-                                                <i class="fas fa-pen text-muted"></i>
-                                            </a>
+                                            @if (!$user->hasRole('Jamaah') && $user->id !== auth()->id())
+                                                <a href="{{ route('admin.users.edit', $user->id) }}"
+                                                    class="btn btn-light btn-sm border" aria-label="Edit">
+                                                    <i class="fas fa-pen text-muted"></i>
+                                                </a>
+                                            @else
+                                                <button class="btn btn-secondary btn-sm" disabled title="Tidak dapat dihapus">
+                                                    <i class="fas fa-pen text-muted"></i>
+                                                </button>
+                                            @endif
                                         @endcan
 
                                         @can('delete_users')
-                                            @if (!$user->hasRole('Jamaah') && $user->id !== auth()->id())
-                                                <button type="button" class="btn btn-danger btn-sm btn-delete-article"
-                                                    data-action="{{ route('admin.users.destroy', $user->id) }}"
-                                                    aria-label="Hapus">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            @else
-                                                <button class="btn btn-secondary btn-sm" disabled title="Tidak dapat dihapus">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            @endif
+                                            <button type="button" class="btn btn-danger btn-sm btn-delete-article"
+                                                data-action="{{ route('admin.users.destroy', $user->id) }}"
+                                                aria-label="Hapus">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
                                         @endcan
                                     </td>
                                 </tr>
