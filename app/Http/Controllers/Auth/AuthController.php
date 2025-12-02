@@ -80,17 +80,6 @@ class AuthController extends Controller
             return back()->withErrors(['error' => 'Verifikasi reCAPTCHA gagal.'])->withInput();
         }
 
-
-        $ip = $request->ip();
-        $key = 'register:' . sha1($ip);
-
-        if (RateLimiter::tooManyAttempts($key, 5)) {
-            return back()->withErrors([
-                'error' => "Terlalu banyak percobaan. Coba lagi dalam beberapa menit."
-            ]);
-        }
-        RateLimiter::hit($key, 60); // 1 menit
-
         $user = User::create([
             'full_name' => $data['full_name'],
             'username' => $data['username'],
@@ -103,13 +92,6 @@ class AuthController extends Controller
         Auth::login($user);
 
         Otp::where('destination', $user->email)->delete();
-
-
-        if ($user->otp_blocked_until && now()->lt($user->otp_blocked_until)) {
-            return back()->withErrors([
-                'error' => 'Akun Anda diblokir sementara karena terlalu banyak percobaan OTP. Silakan coba lagi nanti.'
-            ]);
-        }
 
         $code = rand(111111, 999999);
 
@@ -181,23 +163,6 @@ class AuthController extends Controller
         if ($request->has('return_url')) {
             session(['otp_return_url' => $request->return_url]);
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | SPAM PROTECTION (Rate Limit)
-        |--------------------------------------------------------------------------
-        */
-
-        $spamKey = "otp:send:" . sha1($destination . '|' . $request->ip());
-
-        if (RateLimiter::tooManyAttempts($spamKey, 3)) {
-            $wait = RateLimiter::availableIn($spamKey);
-            return back()->withErrors([
-                'error' => "Terlalu banyak permintaan OTP. Coba lagi dalam {$wait} detik."
-            ]);
-        }
-
-        RateLimiter::hit($spamKey, 60); // reset per 1 menit
 
         // OTP REPLACE (hapus OTP lama dan buat baru)
         Otp::where('destination', $destination)->delete();
