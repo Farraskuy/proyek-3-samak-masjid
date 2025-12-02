@@ -30,6 +30,7 @@ use App\Http\Controllers\Donasi\Admin\BankController;
 use App\Http\Controllers\Donasi\Admin\DonationConfirmationController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\LostItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,6 +96,8 @@ Route::post('/donasi/store', [ZISController::class, 'storeKonfirmasi'])->name('d
 
 // =============================== Lost & Found (Public) ===============================
 Route::get('/layanan/barang-hilang', [LostFoundController::class, 'index'])->name('layanan.barang-hilang');
+Route::get('/layanan/barang-ditemukan', [LostFoundController::class, 'index'])->name('layanan.barang-ditemukan');
+Route::get('/layanan/laporan-kehilangan', [LostItemController::class, 'publicIndex'])->name('layanan.laporan-kehilangan');
 
 
 // =============================== Jadwal Kegiatan (Client) ===============================
@@ -155,7 +158,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|super ad
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Postingan
-    
+
     Route::prefix('postingan')->name('postingan.')->group(function () {
         Route::get('/', [PostinganController::class, 'indexAdmin'])->name('index');
         Route::get('/tambah', [PostinganController::class, 'create'])->name('create');
@@ -164,13 +167,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|super ad
 
         Route::get('/edit/{id}', [PostinganController::class, 'edit'])->name('edit');
         Route::put('/update/{id}', [PostinganController::class, 'update'])->name('update');
-         Route::post('/store', [PostinganController::class, 'store'])->name('store');
+        Route::post('/store', [PostinganController::class, 'store'])->name('store');
 
-                Route::middleware(['role:super admin'])->group(function () {
+        Route::middleware(['role:super admin'])->group(function () {
             Route::get('/approval', [PostinganController::class, 'approvalIndex'])->name('approval.index');
             Route::get('/approval/{id}', [PostinganController::class, 'approvalShow'])->name('approval.show');
             Route::post('/approval/{id}', [PostinganController::class, 'approvalUpdate'])->name('approval.update');
-            
         });
     });
 
@@ -181,6 +183,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|super ad
     Route::get('/barang-hilang/{id}/edit', [LostFoundController::class, 'edit'])->name('barang-hilang.edit');
     Route::put('/barang-hilang/{id}', [LostFoundController::class, 'update'])->name('barang-hilang.update');
     Route::delete('/barang-hilang/{id}', [LostFoundController::class, 'destroy'])->name('barang-hilang.destroy');
+
+    // Barang Hilang (Laporan Jamaah → Input DKM)
+    Route::resource('lost-items', LostItemController::class)->names([
+        'index' => 'admin.lost-items.index',
+        'create' => 'admin.lost-items.create',
+        'store' => 'admin.lost-items.store',
+        'edit' => 'admin.lost-items.edit',
+        'update' => 'admin.lost-items.update',
+        'destroy' => 'admin.lost-items.destroy',
+    ]);
 
     //  Admin Jadwal Kegiatan
     Route::prefix('jadwal-kegiatan')->name('kegiatan.')->group(function () {
