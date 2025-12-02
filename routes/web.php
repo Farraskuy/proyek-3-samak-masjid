@@ -95,7 +95,7 @@ Route::post('/donasi/store', [ZISController::class, 'storeKonfirmasi'])->name('d
 
 
 // =============================== Lost & Found (Public) ===============================
-Route::get('/layanan/barang-hilang', [LostFoundController::class, 'index'])->name('layanan.barang-hilang');
+Route::get('/layanan/barang-hilang', [LostFoundController::class, 'publicIndex'])->name('layanan.barang-hilang');
 Route::get('/layanan/barang-ditemukan', [LostFoundController::class, 'index'])->name('layanan.barang-ditemukan');
 Route::get('/layanan/laporan-kehilangan', [LostItemController::class, 'publicIndex'])->name('layanan.laporan-kehilangan');
 

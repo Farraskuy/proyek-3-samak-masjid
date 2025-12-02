@@ -9,12 +9,19 @@ class ItemCategorySeeder extends Seeder
 {
     public function run(): void
     {
-        ItemCategory::insert([
+        $categories = [
             ['name' => 'Kendaraan', 'slug' => 'kendaraan'],
             ['name' => 'Elektronik', 'slug' => 'elektronik'],
             ['name' => 'Aksesoris', 'slug' => 'aksesoris'],
             ['name' => 'Dokumen', 'slug' => 'dokumen'],
             ['name' => 'Lain-lain', 'slug' => 'lain-lain'],
-        ]);
+        ];
+
+        foreach ($categories as $category) {
+            ItemCategory::updateOrCreate(
+                ['slug' => $category['slug']],
+                ['name' => $category['name']]
+            );
+        }
     }
 }

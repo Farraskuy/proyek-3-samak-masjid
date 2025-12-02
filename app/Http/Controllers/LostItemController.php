@@ -20,13 +20,12 @@ class LostItemController extends Controller
         if (!empty($keyword)) {
             $query->where(function ($q) use ($keyword) {
                 $q->where('item_name', 'like', "%{$keyword}%")
-                  ->orWhere('description', 'like', "%{$keyword}%")
-                  ->orWhere('location_lost', 'like', "%{$keyword}%");
+                    ->orWhere('description', 'like', "%{$keyword}%")
+                    ->orWhere('location_lost', 'like', "%{$keyword}%");
             });
         }
 
         $items = $query->paginate(10);
-
         return view('admin.lost-items.index', compact('items'));
     }
 
@@ -98,5 +97,31 @@ class LostItemController extends Controller
         $lostItem->delete();
         return redirect()->route('admin.lost-items.index')
             ->with('success', 'Laporan barang hilang berhasil dihapus!');
+    }
+
+    public function publicIndex(Request $request)
+    {
+        $query = LostItem::with('category')
+            ->where('status', 'aktif')
+            ->where('expiry_date', '>=', now());
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('item_name', 'like', "%{$request->search}%")
+                    ->orWhere('description', 'like', "%{$request->search}%")
+                    ->orWhere('location_lost', 'like', "%{$request->search}%");
+            });
+        }
+
+        if ($request->filled('category')) {
+            $query->whereHas('category', function ($q) use ($request) {
+                $q->where('slug', $request->category);
+            });
+        }
+
+        $items = $query->paginate(9);
+        $categories = ItemCategory::all();
+
+        return view('client.layanan.laporan-kehilangan.index', compact('items', 'categories'));
     }
 }

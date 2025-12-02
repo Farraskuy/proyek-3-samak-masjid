@@ -4,9 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use App\Models\LostAndFoundItem;
+use App\Models\FoundItem;
 
-class FoundItem extends Seeder
+class FoundItemSeeder extends Seeder
 {
     public function run(): void
     {
@@ -14,7 +14,7 @@ class FoundItem extends Seeder
 
         $adminId = $admin ? $admin->id : 1;
 
-        LostAndFoundItem::insert([
+        FoundItem::insert([
             [
                 'inputted_by_admin_id' => $adminId,
                 'item_name' => 'Dompet Kulit Hitam',
