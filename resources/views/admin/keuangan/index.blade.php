@@ -8,9 +8,11 @@
         {{-- Header --}}
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="fw-semibold mb-0">Laporan Keuangan Masjid</h4>
-            <button class="btn btn-success fw-semibold" data-bs-toggle="modal" data-bs-target="#modalTambah">
-                <i class="fa-solid fa-plus me-1"></i> Catat Transaksi
-            </button>
+            @can('create_finance')
+                <button class="btn btn-success fw-semibold" data-bs-toggle="modal" data-bs-target="#modalTambah">
+                    <i class="fa-solid fa-plus me-1"></i> Catat Transaksi
+                </button>
+            @endcan
         </div>
 
         {{-- Ringkasan Saldo Cards --}}
@@ -85,12 +87,14 @@
                                         {{ number_format($item->amount, 0, ',', '.') }}
                                     </td>
                                     <td class="p-3 align-middle text-end">
-                                        <form action="{{ route('admin.keuangan.destroy', $item->id) }}" method="POST"
-                                            onsubmit="return confirm('Hapus data ini?');">
-                                            @csrf @method('DELETE')
-                                            <button class="btn btn-sm btn-light border text-danger"><i
-                                                    class="fa-solid fa-trash"></i></button>
-                                        </form>
+                                        @can('delete_finance')
+                                            <form action="{{ route('admin.keuangan.destroy', $item->id) }}" method="POST"
+                                                onsubmit="return confirm('Hapus data ini?');">
+                                                @csrf @method('DELETE')
+                                                <button class="btn btn-sm btn-light border text-danger"><i
+                                                        class="fa-solid fa-trash"></i></button>
+                                            </form>
+                                        @endcan
                                     </td>
                                 </tr>
                             @empty

@@ -7,11 +7,11 @@
         {{-- Header & Tombol Tambah --}}
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="fw-semibold mb-0">Manajemen Postingan</h4>
-            @if (optional(auth()->user())->role !== 'super admin')
+            @can('create_posts')
                 <a href="{{ route('admin.postingan.create') }}" class="btn btn-success fw-semibold">
                     <i class="fas fa-plus me-1"></i> Tambah Data
                 </a>
-            @endif
+            @endcan
         </div>
 
         {{-- Filter Cepat (Quick Links) --}}
@@ -82,9 +82,9 @@
                                 <th>Kategori</th>
                                 <th>Status postingan</th>
                                 <th>Keputusan</th>
-                                @if (optional(auth()->user())->role === 'admin')
-                                <th>pesan revisi</th>
-                                @endif
+                                @can('create_posts')
+                                    <th>pesan revisi</th>
+                                @endcan
                                 <th>Tanggal dibuat</th>
                                 <th>Tanggal update</th>
                                 <th>Aksi</th>
@@ -96,17 +96,19 @@
                                     <td>{{ ($data->firstItem() ?? 0) + $index }}</td>
                                     <td>{{ $row->title ?? '-' }}</td>
                                     <td>{{ $row->kategori ?? '-' }}</td>
-                                    
+
                                     {{-- Status Postingan (Draft/Published etc) --}}
                                     <td>
                                         @if (strtolower($row->status ?? '') == 'published')
                                             <span class="badge rounded-pill text-bg-success">{{ $row->status }}</span>
                                         @elseif(strtolower($row->status ?? '') == 'not published')
-                                            <span class="badge rounded-pill text-bg-light text-danger-emphasis border border-danger-subtle">{{ $row->status }}</span>
+                                            <span
+                                                class="badge rounded-pill text-bg-light text-danger-emphasis border border-danger-subtle">{{ $row->status }}</span>
                                         @elseif(strtolower($row->status ?? '') == 'pending')
                                             <span class="badge rounded-pill text-bg-warning">{{ $row->status }}</span>
                                         @elseif(strtolower($row->status ?? '') == 'revisi')
-                                            <span class="badge rounded-pill text-bg-info text-white">{{ $row->status }}</span>
+                                            <span
+                                                class="badge rounded-pill text-bg-info text-white">{{ $row->status }}</span>
                                         @elseif (strtolower($row->status ?? '') == 'draft')
                                             <span class="badge rounded-pill text-bg-secondary">{{ $row->status }}</span>
                                         @else
@@ -121,7 +123,8 @@
                                         @endphp
 
                                         @if ($status == 'pending')
-                                            <span class="badge rounded-pill text-bg-warning border border-warning-subtle"> Pending </span>
+                                            <span class="badge rounded-pill text-bg-warning border border-warning-subtle">
+                                                Pending </span>
                                         @elseif ($status == 'approved')
                                             <span class="badge rounded-pill text-bg-success border border-success-subtle">
                                                 Approved
@@ -131,24 +134,26 @@
                                                 Rejected
                                             </span>
                                         @elseif ($status == 'revision')
-                                            <span class="badge rounded-pill text-bg-info text-white border border-info-subtle">
+                                            <span
+                                                class="badge rounded-pill text-bg-info text-white border border-info-subtle">
                                                 Revision
                                             </span>
                                         @else
-                                            <span class="badge rounded-pill text-bg-secondary border border-secondary-subtle">
+                                            <span
+                                                class="badge rounded-pill text-bg-secondary border border-secondary-subtle">
                                                 {{ $row->approval_status ?? '-' }}
                                             </span>
                                         @endif
                                     </td>
 
                                     {{-- Revisi Msg (Kolom Baru) --}}
-                                    @if (optional(auth()->user())->role === 'admin' )
+                                    @can('create_posts')
                                         <td>
                                             @if (strtolower($row->approval_status ?? '') === 'revision')
-                                                
                                                 {{-- Tombol Detail Revisi --}}
-                                                <button type="button" class="btn btn-info btn-sm text-white py-0 px-2" style="font-size: 0.75rem;" 
-                                                    data-bs-toggle="modal" data-bs-target="#modalRevision{{ $row->id }}">
+                                                <button type="button" class="btn btn-info btn-sm text-white py-0 px-2"
+                                                    style="font-size: 0.75rem;" data-bs-toggle="modal"
+                                                    data-bs-target="#modalRevision{{ $row->id }}">
                                                     Detail Revisi
                                                 </button>
 
@@ -159,7 +164,8 @@
                                                     <div class="modal-dialog modal-dialog-centered">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
-                                                                <h5 class="modal-title" id="modalRevisionLabel{{ $row->id }}">
+                                                                <h5 class="modal-title"
+                                                                    id="modalRevisionLabel{{ $row->id }}">
                                                                     Detail Revisi
                                                                 </h5>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
@@ -176,41 +182,43 @@
                                                 </div>
                                                 {{-- MODAL END --}}
                                             @else
-                                            -
+                                                -
                                             @endif
                                         </td>
-                                        @endif
-                                        
+                                    @endcan
+
                                     <td>{{ $row->created_at ?? '-' }}</td>
                                     <td>{{ $row->updated_at ?? '-' }}</td>
 
                                     {{-- Aksi --}}
                                     <td class="text-nowrap text-end">
-                                        
+
                                         {{-- 1. Approval (Super Admin Only) --}}
-                                        @if (optional(auth()->user())->role === 'super admin' && $row->approval_status === 'pending')
-                                            <a href="{{ route('admin.postingan.approval.show', $row->id) }}"
-                                                class="btn btn-primary btn-sm border" aria-label="Approval">
-                                                <i class="fas fa-check-to-slot"></i> Approval
-                                            </a>
+                                        @if ($row->approval_status === 'pending')
+                                            @can('approve_posts')
+                                                <a href="{{ route('admin.postingan.approval.show', $row->id) }}"
+                                                    class="btn btn-primary btn-sm border" aria-label="Approval">
+                                                    <i class="fas fa-check-to-slot"></i> Approval
+                                                </a>
+                                            @endcan
                                         @endif
 
                                         {{-- 2. Edit (Admin Only) --}}
-                                        @if (optional(auth()->user())->role === 'admin')
+                                        @can('edit_posts')
                                             <a href="/admin/postingan/edit/{{ $row->id }}"
                                                 class="btn btn-light btn-sm border" aria-label="Edit">
                                                 <i class="fas fa-pen text-muted"></i>
                                             </a>
-                                        @endif
+                                        @endcan
 
                                         {{-- 3. Delete (Super Admin Only) --}}
-                                        @if (optional(auth()->user())->role === 'super admin')
+                                        @can('delete_posts')
                                             <button type="button" class="btn btn-danger btn-sm btn-delete-article"
                                                 data-action="{{ url('/admin/postingan/delete/' . $row->id) }}"
                                                 aria-label="Hapus">
                                                 <i class="fas fa-trash"></i>
                                             </button>
-                                        @endif
+                                        @endcan
                                     </td>
                                 </tr>
                             @empty

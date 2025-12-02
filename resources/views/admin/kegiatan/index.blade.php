@@ -11,9 +11,11 @@
 
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="fw-semibold mb-0">Kegiatan</h4>
-            <a href="{{ route('admin.kegiatan.create') }}" class="btn btn-success fw-semibold">
-                <i class="fa-solid fa-plus me-1"></i> Tambah Kegiatan
-            </a>
+            @can('create_events')
+                <a href="{{ route('admin.kegiatan.create') }}" class="btn btn-success fw-semibold">
+                    <i class="fa-solid fa-plus me-1"></i> Tambah Kegiatan
+                </a>
+            @endcan
         </div>
 
         @if (session('pj_credentials'))
@@ -87,15 +89,19 @@
                                     <td>{{ $row->location }}</td>
                                     <td>{{ $row->start_time }}</td>
                                     <td>
-                                        <a href="{{ route('admin.kegiatan.edit', $row->event_id) }}"
-                                            class="btn btn-warning btn-sm me-1">
-                                            <i class="fa-regular fa-pen-to-square"></i>
-                                        </a>
+                                        @can('edit_events')
+                                            <a href="{{ route('admin.kegiatan.edit', $row->event_id) }}"
+                                                class="btn btn-warning btn-sm me-1">
+                                                <i class="fa-regular fa-pen-to-square"></i>
+                                            </a>
+                                        @endcan
 
-                                        <button type="button" onclick="hapusKegiatan('{{ $row->event_id }}')"
-                                                                                class="btn btn-danger btn-sm">
-                                                                                <i class="fa-solid fa-trash"></i>
-                                                                            </button>
+                                        @can('delete_events')
+                                            <button type="button" onclick="hapusKegiatan('{{ $row->event_id }}')"
+                                                class="btn btn-danger btn-sm">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        @endcan
                                     </td>
                                 </tr>
                             @empty

@@ -60,7 +60,7 @@
                                     <td>{{ ($data->firstItem() ?? 0) + $index }}</td>
                                     <td>{{ $row->full_name ?? ($row->username ?? '-') }}</td>
                                     <td>{{ $row->email ?? '-' }}</td>
-                                    <td>{{ $row->role ?? '-' }}</td>
+                                    <td>{{ $row->role->name ?? '-' }}</td>
                                     <td>-</td>
                                 </tr>
                             @empty
