@@ -18,9 +18,9 @@ class Postingan extends Model
     ];
 
     // include approval fields
-    protected $attributes = [
-        'approval_status' => 'pending',
-    ];
+    // protected $attributes = [
+    //     'approval_status' => 'pending',
+    // ];
 
     protected $fillable = [
         'id',
@@ -34,7 +34,6 @@ class Postingan extends Model
         'status',
         'keterangan',
         'kategori',
-        'approval_status',
         'approval_note',
         'approved_by',
         'approved_at'

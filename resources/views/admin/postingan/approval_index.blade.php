@@ -14,8 +14,8 @@
                 class="btn btn-sm {{ ($status ?? 'pending') == 'pending' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
                 Menunggu Approval
             </a>
-            <a href="{{ route('admin.postingan.approval.index', ['status' => 'publish']) }}"
-                class="btn btn-sm {{ ($status ?? 'pending') == 'publish' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+            <a href="{{ route('admin.postingan.approval.index', ['status' => 'published']) }}"
+                class="btn btn-sm {{ ($status ?? 'pending') == 'published' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
                 publish
             </a>
             <a href="{{ route('admin.postingan.approval.index', ['status' => 'draft']) }}"

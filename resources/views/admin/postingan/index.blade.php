@@ -24,8 +24,8 @@
                 class="btn btn-sm {{ ($status ?? 'all') == 'pending' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
                 Menunggu Approval(pending)
             </a>
-            <a href="{{ route('admin.postingan.index', ['status' => 'publish']) }}"
-                class="btn btn-sm {{ ($status ?? 'all') == 'publish' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+            <a href="{{ route('admin.postingan.index', ['status' => 'published']) }}"
+                class="btn btn-sm {{ ($status ?? 'all') == 'published' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
                 publish
             </a>
             <a href="{{ route('admin.postingan.index', ['status' => 'arsip']) }}"
@@ -163,10 +163,14 @@
                                        
                                             @if (strtolower($row->status ?? '') === 'revisi')
                                                 {{-- Tombol Detail Revisi --}}
-                                                <button type="button" class="btn btn-info btn-sm text-white py-0 px-2"
-                                                    style="font-size: 0.75rem;" data-bs-toggle="modal"
+                                                {{-- HAPUS: py-0, px-2, dan style font-size --}}
+                                                {{-- TAMBAH: border (supaya konsisten dengan tombol approval) --}}
+                                                
+                                                <button type="button" class="btn btn-info btn-sm text-white border" 
+                                                    data-bs-toggle="modal"
                                                     data-bs-target="#modalRevision{{ $row->id }}">
-                                                    Detail Revisi
+                                                    {{-- Opsional: Tambahkan icon agar makin mirip style-nya --}}
+                                                    <i class="fas fa-info-circle"></i> Detail Revisi
                                                 </button>
 
                                                 {{-- MODAL REVISI --}}
@@ -184,9 +188,12 @@
                                                                     aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body">
-                                                                <p>Catatan Revisi:</p>
-                                                                <div class="alert alert-warning border">
-                                                                    <strong>{{ $row->approval_note ?? 'Tidak ada catatan revisi.' }}</strong>
+                                                                {{-- Tambahkan class 'text-start' agar teks dipaksa rata kiri --}}
+                                                                <p class="text-start">Catatan Revisi:</p>
+                                                                
+                                                                {{-- Tambahkan class 'text-start' disini juga --}}
+                                                                <div class="alert alert-warning border text-break text-wrap text-start" role="alert">
+                                                                    <strong style="white-space: pre-wrap;">{{ $row->approval_note ?? 'Tidak ada catatan revisi.' }}</strong>
                                                                 </div>
                                                             </div>
                                                         </div>
