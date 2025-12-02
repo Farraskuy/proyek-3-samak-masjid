@@ -30,6 +30,7 @@ use App\Http\Controllers\Donasi\Admin\BankController;
 use App\Http\Controllers\Donasi\Admin\DonationConfirmationController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\LostItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,6 +96,8 @@ Route::post('/donasi/store', [ZISController::class, 'storeKonfirmasi'])->name('d
 
 // =============================== Lost & Found (Public) ===============================
 Route::get('/layanan/barang-hilang', [LostFoundController::class, 'index'])->name('layanan.barang-hilang');
+Route::get('/layanan/barang-ditemukan', [LostFoundController::class, 'index'])->name('layanan.barang-ditemukan');
+Route::get('/layanan/laporan-kehilangan', [LostItemController::class, 'publicIndex'])->name('layanan.laporan-kehilangan');
 
 
 // =============================== Jadwal Kegiatan (Client) ===============================
