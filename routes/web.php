@@ -256,7 +256,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|super ad
     Route::get('/donasi/verifikasi', [DonationConfirmationController::class, 'index'])->name('donasi.index');
     Route::post('/donasi/{id}/approve', [DonationConfirmationController::class, 'approve'])->name('donasi.approve');
     Route::post('/donasi/{id}/reject', [DonationConfirmationController::class, 'reject'])->name('donasi.reject');
-    Route::post('/donasi/store-session', [DonasiController::class, 'storeSession'])->name('donasi.store_session');
 
     //Keuangan
     Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan');

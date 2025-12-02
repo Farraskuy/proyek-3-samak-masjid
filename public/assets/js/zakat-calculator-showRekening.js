@@ -116,7 +116,12 @@
                     <div class="input-group mb-3"><span class="input-group-text">Rp</span><input type="text" class="form-control money-input" id="profesi-hutang" onkeyup="calculateProfesi()" placeholder="0"></div>`;
         } else if (type === 'emas') {
             html = `<label class="form-label">Jumlah Emas (Gram)</label>
-                    <div class="input-group mb-3"><input type="number" class="form-control" id="emas-berat" onkeyup="calculateEmas()" placeholder="0"><span class="input-group-text">Gram</span></div>
+                    <div class="input-group mb-3">
+                        <input type="number" class="form-control" id="emas-berat" 
+                            oninput="this.value = this.value.replace(/[^0-9.]/g, '')" 
+                            onkeyup="calculateEmas()" placeholder="0">
+                        <span class="input-group-text">Gram</span>
+                    </div>
                     <small class="text-muted">Asumsi harga emas: ${formatRupiah(HARGA_EMAS)} / gram</small>`;
         } else if (type === 'tabungan') {
             html = `<label class="form-label">Saldo Tabungan</label>

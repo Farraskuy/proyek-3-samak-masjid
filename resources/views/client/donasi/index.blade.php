@@ -148,12 +148,11 @@
                         <div class="mb-4">
                             <label class="form-label">Jenis Infak</label>
                             <select class="form-select form-select-lg mb-3" id="infaq-type" onchange="calculateInfaq()">
-                                <option>Infak Umum</option>
-                                <option>Infak Bencana</option>
-                                <option>Infak Pendidikan</option>
-                                <option>Infak Kesehatan</option>
+                                <option value="umum">Infak Umum</option>
+                                <option value="bencana">Infak Bencana</option>
+                                <option value="pendidikan">Infak Pendidikan</option>
+                                <option value="kesehatan">Infak Kesehatan</option>
                             </select>
-
                             <label class="form-label">Nominal Infak</label>
                             <div class="input-group mb-3">
                                 <span class="input-group-text">Rp</span>
