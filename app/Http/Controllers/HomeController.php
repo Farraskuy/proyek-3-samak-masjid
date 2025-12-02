@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Postingan;
 
 use App\Models\JadwalKegiatan;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {

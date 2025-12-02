@@ -7,7 +7,7 @@
                 <div style="height: 45px; width: 170px;" class="row g-0">
                     <div class="text-dark text-nowrap wrap-text col-9 d-flex flex-column justify-content-center">
                         <small class="p-0 m-0 fw-semibold wrap-text fs-13px">{{ Auth::user()?->username }}</small>
-                        <small class="p-0 m-0 wrap-text w-75 fs-12px">{{ Auth::user()?->role }}</small>
+                        <small class="p-0 m-0 wrap-text w-75 fs-12px">{{ Auth::user()?->role->name }}</small>
                     </div>
                     <div class="h-100 col-3 text-center">
                         <img style="object-fit: cover;" class="rounded-circle" height="40" width="40"
@@ -25,7 +25,7 @@
                         alt="">
                     <div class="d-flex flex-column">
                         <span class="fw-bold text-dark fs-14px">{{ Auth::user()?->full_name }}</span>
-                        <span class="small text-muted fs-12px">{{ ucfirst(Auth::user()?->role) }}</span>
+                        <span class="small text-muted fs-12px">{{ ucfirst(Auth::user()?->role->name) }}</span>
                     </div>
                 </div>
 

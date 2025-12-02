@@ -66,7 +66,7 @@
                 </div>
 
                 <div class="col-md-5 text-center">
-                    <img src="{{ asset('assets/images/auth-bg.png') }}" alt="Hero" class="img-fluid rounded shadow fade"
+                    <img src="{{ asset('assets/images/lukmanulhakim.png') }}" alt="Hero" class="img-fluid rounded shadow fade"
                         data-aos="zoom-in" data-aos-duration="1000" data-aos-delay="300">
                 </div>
 

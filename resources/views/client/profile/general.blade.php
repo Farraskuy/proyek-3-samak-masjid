@@ -54,48 +54,15 @@
                         <label for="username" class="form-label fw-bold text-dark">Username</label>
                         <input type="text" class="form-control bg-white border" id="username"
                             value="{{ $user->username }}" disabled>
-                        <div class="form-text text-muted">Your Dribbble URL: https://dribbble.com/{{ $user->username }}
-                        </div>
                     </div>
 
                     <div class="mb-4">
                         <label for="email" class="form-label fw-bold text-dark">Account Email</label>
                         <input type="email" class="form-control bg-white border" id="email" name="email"
                             value="{{ old('email', $user->email) }}" required>
-                        <div class="form-check mt-2">
-                            <input class="form-check-input" type="checkbox" id="use_different_email">
-                            <label class="form-check-label text-muted small" for="use_different_email">
-                                Use a different email for project requests and messages
-                            </label>
-                        </div>
                         @error('email')
                             <div class="text-danger small mt-1">{{ $message }}</div>
                         @enderror
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label fw-bold text-dark">Google Sign-In</label>
-                        <div class="border rounded p-3 d-flex align-items-center justify-content-between bg-white">
-                            <div class="d-flex align-items-center">
-                                <i class="fab fa-google text-danger me-3 fa-lg"></i>
-                                <span class="text-muted">Google</span>
-                            </div>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" role="switch" id="googleSignIn" checked
-                                    disabled>
-                            </div>
-                        </div>
-                        <div class="form-text text-muted mt-2">Use Google, in addition to your username and password, to
-                            access
-                            your account.</div>
-                    </div>
-
-                    <div class="mb-5">
-                        <label class="form-label fw-bold text-dark d-flex align-items-center">
-                            Disable ads <span class="badge bg-dark ms-2 text-uppercase"
-                                style="font-size: 0.6rem;">Pro</span>
-                        </label>
-                        <p class="text-muted small mb-0">With a Pro account you can disable ads across the site.</p>
                     </div>
 
                     <div class="d-flex justify-content-end pt-4 border-top">
