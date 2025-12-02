@@ -6,9 +6,11 @@
     <section class="p-3">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="fw-semibold mb-0">Manajemen Barang Hilang & Ditemukan</h4>
-            <a href="{{ route('admin.barang-hilang.tambah') }}" class="btn btn-success fw-semibold">
-                <i class="fas fa-plus me-1"></i> Tambah Data
-            </a>
+            @can('create_lost_items')
+                <a href="{{ route('admin.barang-hilang.tambah') }}" class="btn btn-success fw-semibold">
+                    <i class="fas fa-plus me-1"></i> Tambah Data
+                </a>
+            @endcan
         </div>
         <div class="row g-0 gap-3">
             <form method="get" id="form_filter" class="col rounded-3 bg-white p-3 pt-0 form-filter"
@@ -115,20 +117,24 @@
                                     </td>
                                     <td>{{ $item->created_at?->format('d M Y') ?? '-' }}</td>
                                     <td class="text-nowrap">
-                                        <a href="{{ route('admin.barang-hilang.edit', $item->item_id) }}"
-                                            class="btn btn-light btn-sm border" aria-label="Edit">
-                                            <i class="fas fa-pen text-muted"></i>
-                                        </a>
+                                        @can('edit_lost_items')
+                                            <a href="{{ route('admin.barang-hilang.edit', $item->item_id) }}"
+                                                class="btn btn-light btn-sm border" aria-label="Edit">
+                                                <i class="fas fa-pen text-muted"></i>
+                                            </a>
+                                        @endcan
 
-                                        <form action="{{ route('admin.barang-hilang.destroy', $item->item_id) }}"
-                                            method="POST" class="d-inline"
-                                            onsubmit="return confirm('Yakin ingin menghapus barang ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" aria-label="Hapus">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
+                                        @can('delete_lost_items')
+                                            <form action="{{ route('admin.barang-hilang.destroy', $item->item_id) }}"
+                                                method="POST" class="d-inline"
+                                                onsubmit="return confirm('Yakin ingin menghapus barang ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm" aria-label="Hapus">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        @endcan
                                     </td>
                                 </tr>
                             @empty

@@ -14,7 +14,7 @@ class LostAndFoundItem extends Model
     protected $keyType = 'int';
 
     protected $fillable = [
-        'inputted_by_admin_id',
+        'inputted_by_user_id',
         'item_name',
         'description',
         'location_found',
@@ -32,7 +32,7 @@ class LostAndFoundItem extends Model
 
     public function user()
     {
-        return $this->belongsTo(\App\Models\User::class, 'inputted_by_admin_id');
+        return $this->belongsTo(\App\Models\User::class, 'inputted_by_user_id');
     }
 
     public function photos()
