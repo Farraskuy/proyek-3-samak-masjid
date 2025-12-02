@@ -11,7 +11,10 @@ class LostItemSeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = User::where('role', 'admin')->first();
+        $adminRole = \App\Models\Role::where('name', 'admin')->first();
+        $admin = $adminRole
+            ? User::where('role_id', $adminRole->id)->first()
+            : User::first();
         $adminId = $admin ? $admin->id : 1;
         $kategoriDokumen = ItemCategory::where('slug', 'dokumen')->first()?->id ?? 1;
         $kategoriAksesoris = ItemCategory::where('slug', 'aksesoris')->first()?->id ?? 2;

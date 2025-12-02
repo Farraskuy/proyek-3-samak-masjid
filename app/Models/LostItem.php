@@ -4,13 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-<<<<<<< HEAD
-
-class LostItem extends Model
-{
-    /** @use HasFactory<\Database\Factories\LostItemFactory> */
-    use HasFactory;
-=======
 use App\Models\ItemCategory;
 
 class LostItem extends Model
@@ -42,5 +35,4 @@ class LostItem extends Model
     {
         return $this->hasMany(LostItemPhoto::class, 'lost_item_id');
     }
->>>>>>> refs/remotes/origin/master
 }

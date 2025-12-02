@@ -2,20 +2,19 @@
 
 namespace Database\Seeders;
 
-use App\Models\Role;
 use Illuminate\Database\Seeder;
 use App\Models\User;
+use App\Models\Role;
 use App\Models\FoundItem;
 
-<<<<<<<< HEAD:database/seeders/FoundItem.php
-class FoundItem extends Seeder
-========
 class FoundItemSeeder extends Seeder
->>>>>>>> refs/remotes/origin/master:database/seeders/FoundItemSeeder.php
 {
     public function run(): void
     {
-        $userId = User::where('role_id', Role::where('name', 'Sarpras')->first()->id)->first()->id;
+        $sarprasRole = Role::where('name', 'Sarpras')->first();
+        $userId = $sarprasRole
+            ? User::where('role_id', $sarprasRole->id)->first()?->id
+            : User::where('role', 'admin')->first()?->id ?? 1;
 
         FoundItem::insert([
             [
@@ -23,37 +22,17 @@ class FoundItemSeeder extends Seeder
                 'item_name' => 'Dompet Kulit Hitam',
                 'description' => 'Berisi KTM dan kartu ATM BNI',
                 'location_found' => 'Depan Musholla Wanita',
-                // 'featured_image_url' => '',
+                'category' => 'dokumen',
                 'status' => 'Tersedia',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'inputted_by_user_id' => $userId,
+                'inputted_by_admin_id' => $userId,
                 'item_name' => 'Powerbank Xiaomi',
                 'description' => 'Kapasitas 10000mAh, warna hitam',
                 'location_found' => 'Ruang Kelas Masjid',
-                // 'featured_image_url' => '',
-                'status' => 'Tersedia',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'inputted_by_user_id' => $userId,
-                'item_name' => 'Kacamata Minus',
-                'description' => 'Frame hitam, lensa minus 3',
-                'location_found' => 'Area Wudhu Pria',
-                // 'featured_image_url' => '',
-                'status' => 'Tersedia',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'inputted_by_user_id' => $userId,
-                'item_name' => 'Botol Minum Stainless Steel',
-                'description' => 'Berwarna biru dengan tutup hitam',
-                'location_found' => 'Area Wudhu Wanita',
-                // 'featured_image_url' => '',
+                'category' => 'elektronik',
                 'status' => 'Tersedia',
                 'created_at' => now(),
                 'updated_at' => now(),

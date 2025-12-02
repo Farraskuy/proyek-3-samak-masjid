@@ -9,27 +9,18 @@ class ItemCategorySeeder extends Seeder
 {
     public function run(): void
     {
-<<<<<<< HEAD
-        ItemCategory::insert([
-=======
         $categories = [
->>>>>>> refs/remotes/origin/master
             ['name' => 'Kendaraan', 'slug' => 'kendaraan'],
             ['name' => 'Elektronik', 'slug' => 'elektronik'],
             ['name' => 'Aksesoris', 'slug' => 'aksesoris'],
             ['name' => 'Dokumen', 'slug' => 'dokumen'],
             ['name' => 'Lain-lain', 'slug' => 'lain-lain'],
-<<<<<<< HEAD
-        ]);
-=======
         ];
-
         foreach ($categories as $category) {
             ItemCategory::updateOrCreate(
                 ['slug' => $category['slug']],
                 ['name' => $category['name']]
             );
         }
->>>>>>> refs/remotes/origin/master
     }
 }
