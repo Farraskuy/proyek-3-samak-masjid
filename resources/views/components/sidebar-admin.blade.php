@@ -123,7 +123,7 @@
 
         {{-- 4. MODUL KEUANGAN (ZIS) --}}
         {{-- Aktif jika path dimulai dengan admin/keuangan atau admin/donasi --}}
-        @if (auth()->user()->hasPermission('view_finance'))
+        @if (auth()->user()->hasPermission('view_finance') || auth()->user()->hasPermission('view_banks'))
             <li class="{{ request()->is('admin/keuangan*', 'admin/donasi*') ? 'showMenu' : '' }}">
                 <div class="nav-button {{ request()->is('admin/keuangan*', 'admin/donasi*') ? 'active' : '' }}">
                     <div class="iocn-link" onclick="expandMenu(this)">
@@ -148,6 +148,13 @@
                             <span class="fa-regular fa-chart-line-up"></span> Manajemen Transaksi
                         </a>
                     </li>
+                    @if (auth()->user()->hasPermission('view_banks'))
+                        <li class="nav-button {{ request()->is('admin/banks*') ? 'active' : '' }}">
+                            <a class="d-flex gap-2 fw-semibold" href="{{ route('admin.banks.index') }}">
+                                <span class="fa-regular fa-building-columns"></span> Manajemen Rekening
+                            </a>
+                        </li>
+                    @endif
                 </ul>
             </li>
         @endif

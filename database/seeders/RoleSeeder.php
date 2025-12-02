@@ -59,6 +59,12 @@ class RoleSeeder extends Seeder
             ['name' => 'manage_expense', 'group' => 'Keuangan'], // Uang keluar
             ['name' => 'verify_donation', 'group' => 'Keuangan'], // Konfirmasi donasi
 
+            // Bank (Bendahara)
+            ['name' => 'view_banks', 'group' => 'Bank'],
+            ['name' => 'create_banks', 'group' => 'Bank'],
+            ['name' => 'edit_banks', 'group' => 'Bank'],
+            ['name' => 'delete_banks', 'group' => 'Bank'],
+
             // Barang Hilang (Sarpras)
             ['name' => 'view_lost_items', 'group' => 'Barang Hilang'],
             ['name' => 'create_lost_items', 'group' => 'Barang Hilang'],
@@ -92,7 +98,7 @@ class RoleSeeder extends Seeder
 
         // Bendahara
         $bendaharaRole = Role::firstOrCreate(['name' => 'Bendahara'], ['alias' => 'Bendahara', 'description' => 'Mengelola keuangan']);
-        $bendaharaPermissions = Permission::whereIn('group', ['Keuangan'])->get();
+        $bendaharaPermissions = Permission::whereIn('group', ['Keuangan', 'Bank'])->get();
         $bendaharaRole->permissions()->sync($bendaharaPermissions);
 
         // Divisi Sarana & Prasarana

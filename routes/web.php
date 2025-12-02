@@ -46,39 +46,28 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Login / Register / Logout
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
-Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:3,1');
+Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // OTP
 Route::get('/auth/send-otp/sent/{destination}', [AuthController::class, 'sentOtp'])->name('auth.sentOtp');
-Route::post('/auth/send-otp', [AuthController::class, 'sendOtp'])->middleware('throttle:3,1')->name('auth.sendOtp');
-Route::post('/auth/resend-otp', [AuthController::class, 'sendOtp'])->middleware('throttle:3,1')->name('auth.resendOtp');
+Route::post('/auth/send-otp', [AuthController::class, 'sendOtp'])->name('auth.sendOtp');
+Route::post('/auth/resend-otp', [AuthController::class, 'sendOtp'])->name('auth.resendOtp');
 Route::get('/auth/verify', [AuthController::class, 'showVerifyForm'])->name('auth.showVerifyForm');
-Route::post('/auth/verify', [AuthController::class, 'verifyOtp'])->middleware('throttle:5,1')->name('auth.verifyOtp');
+Route::post('/auth/verify', [AuthController::class, 'verifyOtp'])->name('auth.verifyOtp');
 
 // Forgot Password
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('password.request');
-Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->middleware('throttle:3,1')->name('password.email');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('/forgot-password/sent', [ForgotPasswordController::class, 'showPasswordEmailsent'])->name('password.sent');
 
 // Reset Password
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->middleware('throttle:5,1')->name('password.update');
-
-
-// =============================== Notification API ===============================
-Broadcast::routes(['middleware' => ['auth:sanctum']]);
-
-Route::middleware('auth')->get('/api/notifications', function () {
-    return \App\Models\Notification::where('user_id', Auth::id())
-        ->orderBy('created_at', 'desc')
-        ->limit(10)
-        ->get();
-});
+Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 
 // =============================== News Routes (Client) ===============================
@@ -140,8 +129,7 @@ Route::middleware('auth')->prefix('profil')->name('profile.')->group(function ()
 
 
 // =============================== Konsultasi (Public + Client Auth) ===============================
-Route::get('/konsultasi', [ConsultationClientController::class, 'index'])
-    ->name('client.consultations.index');
+Route::get('/konsultasi', [ConsultationClientController::class, 'index'])->name('client.consultations.index');
 
 Route::middleware('auth')->prefix('konsultasi-saya')->name('client.consultations.')->group(function () {
     Route::get('/buat', [ConsultationClientController::class, 'create'])->name('create');
@@ -206,16 +194,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::delete('/barang-hilang/{id}', [LostFoundController::class, 'destroy'])->name('barang-hilang.destroy')->middleware('permission:delete_lost_items');
     });
 
-    // Barang Hilang (Laporan Jamaah → Input DKM)
-    Route::resource('lost-items', LostItemController::class)->names([
-        'index' => 'admin.lost-items.index',
-        'create' => 'admin.lost-items.create',
-        'store' => 'admin.lost-items.store',
-        'edit' => 'admin.lost-items.edit',
-        'update' => 'admin.lost-items.update',
-        'destroy' => 'admin.lost-items.destroy',
-    ]);
-
     //  Admin Jadwal Kegiatan
     Route::prefix('jadwal-kegiatan')->name('kegiatan.')->middleware('permission:view_events')->group(function () {
         Route::get('/', [AdminKegiatanController::class, 'index'])->name('index');
@@ -272,7 +250,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     });
 
     // Bank
-    Route::resource('banks', BankController::class)->middleware('permission:view_finance');
+    Route::prefix('banks')->name('banks.')->group(function () {
+        Route::get('/', [BankController::class, 'index'])->name('index')->middleware('permission:view_banks');
+        Route::get('/create', [BankController::class, 'create'])->name('create')->middleware('permission:create_banks');
+        Route::post('/', [BankController::class, 'store'])->name('store')->middleware('permission:create_banks');
+        Route::get('/{bank}/edit', [BankController::class, 'edit'])->name('edit')->middleware('permission:edit_banks');
+        Route::put('/{bank}', [BankController::class, 'update'])->name('update')->middleware('permission:edit_banks');
+        Route::delete('/{bank}', [BankController::class, 'destroy'])->name('destroy')->middleware('permission:delete_banks');
+    });
 
     // Donasi Confirmation
     Route::middleware('permission:verify_donation')->group(function () {
