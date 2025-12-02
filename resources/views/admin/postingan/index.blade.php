@@ -22,19 +22,23 @@
             </a>
             <a href="{{ route('admin.postingan.index', ['status' => 'pending']) }}"
                 class="btn btn-sm {{ ($status ?? 'all') == 'pending' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                Menunggu Approval
+                Menunggu Approval(pending)
             </a>
-            <a href="{{ route('admin.postingan.index', ['status' => 'approved']) }}"
-                class="btn btn-sm {{ ($status ?? 'all') == 'approved' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                Disetujui
+            <a href="{{ route('admin.postingan.index', ['status' => 'publish']) }}"
+                class="btn btn-sm {{ ($status ?? 'all') == 'publish' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                publish
             </a>
-            <a href="{{ route('admin.postingan.index', ['status' => 'rejected']) }}"
-                class="btn btn-sm {{ ($status ?? 'all') == 'rejected' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                Ditolak
+            <a href="{{ route('admin.postingan.index', ['status' => 'arsip']) }}"
+                class="btn btn-sm {{ ($status ?? 'all') == 'arsip' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                archieve
             </a>
-            <a href="{{ route('admin.postingan.index', ['status' => 'revision']) }}"
-                class="btn btn-sm {{ ($status ?? 'all') == 'revision' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+            <a href="{{ route('admin.postingan.index', ['status' => 'revisi']) }}"
+                class="btn btn-sm {{ ($status ?? 'all') == 'revisi' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
                 Revisi
+            </a>
+            <a href="{{ route('admin.postingan.index', ['status' => 'draft']) }}"
+                class="btn btn-sm {{ ($status ?? 'all') == 'draft' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                draft
             </a>
         </div>
 
@@ -81,10 +85,6 @@
                                 <th>Judul</th>
                                 <th>Kategori</th>
                                 <th>Status postingan</th>
-                                <th>Keputusan</th>
-                                @can('create_posts')
-                                    <th>pesan revisi</th>
-                                @endcan
                                 <th>Tanggal dibuat</th>
                                 <th>Tanggal update</th>
                                 <th>Aksi</th>
@@ -99,57 +99,69 @@
 
                                     {{-- Status Postingan (Draft/Published etc) --}}
                                     <td>
-                                        @if (strtolower($row->status ?? '') == 'published')
-                                            <span class="badge rounded-pill text-bg-success">{{ $row->status }}</span>
-                                        @elseif(strtolower($row->status ?? '') == 'not published')
-                                            <span
-                                                class="badge rounded-pill text-bg-light text-danger-emphasis border border-danger-subtle">{{ $row->status }}</span>
-                                        @elseif(strtolower($row->status ?? '') == 'pending')
-                                            <span class="badge rounded-pill text-bg-warning">{{ $row->status }}</span>
-                                        @elseif(strtolower($row->status ?? '') == 'revisi')
-                                            <span
-                                                class="badge rounded-pill text-bg-info text-white">{{ $row->status }}</span>
-                                        @elseif (strtolower($row->status ?? '') == 'draft')
-                                            <span class="badge rounded-pill text-bg-secondary">{{ $row->status }}</span>
-                                        @else
-                                            <span class="badge rounded-pill text-bg-secondary">{{ $row->status }}</span>
-                                        @endif
-                                    </td>
-
-                                    {{-- Keputusan (Approved/Rejected/Revision) --}}
-                                    <td>
                                         @php
-                                            $status = strtolower($row->approval_status ?? '');
+                                            // Normalisasi status ke huruf kecil agar case-insensitive
+                                            $status = strtolower($row->status ?? ''); 
                                         @endphp
 
-                                        @if ($status == 'pending')
-                                            <span class="badge rounded-pill text-bg-warning border border-warning-subtle">
-                                                Pending </span>
-                                        @elseif ($status == 'approved')
-                                            <span class="badge rounded-pill text-bg-success border border-success-subtle">
-                                                Approved
+                                        @if ($status == 'published')
+                                            <span class="badge rounded-pill text-bg-success">
+                                                {{ $row->status }}
                                             </span>
-                                        @elseif ($status == 'rejected')
-                                            <span class="badge rounded-pill text-bg-danger border border-danger-subtle">
-                                                Rejected
+
+                                        @elseif($status == 'pending')
+                                            {{-- Warna Kuning (Warning) untuk Pending --}}
+                                            <span class="badge rounded-pill text-bg-warning text-dark">
+                                                {{ $row->status }}
                                             </span>
-                                        @elseif ($status == 'revision')
-                                            <span
-                                                class="badge rounded-pill text-bg-info text-white border border-info-subtle">
-                                                Revision
+
+                                        @elseif($status == 'revisi')
+                                            {{-- Warna Merah (Danger) atau Biru (Info) untuk Revisi. 
+                                                Saya sarankan Merah agar admin/user sadar perlu tindakan --}}
+                                            <span class="badge rounded-pill text-bg-danger">
+                                                {{ $row->status }}
                                             </span>
+
+                                        @elseif($status == 'draft')
+                                            {{-- Warna Abu-abu (Secondary) untuk Draft --}}
+                                            <span class="badge rounded-pill text-bg-secondary">
+                                                {{ $row->status }}
+                                            </span>
+
+                                        @elseif($status == 'arsip')
+                                            {{-- Warna Hitam/Gelap (Dark) untuk Arsip --}}
+                                            <span class="badge rounded-pill text-bg-dark">
+                                                {{ $row->status }}
+                                            </span>
+
                                         @else
-                                            <span
-                                                class="badge rounded-pill text-bg-secondary border border-secondary-subtle">
-                                                {{ $row->approval_status ?? '-' }}
+                                            {{-- Fallback jika status tidak dikenali --}}
+                                            <span class="badge rounded-pill text-bg-light text-dark border">
+                                                {{ $row->status }}
                                             </span>
                                         @endif
                                     </td>
 
+                                  
+
+                                    <td>{{ $row->created_at ?? '-' }}</td>
+                                    <td>{{ $row->updated_at ?? '-' }}</td>
+
+                                    {{-- Aksi --}}
+                                    <td class="text-nowrap text-end">
+
+
+
+
+
+
+
+
+                                    
                                     {{-- Revisi Msg (Kolom Baru) --}}
                                     @can('create_posts')
-                                        <td>
-                                            @if (strtolower($row->approval_status ?? '') === 'revision')
+                                       
+                                            @if (strtolower($row->status ?? '') === 'revisi')
                                                 {{-- Tombol Detail Revisi --}}
                                                 <button type="button" class="btn btn-info btn-sm text-white py-0 px-2"
                                                     style="font-size: 0.75rem;" data-bs-toggle="modal"
@@ -182,19 +194,18 @@
                                                 </div>
                                                 {{-- MODAL END --}}
                                             @else
-                                                -
+                                                
                                             @endif
-                                        </td>
+                                     
                                     @endcan
 
-                                    <td>{{ $row->created_at ?? '-' }}</td>
-                                    <td>{{ $row->updated_at ?? '-' }}</td>
 
-                                    {{-- Aksi --}}
-                                    <td class="text-nowrap text-end">
+
+
+
 
                                         {{-- 1. Approval (Super Admin Only) --}}
-                                        @if ($row->approval_status === 'pending')
+                                        @if ($row->status === 'pending')
                                             @can('approve_posts')
                                                 <a href="{{ route('admin.postingan.approval.show', $row->id) }}"
                                                     class="btn btn-primary btn-sm border" aria-label="Approval">
