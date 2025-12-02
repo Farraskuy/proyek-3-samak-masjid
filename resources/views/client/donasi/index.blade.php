@@ -69,6 +69,32 @@
         color: #0099ff;
         font-size: 0.9rem;
     }
+    .hidden-checkbox {
+        display: none;
+    }
+    .custom-checkbox-label {
+        border: 2px solid #dee2e6;
+        background-color: white;
+        color: #6c757d;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        position: relative;
+    }
+
+    .hidden-checkbox:checked + .custom-checkbox-label {
+        border-color: #198754;
+        background-color: #e8f5e9;
+        color: #198754;
+        box-shadow: 0 4px 10px rgba(25, 135, 84, 0.15);
+    }
+
+    .hidden-checkbox:checked + .custom-checkbox-label::after {
+        content: "✅";
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 1.2rem;
+    }
 </style>
 
 <div class="zis-container">
@@ -103,6 +129,7 @@
                                 <option value="profesi">Zakat Profesi (Penghasilan)</option>
                                 <option value="emas">Zakat Emas & Perak</option>
                                 <option value="tabungan">Zakat Tabungan</option>
+                                <option value="pertanian">Zakat Pertanian</option>
                             </select>
                         </div>
 
@@ -120,7 +147,7 @@
                     <div id="section-infaq" style="display: none;">
                         <div class="mb-4">
                             <label class="form-label">Jenis Infak</label>
-                            <select class="form-select mb-3">
+                            <select class="form-select form-select-lg mb-3" id="infaq-type" onchange="calculateInfaq()">
                                 <option>Infak Umum</option>
                                 <option>Infak Bencana</option>
                                 <option>Infak Pendidikan</option>
@@ -163,7 +190,7 @@
                                     </p>
                                 </div>
 
-                                <a href="/donasi/konfirmasi" class="btn btn-lg rounded-pill px-5 py-3 fw-bold shadow-sm" 
+                                <a href="/donasi/konfirmasi" id="btn-konfirmasi" class="btn btn-lg rounded-pill px-5 py-3 fw-bold shadow-sm" 
                                 style="background-color: #FFC107; color: #212529; border: none;">
                                     <i class="fas fa-upload me-2"></i> Upload Bukti Donasi
                                 </a>

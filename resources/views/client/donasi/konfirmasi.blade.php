@@ -38,6 +38,13 @@
         background-color: #fff;
     }
 
+    /* Style untuk input yang terkunci (Readonly) */
+    .form-control[readonly], .form-select.locked {
+        background-color: #e9ecef; /* Warna abu-abu */
+        opacity: 1;
+        cursor: not-allowed;
+    }
+
     /* Area Upload Dashed */
     .upload-zone {
         border: 2px dashed #dee2e6;
@@ -72,7 +79,7 @@
     }
 
     .btn-submit {
-        background-color: #1a1e21; /* Warna hitam sesuai gambar */
+        background-color: #1a1e21;
         color: white;
         border-radius: 6px;
         font-weight: 600;
@@ -142,9 +149,52 @@
                                 required>
                         </div>
 
+                        {{-- Input Jumlah Donasi (Dikunci jika ada request amount) --}}
                         <div class="mb-3">
-                            <label class="form-label">Jumlah Donasi (Rp)</label>
-                            <input type="number" name="amount" class="form-control" placeholder="50000" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')"required>
+                            <label class="form-label">
+                                Jumlah Donasi (Rp)
+                                @if(request('amount')) <i class="bi bi-lock-fill text-muted ms-1" title="Terkunci dari kalkulator"></i> @endif
+                            </label>
+                            <input type="number" 
+                                   name="amount" 
+                                   class="form-control {{ request('amount') ? 'bg-light' : '' }}" 
+                                   placeholder="50000" 
+                                   inputmode="numeric" 
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')" 
+                                   value="{{ request('amount') }}" 
+                                   {{ request('amount') ? 'readonly' : '' }}
+                                   required>
+                            @if(request('amount'))
+                                <small class="text-muted" style="font-size: 0.75rem;">*Nominal otomatis dari kalkulator</small>
+                            @endif
+                        </div>
+
+                        {{-- Dropdown Jenis Donasi (Dikunci jika ada request type) --}}
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Jenis Donasi
+                                @if(request('type')) <i class="bi bi-lock-fill text-muted ms-1" title="Terkunci dari kalkulator"></i> @endif
+                            </label>
+                            <select name="donation_type" 
+                                    class="form-select {{ request('type') ? 'locked' : '' }}" 
+                                    {{ request('type') ? 'tabindex=-1' : '' }} 
+                                    style="{{ request('type') ? 'pointer-events: none;' : '' }}"
+                                    required>
+                                <option value="" disabled {{ !request('type') ? 'selected' : '' }}>Pilih Jenis Donasi</option> 
+                                <option value="maal" {{ request('type') == 'maal' ? 'selected' : '' }}>Zakat Maal (Harta)</option>
+                                <option value="profesi" {{ request('type') == 'profesi' ? 'selected' : '' }}>Zakat Profesi (Penghasilan)</option>
+                                <option value="emas" {{ request('type') == 'emas' ? 'selected' : '' }}>Zakat Emas & Perak</option>
+                                <option value="tabungan" {{ request('type') == 'tabungan' ? 'selected' : '' }}>Zakat Tabungan</option>
+                                <option value="pertanian" {{ request('type') == 'pertanian' ? 'selected' : '' }}>Zakat Pertanian</option>
+                                <option value="umum" {{ request('type') == 'umum' ? 'selected' : '' }}>Infak Umum</option>
+                                <option value="bencana" {{ request('type') == 'bencana' ? 'selected' : '' }}>Infak Bencana</option>
+                                <option value="pendidikan" {{ request('type') == 'pendidikan' ? 'selected' : '' }}>Infak Pendidikan</option>
+                                <option value="kesehatan" {{ request('type') == 'kesehatan' ? 'selected' : '' }}>Infak Kesehatan</option>
+                            </select>
+                            {{-- Trik agar data select tetap terkirim walaupun dikunci secara visual --}}
+                            @if(request('type'))
+                                <input type="hidden" name="donation_type_backup" value="{{ request('type') }}">
+                            @endif
                         </div>
 
                         <div class="mb-3">
@@ -152,12 +202,21 @@
                             <input type="date" name="transfer_date" class="form-control" required>
                         </div>
 
+                        {{-- Dropdown Bank Tujuan (Dikunci jika ada request bank_id) --}}
                         <div class="mb-3">
-                            <label class="form-label">Transfer ke Bank Tujuan</label>
-                            <select name="destination_account_id" class="form-select" required>
+                            <label class="form-label">
+                                Transfer ke Bank Tujuan
+                                @if(request('bank_id')) <i class="bi bi-lock-fill text-muted ms-1" title="Terkunci dari kalkulator"></i> @endif
+                            </label>
+                            <select name="destination_account_id" 
+                                    class="form-select {{ request('bank_id') ? 'locked' : '' }}" 
+                                    {{ request('bank_id') ? 'tabindex=-1' : '' }} 
+                                    style="{{ request('bank_id') ? 'pointer-events: none;' : '' }}"
+                                    required>
                                 <option value="" selected disabled>Pilih bank tujuan</option>
                                 @foreach($banks as $bank)
-                                    <option value="{{ $bank->account_id }}">
+                                    <option value="{{ $bank->account_id }}"
+                                        {{ request('bank_id') == $bank->account_id ? 'selected' : ''}}>
                                         {{ $bank->bank_name }} - {{ $bank->account_number }}
                                     </option>
                                 @endforeach
@@ -194,18 +253,17 @@
         </div>
 
         <div class="col-lg-4">
+            {{-- Bagian Riwayat (Tidak berubah) --}}
             <div class="card history-card sticky-top" style="top: 20px;">
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-4">Riwayat Konfirmasi</h5>
                     @auth
-                        
                         @forelse($riwayat as $item)
                             <div class="history-item">
                                 <div class="d-flex justify-content-between align-items-start mb-1">
                                     <div class="fw-bold text-dark">
                                         Rp {{ number_format($item->amount, 0, ',', '.') }}
                                     </div>
-                                    
                                     @php
                                         $badgeClass = match($item->status) {
                                             'verified', 'approved' => 'badge-verified', 
@@ -217,16 +275,13 @@
                                         {{ ucfirst($item->status) }}
                                     </span>
                                 </div>
-
                                 <div class="small text-muted mb-1">
                                     <i class="bi bi-calendar-event me-1"></i>
                                     {{ \Carbon\Carbon::parse($item->transfer_date)->format('d M Y') }}
                                 </div>
-
                                 <div class="small text-muted">
                                     <i class="bi bi-bank me-1"></i>
                                     {{ optional($item->destinationAccount)->bank_name ?? 'Bank Tujuan' }}
-                                    
                                     @if(optional($item->destinationAccount)->account_number)
                                         - {{ $item->destinationAccount->account_number }}
                                     @endif
@@ -238,7 +293,6 @@
                                 <small>Belum ada riwayat konfirmasi.</small>
                             </div>
                         @endforelse
-
                     @else
                         <div class="text-center py-5 bg-light rounded-3 border border-dashed">
                             <div class="mb-3">
@@ -255,7 +309,6 @@
                                 Login Sekarang
                             </a>
                         </div>
-
                     @endauth
                 </div>
             </div>

@@ -15,6 +15,7 @@ class DonationConfirmation extends Model
     protected $fillable = [
         'user_id',
         'guest_name',
+        'donation_type',
         'amount',
         'transfer_date',
         'destination_account_id',
