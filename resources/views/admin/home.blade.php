@@ -164,7 +164,7 @@
                 </div>
             @endif
 
-            @if (Auth::user()->hasPermission('view_lost_items') || Auth::user()->hasPermission('view_consultations'))
+            @if (Auth::user()->hasPermission('view_users') || Auth::user()->hasPermission('view_roles'))
                 <div class="flex-grow-1" style="min-width: 300px;">
                     <p class="fw-bold mb-3 fs-14px text-danger">Pengguna Aplikasi</p>
                     <div class="d-flex gap-3 mb-3 py-2 bg-light rounded-3 flex-wrap w-100">

@@ -23,38 +23,38 @@
             @forelse ($albums as $index => $album)
                 <div class="col-lg-4 col-md-6">
                     <a href="{{ route('galeri.show', $album->album_id) }}" class="text-decoration-none">
-                        <div class="album-card" data-aos="fade-up" data-aos-delay="{{ $index * 80 }}">
-
+                        <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift" data-aos="fade-up"
+                            data-aos-delay="{{ $index * 80 }}">
                             <!-- Album Cover -->
-                            <div class="album-cover">
+                            <div class="card-thumbnail-wrapper position-relative" style="height: 240px; overflow: hidden;">
                                 @php
                                     $cover = $album->cover->image_url ?? null;
                                 @endphp
 
                                 @if ($cover)
-                                    <div class="card-thumbnail-wrapper" style="height: 280px; background: #f8f9fa;">
-                                        <img src="{{ asset('storage/' . $cover) }}" class="album-image"
-                                            alt="{{ $album->album_name }}">
-                                        <i class="fas fa-image fallback-icon"></i>
-                                    </div>
+                                    <img src="{{ asset('storage/' . $cover) }}" class="w-100 h-100 object-fit-cover"
+                                        alt="{{ $album->album_name }}">
+                                    <i class="fas fa-image fallback-icon"></i>
                                 @else
-                                    <div class="album-placeholder">
-                                        <i class="fas fa-image"></i>
-                                        <span>No Cover</span>
+                                    <div
+                                        class="d-flex align-items-center justify-content-center w-100 h-100 bg-light text-muted">
+                                        <div class="text-center">
+                                            <i class="fas fa-images fa-3x mb-2 opacity-50"></i>
+                                            <p class="small m-0">No Cover</p>
+                                        </div>
                                     </div>
                                 @endif
-
-                                <!-- Overlay -->
-                                <div class="album-overlay"></div>
                             </div>
 
                             <!-- Album Info -->
-                            <div class="album-info">
-                                <h5 class="album-title">
+                            <div class="card-body text-center p-4">
+                                <h5 class="fw-bold text-dark mb-1 text-truncate">
                                     {{ $album->album_name }}
                                 </h5>
+                                <p class="text-muted small mb-0">
+                                    <i class="fas fa-images me-1"></i> Lihat Galeri
+                                </p>
                             </div>
-
                         </div>
                     </a>
                 </div>
@@ -80,101 +80,18 @@
 
 @push('styles')
     <style>
-        /* Album Card */
-        .album-card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transition: all 0.4s ease;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
+        /* Card Hover Effect */
+        .hover-lift {
+            transition: all 0.3s ease;
         }
 
-        .album-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 40px rgba(23, 92, 158, 0.2);
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(23, 92, 158, 0.15) !important;
         }
 
-        /* Album Cover */
-        .album-cover {
-            position: relative;
-            width: 100%;
-            height: 280px;
-            overflow: hidden;
-            background: #f8f9fa;
-        }
-
-        .album-image {
-            width: 100%;
-            height: 100%;
+        .object-fit-cover {
             object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .album-card:hover .album-image {
-            transform: scale(1.1);
-        }
-
-        .album-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #175C9E 0%, #1a4d7a 100%);
-            color: white;
-        }
-
-        .album-placeholder i {
-            font-size: 48px;
-            opacity: 0.5;
-            margin-bottom: 12px;
-        }
-
-        .album-placeholder span {
-            font-size: 14px;
-            opacity: 0.7;
-        }
-
-        /* Album Overlay */
-        .album-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to bottom, transparent 0%, rgba(23, 92, 158, 0.95) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .album-card:hover .album-overlay {
-            opacity: 1;
-        }
-
-        /* Album Info */
-        .album-info {
-            padding: 24px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .album-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #175C9E;
-            margin: 0;
-            line-height: 1.4;
-            text-align: center;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
         }
 
         /* Empty State */
