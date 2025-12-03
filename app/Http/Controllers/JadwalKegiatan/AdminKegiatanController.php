@@ -11,9 +11,9 @@ class AdminKegiatanController extends Controller
     //Tampilkan daftar kegiatan (khusus admin)
     public function index()
     {
-        $events = JadwalKegiatan::orderBy('start_time', 'asc')->get();
+        $data = JadwalKegiatan::orderBy('start_time', 'asc')->paginate(50);
 
-        return view('admin.kegiatan.index', compact('events'));
+        return view('admin.kegiatan.index', compact('data'));
     }
 
     public function create()

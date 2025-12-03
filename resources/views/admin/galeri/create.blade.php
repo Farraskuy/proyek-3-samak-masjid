@@ -10,7 +10,7 @@
 
         <h4 class="mb-0">Tambah Album</h4>
 
-        <a href="{{ route('admin.galeri') }}" class="btn btn-outline-secondary btn-sm">Kembali ke Daftar Album</a>
+        <a href="{{ route('galeri.index') }}" class="btn btn-outline-secondary btn-sm">Kembali ke Daftar Album</a>
 
     </div>
 
@@ -58,7 +58,7 @@
 
 
 
-            <form action="{{ route('admin.galeri.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('galeri.store') }}" method="POST" enctype="multipart/form-data">
 
                 @csrf
 
@@ -139,7 +139,7 @@
 
                     </button>
 
-                    <a href="{{ route('admin.galeri') }}" class="btn btn-outline-secondary">Batal</a>
+                    <a href="{{ route('galeri.index') }}" class="btn btn-outline-secondary">Batal</a>
 
                 </div>
 

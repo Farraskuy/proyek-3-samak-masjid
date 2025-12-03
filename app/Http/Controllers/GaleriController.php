@@ -19,6 +19,13 @@ class GaleriController extends Controller
         return $n > 0 ? $n : 50;
     }
 
+    public function adminIndex()
+    {
+        $data = GalleryAlbum::orderBy('created_at', 'desc')->paginate(10);
+
+        return view('admin.galeri.index', compact('data'));
+    }
+
     public function index(Request $request)
     {
         $perPage = $this->perPage($request);
@@ -74,7 +81,7 @@ class GaleriController extends Controller
             }
         }
 
-        return redirect()->route('admin.galeri')
+        return redirect()->route('galeri.index')
                          ->with('success', 'Album berhasil ditambahkan!');
     }
 
@@ -194,7 +201,7 @@ class GaleriController extends Controller
             }
         }
 
-        return redirect()->route('admin.galeri')
+        return redirect()->route('admin.galeri.index')
                          ->with('success', 'Album berhasil diperbarui!');
     }
 
@@ -210,7 +217,7 @@ class GaleriController extends Controller
 
         $album->delete();
 
-        return redirect()->route('admin.galeri')
+        return redirect()->route('admin.galeri.index')
                          ->with('success', 'Album berhasil dihapus!');
     }
 

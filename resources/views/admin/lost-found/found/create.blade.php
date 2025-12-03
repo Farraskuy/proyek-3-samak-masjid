@@ -9,10 +9,12 @@
             <i class="fa-regular fa-arrow-left me-1"></i> Kembali
         </a>
     </div>
+
     <div class="card shadow-sm">
         <div class="card-body">
             <form action="{{ route('admin.barang-hilang.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
+
                 <div class="mb-3">
                     <label class="form-label">Nama Barang <span class="text-danger">*</span></label>
                     <input type="text" name="item_name" class="form-control" required>
@@ -20,6 +22,7 @@
                     <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label">Deskripsi <span class="text-danger">*</span></label>
                     <textarea name="description" class="form-control" rows="3" required>{{ old('description') }}</textarea>
@@ -27,6 +30,7 @@
                     <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label">Lokasi Ditemukan <span class="text-danger">*</span></label>
                     <input type="text" name="location_found" class="form-control" required value="{{ old('location_found') }}">
@@ -34,6 +38,7 @@
                     <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label">Kategori <span class="text-danger">*</span></label>
                     <select name="category" class="form-select" required>
@@ -48,6 +53,7 @@
                     <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label">Status <span class="text-danger">*</span></label>
                     <select name="status" class="form-select" required>
@@ -58,6 +64,7 @@
                     <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label">Foto Barang <span class="text-danger">*</span></label>
                     <input type="file" name="featured_images[]" class="form-control" accept="image/*" multiple required>
@@ -69,6 +76,7 @@
                     <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                 </div>
+
                 <button type="submit" class="btn btn-success">
                     <i class="fa-regular fa-floppy-disk me-1"></i> Simpan
                 </button>

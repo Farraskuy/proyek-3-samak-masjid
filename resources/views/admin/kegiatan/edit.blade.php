@@ -195,7 +195,7 @@
                     <hr>
 
                     <div class="d-flex gap-2 justify-content-end">
-                        <a href="{{ route('admin.kegiatan') }}" class="btn btn-secondary">Kembali</a>
+                        <a href="{{ route('admin.kegiatan.index') }}" class="btn btn-secondary">Kembali</a>
                         <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                     </div>
 
