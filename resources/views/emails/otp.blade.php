@@ -5,13 +5,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kode Verifikasi - {{ config('app.name') }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* Inline CSS untuk kompatibilitas email client */
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Inter', Arial, sans-serif;
+            font-family: 'Poppins', Arial, sans-serif;
             background-color: #f8fafc;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
@@ -36,7 +36,7 @@
 
         img {
             border: 0;
-            -ms-interpolation-mode: bicubic;
+            -ms-Poppinspolation-mode: bicubic;
         }
 
         /* Responsive Styles */
@@ -81,7 +81,7 @@
     </style>
 </head>
 
-<body style="margin:0; padding:0; font-family:'Inter', Arial, sans-serif; background-color:#f8fafc;">
+<body style="margin:0; padding:0; font-family:'Poppins', Arial, sans-serif; background-color:#f8fafc; display: flex; justify-content: center; align-items: center;">
 
     <table role="presentation" style="background-color:#f8fafc;">
         <tr>
@@ -103,7 +103,7 @@
                                                 </td>
                                                 <td style="vertical-align: middle;">
                                                     <h4 class="logo-text"
-                                                        style="margin:0; font-family:'Inter', Arial, sans-serif; font-size: 20px; color: #1a202c; font-weight: 600;">
+                                                        style="margin:0; font-family:'Poppins', Arial, sans-serif; font-size: 20px; color: #1a202c; font-weight: 600;">
                                                         Samak Masjid
                                                     </h4>
                                                 </td>
@@ -148,7 +148,7 @@
                                                 <td align="center"
                                                     style="background-color:#f8fafc; border-radius:8px; padding: 20px 25px;">
                                                     <h1
-                                                        style="margin:0; font-family:'Inter', Arial, sans-serif; font-size: 40px; font-weight: 700; color: #175C9E; letter-spacing: 6px; mso-line-height-rule: exactly;">
+                                                        style="margin:0; font-family:'Poppins', Arial, sans-serif; font-size: 40px; font-weight: 700; color: #175C9E; letter-spacing: 6px; mso-line-height-rule: exactly;">
                                                         {{ $code }}
                                                     </h1>
                                                 </td>

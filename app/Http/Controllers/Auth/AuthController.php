@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Traits\VerifyCaptcha;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +14,7 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Otp;
 use App\Mail\OtpMail;
+use Session;
 
 class AuthController extends Controller
 {
@@ -86,8 +88,10 @@ class AuthController extends Controller
             'email' => $data['email'],
             'phone_number' => $data['phone_number'],
             'password' => Hash::make($data['password']),
-            'role' => 'jamaah',
+            'role' => Role::where('name', 'jamaah')->first()->id,
         ]);
+
+        Session::put('otp_return_url', route('home'));
 
         Auth::login($user);
 

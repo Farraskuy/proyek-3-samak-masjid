@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
@@ -115,15 +117,10 @@ Route::post('/form/{slug}/submit', [FormBuilderController::class, 'submit'])->na
 // =============================== User Profile (Auth) ===============================
 Route::middleware('auth')->prefix('profil')->name('profile.')->group(function () {
     Route::get('/', [ProfileController::class, 'show'])->name('show');
-    Route::get('/general', [ProfileController::class, 'general'])->name('general');
-    Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
     Route::put('/', [ProfileController::class, 'update'])->name('update');
 
     Route::get('/password', [ProfileController::class, 'password'])->name('password');
     Route::put('/password', [ProfileController::class, 'changePassword'])->name('change-password');
-
-    Route::get('/preferensi', [ProfileController::class, 'preferences'])->name('preferences');
-    Route::put('/preferensi', [ProfileController::class, 'updatePreferences'])->name('update-preferences');
 });
 
 
@@ -143,26 +140,26 @@ Route::middleware('auth')->prefix('konsultasi-saya')->name('client.consultations
 // Protected by Auth and Permission Middleware
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
 
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware('role');
 
     // Role Management
     Route::prefix('roles')->name('roles.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Admin\RoleController::class, 'index'])->name('index')->middleware('permission:view_roles');
-        Route::get('/create', [\App\Http\Controllers\Admin\RoleController::class, 'create'])->name('create')->middleware('permission:create_roles');
-        Route::post('/', [\App\Http\Controllers\Admin\RoleController::class, 'store'])->name('store')->middleware('permission:create_roles');
-        Route::get('/{role}/edit', [\App\Http\Controllers\Admin\RoleController::class, 'edit'])->name('edit')->middleware('permission:edit_roles');
-        Route::put('/{role}', [\App\Http\Controllers\Admin\RoleController::class, 'update'])->name('update')->middleware('permission:edit_roles');
-        Route::delete('/{role}', [\App\Http\Controllers\Admin\RoleController::class, 'destroy'])->name('destroy')->middleware('permission:delete_roles');
+        Route::get('/', [RoleController::class, 'index'])->name('index')->middleware('permission:view_roles');
+        Route::get('/create', [RoleController::class, 'create'])->name('create')->middleware('permission:create_roles');
+        Route::post('/', [RoleController::class, 'store'])->name('store')->middleware('permission:create_roles');
+        Route::get('/{role}/edit', [RoleController::class, 'edit'])->name('edit')->middleware('permission:edit_roles');
+        Route::put('/{role}', [RoleController::class, 'update'])->name('update')->middleware('permission:edit_roles');
+        Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy')->middleware('permission:delete_roles');
     });
 
     // Let's define it more granularly to match the pattern
     Route::prefix('users')->name('users.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('index')->middleware('permission:view_users');
-        Route::get('/create', [\App\Http\Controllers\Admin\UserController::class, 'create'])->name('create')->middleware('permission:edit_users');
-        Route::post('/', [\App\Http\Controllers\Admin\UserController::class, 'store'])->name('store')->middleware('permission:edit_users');
-        Route::get('/{user}/edit', [\App\Http\Controllers\Admin\UserController::class, 'edit'])->name('edit')->middleware('permission:edit_users');
-        Route::put('/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('update')->middleware('permission:edit_users');
-        Route::delete('/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('destroy')->middleware('permission:delete_users');
+        Route::get('/', [UserController::class, 'index'])->name('index')->middleware('permission:view_users');
+        Route::get('/create', [UserController::class, 'create'])->name('create')->middleware('permission:edit_users');
+        Route::post('/', [UserController::class, 'store'])->name('store')->middleware('permission:edit_users');
+        Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit')->middleware('permission:edit_users');
+        Route::put('/{user}', [UserController::class, 'update'])->name('update')->middleware('permission:edit_users');
+        Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy')->middleware('permission:delete_users');
     });
 
     // Postingan

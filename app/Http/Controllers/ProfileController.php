@@ -12,36 +12,9 @@ use Illuminate\Validation\Rule;
 class ProfileController extends Controller
 {
     /**
-     * Show user profile
-     */
-    /**
-     * Show user profile
-     */
-    public function show()
-    {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
-        return redirect()->route('profile.edit');
-    }
-
-    /**
-     * Show general settings
-     */
-    public function general()
-    {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
-        return redirect()->route('profile.edit');
-    }
-
-    /**
      * Show edit profile form
      */
-    public function edit()
+    public function show()
     {
         if (!Auth::check()) {
             return redirect()->route('login');
@@ -136,40 +109,6 @@ class ProfileController extends Controller
         }
     }
 
-    /**
-     * Show preferences
-     */
-    public function preferences()
-    {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
-        $user = Auth::user();
-        return view('client.profile.preferences', compact('user'));
-    }
-
-    /**
-     * Update preferences
-     */
-    public function updatePreferences(Request $request)
-    {
-        if (!Auth::check()) {
-            return redirect()->route('login');
-        }
-
-        $user = Auth::user();
-
-        // Checkboxes send '1' if checked, nothing if unchecked.
-        // We can simply check for their presence.
-        $user->update([
-            'notifications_email' => $request->has('notifications_email'),
-            'newsletter' => $request->has('newsletter'),
-            'public_profile' => $request->has('public_profile'),
-        ]);
-
-        return back()->with('success', 'Preferensi berhasil diperbarui');
-    }
     /**
      * Show change password form
      */
