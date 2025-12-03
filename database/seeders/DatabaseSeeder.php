@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             PostinganSeeder::class,
             ConsultationSeeder::class,
             StaticPageSeeder::class,
+            FormBuilderSeeder::class,
             GalleryAlbumSeeder::class,
             GalleryPhotoSeeder::class,
             JadwalKegiatanSeeder::class,
