@@ -7,7 +7,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">Edit Album</h4>
-        <a href="{{ route('admin.galeri') }}" class="btn btn-outline-secondary btn-sm">Kembali ke Daftar Album</a>
+        <a href="{{ route('galeri.index') }}" class="btn btn-outline-secondary btn-sm">Kembali ke Daftar Album</a>
     </div>
 
     <div class="card shadow-sm mb-4">
@@ -119,7 +119,7 @@
                         <i class="bi bi-save me-1"></i> Simpan Perubahan
                     </button>
 
-                    <a href="{{ route('admin.galeri') }}" class="btn btn-outline-secondary">Batal</a>
+                    <a href="{{ route('galeri.index') }}" class="btn btn-outline-secondary">Batal</a>
                 </div>
 
             </form>

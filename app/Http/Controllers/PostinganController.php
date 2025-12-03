@@ -106,6 +106,11 @@ class PostinganController extends Controller
     // Store uploaded article (previously AddPostinganController::upload)
     public function store(Request $request)
     {
+
+         if ( !optional($request->user())->hasPermission('create_posts')  ) {
+            abort(403, 'Unauthorized');
+        }
+
         $validated = $request->validate([
             'title_view' => 'required|string|max:255',
             'keterangan_view' => 'nullable|string',
@@ -183,6 +188,12 @@ class PostinganController extends Controller
     // Admin: list articles for edit (previously ShowPostingan::getEditArtikel)
     public function indexAdmin(Request $request)
     {
+
+
+        if ( !optional($request->user())->hasPermission('view_posts')  ) {
+            abort(403, 'Unauthorized');
+        }
+
         $perPage = $request->query('showing', 50);
         $keyword = $request->query('keyword', '');
         $status = $request->query('status', 'all');
@@ -216,6 +227,12 @@ class PostinganController extends Controller
     // Approval index for super-admin: list postingans awaiting approval
     public function approvalIndex(Request $request)
     {
+
+        if (!optional($request->user())->hasPermission('approve_posts')) {
+            abort(403, 'Unauthorized');
+        }
+
+
         $perPage = $request->query('showing', 50);
         $status = $request->query('status', 'pending'); // Default to pending
 
@@ -233,23 +250,23 @@ class PostinganController extends Controller
 
     // Show approval detail + preview
 
-    public function approvalShow($id)
-    {
+        public function approvalShow(Request $request, $id)
+        {
+            if (!optional($request->user())->hasPermission('approve_posts')) {
+                abort(403, 'Unauthorized');
+            }
 
-        $post = Postingan::where('id', $id)->firstOrFail();
+            $post = Postingan::where('id', $id)->firstOrFail();
 
-        // Tambahkan /storage/ hanya untuk tag <img>
-        $post->content = preg_replace(
-            '/<img\s+[^>]*src="(news\/[^"]+)"/i',
-            '<img src="/storage/$1"',
-            $post->content
-        );
+            // Tambahkan /storage/ hanya untuk tag <img>
+            $post->content = preg_replace(
+                '/<img\s+[^>]*src="(news\/[^"]+)"/i',
+                '<img src="/storage/$1"',
+                $post->content
+            );
 
-        return view('admin.postingan.approval_detail', compact('post'));
-
-
-
-    }
+            return view('admin.postingan.approval_detail', compact('post'));
+        }
 
 
 
@@ -258,6 +275,10 @@ class PostinganController extends Controller
     // Handle approval action (approve/reject/revision)
     public function approvalUpdate(Request $request, $id)
     {
+        if (!optional($request->user())->hasPermission('approve_posts')) {
+            abort(403, 'Unauthorized');
+        }
+
         // 1. Cari Postingan
         $post = Postingan::findOrFail($id);
 
@@ -289,6 +310,7 @@ class PostinganController extends Controller
         } else {
             // Untuk kondisi 'arsip' atau 'draft'
             $post->published_at = null;
+            $post->approval_note = null;
             // Opsional: Hapus note jika diarsipkan/draft
             // $post->approval_note = null; 
         }
@@ -303,10 +325,11 @@ class PostinganController extends Controller
     // Delete article and associated images (previously ShowPostingan::deleteArtikel)
     public function deleteArtikel(Request $request, $id)
     {
-        // Only allow super admin to delete
-        if (optional($request->user())->role !== 'super admin') {
+
+        if ( !optional($request->user())->hasPermission('delete_posts')  ) {
             abort(403, 'Unauthorized');
         }
+
 
         $this->search_delete_featured_image($id);
         $this->search_delete_kontent_image($id);
@@ -349,19 +372,24 @@ class PostinganController extends Controller
         }
     }
 
-    public function edit($id)
-    {
-        $post = Postingan::where('id', $id)->firstOrFail();
 
-        // Tambahkan /storage/ hanya untuk tag <img>
-        $post->content = preg_replace(
-            '/<img\s+[^>]*src="(news\/[^"]+)"/i',
-            '<img src="/storage/$1"',
-            $post->content
-        );
-
-        return view('admin.postingan.edit', compact('post'));
+public function edit(Request $request, $id)
+{
+    if (!optional($request->user())->hasPermission('edit_posts')) {
+        abort(403, 'Unauthorized');
     }
+
+    $post = Postingan::where('id', $id)->firstOrFail();
+
+    // Tambahkan /storage/ hanya untuk tag <img>
+    $post->content = preg_replace(
+        '/<img\s+[^>]*src="(news\/[^"]+)"/i',
+        '<img src="/storage/$1"',
+        $post->content
+    );
+
+    return view('admin.postingan.edit', compact('post'));
+}
 
 
 

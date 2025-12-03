@@ -229,7 +229,6 @@
                                             </a>
                                         @endcan
 
-                                        {{-- 3. Delete (Super Admin Only) --}}
                                         @can('delete_posts')
                                             <button type="button" class="btn btn-danger btn-sm btn-delete-article"
                                                 data-action="{{ url('/admin/postingan/delete/' . $row->id) }}"

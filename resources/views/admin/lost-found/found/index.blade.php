@@ -11,16 +11,19 @@
         </a>
         @endcan
     </div>
+
     <div class="row g-0 gap-3">
         <form method="get" id="form_filter" class="col rounded-3 bg-white p-3 pt-0 form-filter"
             style="height: fit-content">
             <div class="alert-container"></div>
+
             @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
                 {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             @endif
+
             <div class="bg-white position-sticky pt-3 pb-2" style="top: 61px; z-index: 1">
                 <div class="d-flex gap-2 justify-content-end mb-2">
                     <input type="text" class="form-control" placeholder="Cari barang"
@@ -31,12 +34,15 @@
                         <option value="date">Tanggal</option>
                         <option value="status">Status</option>
                     </select>
+
+                    {{-- Sort Toggle --}}
                     <div class="sort-toggle">
                         <input type="radio" name="ordered_by" value="asc" id="ordered_by_asc"
                             {{ request('ordered_by') == 'asc' ? 'checked' : '' }} onchange="this.form.submit()" hidden>
                         <label for="ordered_by_asc" class="btn btn-outline-secondary" title="Urutkan A-Z">
                             <i class="fas fa-sort-alpha-down"></i>
                         </label>
+
                         <input type="radio" name="ordered_by" value="desc" id="ordered_by_desc"
                             {{ request('ordered_by', 'desc') == 'desc' ? 'checked' : '' }} onchange="this.form.submit()"
                             hidden>
@@ -46,6 +52,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="table-responsive position-relative mb-3" style="min-height: 200px">
                 <table class="table table-sm table-hover fs-14px">
                     <thead>
@@ -65,23 +72,9 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    @php
-                                    $firstPhoto = $item->photos->first();
-                                    @endphp
-                                    @if ($firstPhoto)
-                                    <img src="{{ asset('storage/' . $firstPhoto->image_url) }}"
-                                        alt="{{ $item->item_name }}" class="rounded" width="40"
-                                        height="40" style="object-fit: cover;">
-                                    @else
-                                    <div class="bg-light d-flex align-items-center justify-content-center rounded"
-                                        style="width: 40px; height: 40px;">
-                                        <i class="fas fa-box text-muted"></i>
-                                    </div>
-                                    @endif
                                     <div>
                                         <div class="fw-semibold">{{ $item->item_name ?? '-' }}</div>
-                                        <small
-                                            class="text-muted">{{ Str::limit($item->description ?? '', 35) }}</small>
+                                        <small class="text-muted">{{ Str::limit($item->description ?? '', 35) }}</small>
                                     </div>
                                 </div>
                             </td>
@@ -114,6 +107,7 @@
                                     <i class="fas fa-pen text-muted"></i>
                                 </a>
                                 @endcan
+
                                 @can('delete_lost_items')
                                 <form action="{{ route('admin.barang-hilang.destroy', $item->item_id) }}"
                                     method="POST" class="d-inline"
@@ -141,6 +135,7 @@
                     </tbody>
                 </table>
             </div>
+
             <div class="d-flex justify-content-between gap-2 flex-wrap">
                 <div class="d-flex justify-content-between showing-wrapper-bawah">
                     <div class="d-flex fs-14px align-items-center gap-1">
@@ -159,6 +154,7 @@
         </form>
     </div>
 </section>
+
 @push('styles')
 <style>
     /* Hide unselected sort labels */
