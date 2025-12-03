@@ -2,162 +2,275 @@
 
 @section('title', 'Tambah Kegiatan')
 
+@push('styles')
+    <style>
+        .file-uploader {
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 2px dashed #dee2e6;
+            background: #fafafa;
+            text-align: center;
+            cursor: pointer;
+            color: #666;
+            transition: .2s ease-in-out;
+            display: block !important;
+        }
+
+        .file-uploader.on-drag {
+            background: #f3f3f3;
+            border-color: #CE9138 !important;
+        }
+
+        /* Image Preview */
+        #image-preview-container {
+            display: none;
+            position: relative;
+        }
+
+        #image-preview {
+            width: 100%;
+            border-radius: 1rem;
+            border: 1px solid #ddd;
+        }
+
+        #remove-image-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0, 0, 0, .55);
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
+@endpush
+
 @section('content')
-    <section class="p-3">
-        <h4 class="fw-bold mb-1" style="color: #175C9E;">Tambah Kegiatan Baru</h4>
-        <p class="text-muted mb-4">Formulir penambahan kegiatan masjid kampus</p>
+    <section class="p-3 container">
 
         <form action="{{ route('admin.kegiatan.store') }}" method="POST" enctype="multipart/form-data" id="formKegiatan">
             @csrf
-            <div class="card shadow-sm rounded-3 border-0">
-                <div class="card-body p-4">
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Nama Kegiatan <span class="text-danger">*</span></label>
-                        <input type="text" name="event_name" class="form-control" required>
-                    </div>
+            {{-- Header --}}
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <a href="{{ route('admin.kegiatan.index') }}" class="btn btn-light btn-sm rounded-4">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h4 class="fw-semibold mb-0">Tambah Kegiatan Baru</h4>
+            </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Tema / Deskripsi</label>
-                        <textarea name="theme" class="form-control" rows="2"></textarea>
-                    </div>
+            <div class="row g-4">
+                {{-- Left Column --}}
+                <div class="col-lg-8">
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Lokasi <span class="text-danger">*</span></label>
-                        <input type="text" name="location" class="form-control" required>
-                    </div>
+                    {{-- Informasi Utama --}}
+                    <div class="card bg-white border-0 rounded-3 p-4 mb-4">
+                        <h5 class="fw-semibold mb-3">Informasi Utama</h5>
 
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Waktu Mulai <span class="text-danger">*</span></label>
-                            <input type="datetime-local" name="start_time" class="form-control" required>
+                        <div class="mb-3">
+                            <label for="eventNameInput" class="form-label fw-semibold">Nama Kegiatan <span
+                                    class="text-danger">*</span></label>
+                            <input id="eventNameInput" type="text" name="event_name" class="form-control input-lg"
+                                placeholder="Contoh: Kajian Rutin Sabtu Sore" required>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Waktu Selesai <span class="text-danger">*</span></label>
-                            <input type="datetime-local" name="end_time" class="form-control" required>
+
+                        <div class="mb-3">
+                            <label for="themeInput" class="form-label fw-semibold">Tema / Deskripsi</label>
+                            <textarea id="themeInput" name="theme" class="form-control" rows="3"
+                                placeholder="Deskripsi singkat mengenai kegiatan..."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="locationInput" class="form-label fw-semibold">Lokasi <span
+                                    class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i
+                                        class="fas fa-map-marker-alt text-muted"></i></span>
+                                <input id="locationInput" type="text" name="location"
+                                    class="form-control border-start-0 ps-0" placeholder="Contoh: Masjid Utama, Lantai 1"
+                                    required>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Poster Kegiatan</label>
-                        <input type="file" name="poster" class="form-control" accept="image/*" id="posterInput">
-                        <div id="imagePreview" class="mt-2" style="display:none;">
-                            <img id="previewImg" src="" class="img-thumbnail" style="max-height: 150px;">
-                            <button type="button" class="btn btn-sm btn-outline-danger ms-2"
-                                id="removeImage">Hapus</button>
+                    {{-- Waktu Pelaksanaan --}}
+                    <div class="card bg-white border-0 rounded-3 p-4 mb-4">
+                        <h5 class="fw-semibold mb-3">Waktu Pelaksanaan</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="startTimeInput" class="form-label fw-semibold">Waktu Mulai <span
+                                        class="text-danger">*</span></label>
+                                <input id="startTimeInput" type="datetime-local" name="start_time" class="form-control"
+                                    required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="endTimeInput" class="form-label fw-semibold">Waktu Selesai <span
+                                        class="text-danger">*</span></label>
+                                <input id="endTimeInput" type="datetime-local" name="end_time" class="form-control"
+                                    required>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="checkTamu" name="is_have_tamu_undangan">
-                        <label class="form-check-label fw-semibold" for="checkTamu">Ada pembicara / tamu undangan</label>
-                    </div>
-
-                    <div id="daftarTamuContainer" style="display:none;">
-                        <div id="inputTamuWrapper">
-                            <input type="text" name="daftar_tamu[]" class="form-control mb-2"
-                                placeholder="Nama pembicara">
+                    {{-- Tamu Undangan --}}
+                    <div class="card bg-white border-0 rounded-3 p-4 mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-semibold mb-0">Pembicara / Tamu</h5>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="checkTamu" name="is_have_tamu_undangan">
+                            </div>
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-primary mb-3" id="btnTambahTamu">+
-                            Tambah</button>
+
+                        <div id="daftarTamuContainer" style="display:none;">
+                            <p class="text-muted small mb-3">Tambahkan nama pembicara atau tamu undangan khusus.</p>
+                            <div id="inputTamuWrapper">
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text bg-light"><i class="fas fa-user text-muted"></i></span>
+                                    <input type="text" name="daftar_tamu[]" class="form-control"
+                                        placeholder="Nama pembicara">
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="btnTambahTamu">
+                                <i class="fas fa-plus me-1"></i> Tambah Pembicara
+                            </button>
+                        </div>
+                        <div id="noTamuMessage" class="text-muted small fst-italic">
+                            Tidak ada pembicara khusus untuk kegiatan ini.
+                        </div>
                     </div>
 
-                    <hr>
+                </div>
 
-                    <!-- Form Integration -->
-                    <h5 class="fw-bold mb-3 text-secondary">Integrasi Formulir</h5>
+                {{-- Right Column --}}
+                <div class="col-lg-4">
 
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
+                    {{-- Action --}}
+                    <div class="card bg-white border-0 rounded-3 p-4 mb-4">
+                        <h5 class="fw-semibold mb-3">Aksi</h5>
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                            <i class="fas fa-save me-2"></i> Simpan Kegiatan
+                        </button>
+                    </div>
+
+                    {{-- Poster --}}
+                    <div class="card bg-white border-0 rounded-3 p-4 mb-4">
+                        <h5 class="fw-semibold mb-3">Poster Kegiatan</h5>
+
+                        <label for="file-input" id="file-uploader" class="file-uploader">
+                            <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
+                            <div class="fw-semibold">Drag & drop gambar</div>
+                            <div class="small text-muted">atau klik untuk memilih</div>
+                        </label>
+
+                        <input type="file" name="poster" id="file-input" accept="image/*" class="d-none">
+
+                        <div id="image-preview-container" class="mt-3">
+                            <img id="image-preview" src="#" alt="Preview">
+                            <button type="button" id="remove-image-btn">&times;</button>
+                        </div>
+                    </div>
+
+                    {{-- Integrasi Form --}}
+                    <div class="card bg-white border-0 rounded-3 p-4 mb-4">
+                        <h5 class="fw-semibold mb-3">Integrasi Formulir</h5>
+
+                        <div class="mb-3">
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" id="checkRegForm"
                                     name="has_registration_form" value="1">
-                                <label class="form-check-label fw-semibold" for="checkRegForm">Butuh Formulir
-                                    Pendaftaran</label>
+                                <label class="form-check-label fw-medium" for="checkRegForm">Form Pendaftaran</label>
                             </div>
-                            <div id="regFormContainer" style="display:none;">
-                                <select name="registration_form_id" class="form-select select2-form">
+                            <div id="regFormContainer" style="display:none;" class="ps-4 border-start ms-2">
+                                <select name="registration_form_id" class="form-select form-select-sm">
                                     <option value="">-- Pilih Formulir --</option>
                                     @foreach ($forms as $form)
-                                        <option value="{{ $form->id }}">{{ $form->title }} ({{ $form->fields_count }}
-                                            Pertanyaan)</option>
+                                        <option value="{{ $form->id }}">{{ $form->title }}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6">
+
+                        <div class="mb-0">
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" id="checkCloseForm" name="has_closing_form"
-                                    value="1">
-                                <label class="form-check-label fw-semibold" for="checkCloseForm">Butuh Formulir Penutupan
+                                <input class="form-check-input" type="checkbox" id="checkCloseForm"
+                                    name="has_closing_form" value="1">
+                                <label class="form-check-label fw-medium" for="checkCloseForm">Form Penutupan
                                     (Kuisioner)</label>
                             </div>
-                            <div id="closeFormContainer" style="display:none;">
-                                <select name="closing_form_id" class="form-select select2-form">
+                            <div id="closeFormContainer" style="display:none;" class="ps-4 border-start ms-2">
+                                <select name="closing_form_id" class="form-select form-select-sm">
                                     <option value="">-- Pilih Formulir --</option>
                                     @foreach ($forms as $form)
-                                        <option value="{{ $form->id }}">{{ $form->title }} ({{ $form->fields_count }}
-                                            Pertanyaan)</option>
+                                        <option value="{{ $form->id }}">{{ $form->title }}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
                     </div>
 
-                    <hr>
+                    {{-- Penanggung Jawab --}}
+                    <div class="card bg-white border-0 rounded-3 p-4">
+                        <h5 class="fw-semibold mb-3">Penanggung Jawab</h5>
 
-                    <!-- PJ Feature -->
-                    <h5 class="fw-bold mb-3 text-secondary">Penanggung Jawab (PJ)</h5>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="checkPJ" name="has_pj"
+                                value="1">
+                            <label class="form-check-label fw-medium" for="checkPJ">Buat Akun PJ Otomatis</label>
+                        </div>
 
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="checkPJ" name="has_pj" value="1">
-                        <label class="form-check-label fw-semibold" for="checkPJ">Aktifkan Penanggung Jawab Acara</label>
-                    </div>
-
-                    <div id="pjInfoContainer" class="alert alert-info" style="display:none;">
-                        <i class="fas fa-info-circle me-2"></i> Akun Penanggung Jawab akan dibuat secara otomatis.
-                        Kredensial (Email & Password) akan ditampilkan setelah kegiatan berhasil disimpan.
-                    </div>
-
-                    <hr>
-
-                    <div class="d-flex gap-2 justify-content-end">
-                        <a href="{{ route('admin.kegiatan.store') }}" class="btn btn-secondary">Kembali</a>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <div id="pjInfoContainer" class="alert alert-info small mb-0" style="display:none;">
+                            <i class="fas fa-info-circle me-1"></i> Akun PJ akan dibuatkan. Email & Password muncul setelah
+                            disimpan.
+                        </div>
                     </div>
 
                 </div>
             </div>
         </form>
     </section>
+@endsection
 
-    <style>
-        .form-control:focus {
-            border-color: #175C9E;
-            box-shadow: 0 0 0 0.2rem rgba(23, 92, 158, 0.1);
-        }
-
-        .btn-primary {
-            background-color: #175C9E;
-            border-color: #175C9E;
-        }
-
-        .btn-primary:hover {
-            background-color: #144a7a;
-            border-color: #144a7a;
-        }
-    </style>
-
+@push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let counter = 1;
 
-            document.getElementById('checkTamu').addEventListener('change', function() {
-                document.getElementById('daftarTamuContainer').style.display = this.checked ? 'block' :
-                    'none';
+            // --- Tamu Undangan Logic ---
+            const checkTamu = document.getElementById('checkTamu');
+            const daftarTamuContainer = document.getElementById('daftarTamuContainer');
+            const noTamuMessage = document.getElementById('noTamuMessage');
+
+            function toggleTamu() {
+                if (checkTamu.checked) {
+                    daftarTamuContainer.style.display = 'block';
+                    noTamuMessage.style.display = 'none';
+                } else {
+                    daftarTamuContainer.style.display = 'none';
+                    noTamuMessage.style.display = 'block';
+                }
+            }
+            checkTamu.addEventListener('change', toggleTamu);
+            // Init state
+            toggleTamu();
+
+            document.getElementById('btnTambahTamu').addEventListener('click', function() {
+                counter++;
+                const div = document.createElement('div');
+                div.className = 'input-group mb-2';
+                div.innerHTML = `
+                    <span class="input-group-text bg-light"><i class="fas fa-user text-muted"></i></span>
+                    <input type="text" name="daftar_tamu[]" class="form-control" placeholder="Nama pembicara ${counter}">
+                    <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>`;
+                document.getElementById('inputTamuWrapper').appendChild(div);
             });
 
-            // Form Toggles
+            // --- Form Toggles ---
             document.getElementById('checkRegForm').addEventListener('change', function() {
                 document.getElementById('regFormContainer').style.display = this.checked ? 'block' : 'none';
             });
@@ -167,38 +280,55 @@
                     'none';
             });
 
-            // PJ Toggle
+            // --- PJ Toggle ---
             document.getElementById('checkPJ').addEventListener('change', function() {
                 document.getElementById('pjInfoContainer').style.display = this.checked ? 'block' : 'none';
             });
 
-            document.getElementById('btnTambahTamu').addEventListener('click', function() {
-                counter++;
-                const div = document.createElement('div');
-                div.className = 'input-group mb-2';
-                div.innerHTML = `<input type="text" name="daftar_tamu[]" class="form-control" placeholder="Nama pembicara ${counter}">
-            <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">×</button>`;
-                document.getElementById('inputTamuWrapper').appendChild(div);
+            // --- Image Uploader Logic (Copied & Adapted) ---
+            const uploader = document.getElementById("file-uploader");
+            const input = document.getElementById("file-input");
+            const preview = document.getElementById("image-preview");
+            const container = document.getElementById("image-preview-container");
+            const removeBtn = document.getElementById("remove-image-btn");
+
+            uploader.addEventListener("dragover", e => {
+                e.preventDefault();
+                uploader.classList.add("on-drag");
             });
 
-            const input = document.getElementById('posterInput');
-            input.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        document.getElementById('previewImg').src = e.target.result;
-                        document.getElementById('imagePreview').style.display = 'block';
-                    }
-                    reader.readAsDataURL(file);
-                }
+            uploader.addEventListener("dragleave", () => {
+                uploader.classList.remove("on-drag");
             });
 
-            document.getElementById('removeImage').addEventListener('click', function() {
-                input.value = '';
-                document.getElementById('imagePreview').style.display = 'none';
+            uploader.addEventListener("drop", e => {
+                e.preventDefault();
+                uploader.classList.remove("on-drag");
+                input.files = e.dataTransfer.files;
+                showPreview(e.dataTransfer.files[0]);
             });
 
+            input.addEventListener("change", () => {
+                if (input.files[0]) showPreview(input.files[0]);
+            });
+
+            removeBtn.addEventListener("click", () => {
+                input.value = "";
+                container.style.display = "none";
+                uploader.style.display = "block";
+            });
+
+            function showPreview(file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    preview.src = e.target.result;
+                    container.style.display = "block";
+                    uploader.style.display = "none";
+                };
+                reader.readAsDataURL(file);
+            }
+
+            // --- Validation ---
             document.getElementById('formKegiatan').addEventListener('submit', function(e) {
                 const start = new Date(document.querySelector('[name="start_time"]').value);
                 const end = new Date(document.querySelector('[name="end_time"]').value);
@@ -209,5 +339,4 @@
             });
         });
     </script>
-
-@endsection
+@endpush
