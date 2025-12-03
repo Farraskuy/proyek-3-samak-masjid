@@ -3,8 +3,8 @@
         <div class="card-body p-3">
             <div class="list-group list-group-flush bg-transparent">
                 <h6 class="fw-bold text-dark mb-2 px-3 mt-2">Menu</h6>
-                <a href="{{ route('profile.edit') }}"
-                    class="list-group-item list-group-item-action border-0 px-3 py-2.5 mb-1 d-flex align-items-center rounded-3 {{ Route::is('profile.edit') ? 'active-link' : 'text-secondary' }}">
+                <a href="{{ route('profile.show') }}"
+                    class="list-group-item list-group-item-action border-0 px-3 py-2.5 mb-1 d-flex align-items-center rounded-3 {{ Route::is('profile.show') ? 'active-link' : 'text-secondary' }}">
                     <i class="fa-regular fa-circle-user me-3" style="width: 20px;"></i>
                     <span class="fw-medium">Preferensi Akun</span>
                 </a>

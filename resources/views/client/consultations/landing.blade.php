@@ -129,14 +129,15 @@
                     @csrf
                     <div class="row g-3">
                         <div class="col-12">
-                            <label class="form-label fw-bold small">Nama Lengkap</label>
-                            <input type="text" class="form-control auth-check" placeholder="Nama depan" value="{{ Auth::check() ? Auth::user()->full_name : '' }}" readonly>
+                            <label for="nameInput" class="form-label fw-bold small">Nama Lengkap</label>
+                            <input id="nameInput" type="text" class="form-control auth-check" placeholder="Nama depan"
+                                value="{{ Auth::check() ? Auth::user()->full_name : '' }}" readonly>
                         </div>
 
-                        
+
                         <div class="col-12">
-                            <label class="form-label fw-bold small">Alamat Email</label>
-                            <input type="email" class="form-control auth-check" placeholder="Alamat email"
+                            <label for="emailInput" class="form-label fw-bold small">Alamat Email</label>
+                            <input id="emailInput" type="email" class="form-control auth-check" placeholder="Alamat email"
                                 value="{{ Auth::check() ? Auth::user()->email : '' }}" readonly>
                         </div>
 
@@ -144,8 +145,8 @@
                         <input type="hidden" name="question_subject" value="Pertanyaan dari Halaman Konsultasi">
 
                         <div class="col-12">
-                            <label class="form-label fw-bold small">Pertanyaan / Pesan</label>
-                            <textarea name="question_text" class="form-control auth-check" rows="4"
+                            <label for="questionInput" class="form-label fw-bold small">Pertanyaan / Pesan</label>
+                            <textarea id="questionInput" name="question_text" class="form-control auth-check" rows="4"
                                 placeholder="Tuliskan pertanyaan atau permasalahan Anda di sini..."></textarea>
                         </div>
 
@@ -171,24 +172,21 @@
     <!-- Login Modal -->
     <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-content border-0 shadow rounded-4">
                 <div class="modal-body p-5 text-center">
                     <div class="mb-4">
-                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center"
-                            style="width: 80px; height: 80px;">
-                            <i class="fas fa-lock fa-2x text-primary"></i>
-                        </div>
+                        <i class="fas fa-lock fa-3x text-muted opacity-50"></i>
                     </div>
-                    <h3 class="fw-bold mb-2">Login Diperlukan</h3>
-                    <p class="text-muted mb-4">Silakan login terlebih dahulu untuk berkonsultasi dengan Ustadz kami.</p>
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('login') }}" class="fw-medium btn btn-primary btn-lg rounded-pill">Login Sekarang</a>
-                        <button type="button" class="btn btn-light btn-lg rounded-pill"
+                    <h4 class="fw-bold mb-2">Login Diperlukan</h4>
+                    <p class="text-muted mb-4 small">Silakan login untuk melanjutkan konsultasi.</p>
+                    <div class="d-grid gap-2 col-10 mx-auto">
+                        <a href="{{ route('login') }}" class="btn btn-primary rounded-pill">Login</a>
+                        <button type="button" class="btn btn-light rounded-pill text-muted"
                             data-bs-dismiss="modal">Batal</button>
                     </div>
-                    <div class="mt-3">
+                    <div class="mt-4">
                         <small class="text-muted">Belum punya akun? <a href="{{ route('register') }}"
-                                class="text-decoration-none">Daftar</a></small>
+                                class="fw-bold text-decoration-none">Daftar</a></small>
                     </div>
                 </div>
             </div>

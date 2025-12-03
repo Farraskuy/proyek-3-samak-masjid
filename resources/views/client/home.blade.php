@@ -44,16 +44,42 @@
             max-width: 260px;
             opacity: .85;
         }
+
+        /* Hero Section Responsive */
+        .hero-section {
+            background-color: #175C9E;
+            min-height: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-image-col {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                background-image: linear-gradient(rgba(23, 92, 158, 0.85), rgba(23, 92, 158, 0.95)), url('{{ asset('assets/images/lukmanulhakim.png') }}');
+                background-size: cover;
+                background-position: center;
+                height: auto;
+                padding-top: 4rem;
+                padding-bottom: 4rem;
+            }
+
+            .hero-image-col {
+                display: none;
+            }
+        }
     </style>
 @endpush
 
 @section('content')
 
     {{-- HERO --}}
-    <section class="d-flex align-items-center py-5 py-md-6 hero-animate bg-pattern"
-        style="background-color: #175C9E; height: 400px;">
+    <section class="d-flex align-items-center py-5 py-md-6 hero-animate bg-pattern hero-section">
         <div class="container position-relative">
-            <div class="row align-items-center text-center text-md-start">
+            <div class="row align-items-center text-start">
 
                 <div class="col-md-7">
                     <h1 class="display-4 fw-bold text-white mb-3" data-aos="fade-right" data-aos-duration="900">
@@ -65,9 +91,10 @@
                     </p>
                 </div>
 
-                <div class="col-md-5 text-center">
-                    <img src="{{ asset('assets/images/lukmanulhakim.png') }}" alt="Hero" class="img-fluid rounded shadow fade"
-                        data-aos="zoom-in" data-aos-duration="1000" data-aos-delay="300">
+                <div class="col-md-5 text-center hero-image-col">
+                    <img src="{{ asset('assets/images/lukmanulhakim.png') }}" alt="Hero"
+                        class="img-fluid rounded shadow fade" data-aos="zoom-in" data-aos-duration="1000"
+                        data-aos-delay="300">
                 </div>
 
             </div>

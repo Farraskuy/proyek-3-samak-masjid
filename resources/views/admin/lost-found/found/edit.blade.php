@@ -1,5 +1,4 @@
 @extends('admin.layout')
-
 @section('title', 'Edit Barang - Lost & Found')
 
 @section('content')
@@ -104,7 +103,6 @@
     </div>
 </div>
 @endsection
-
 @section('styles')
 <style>
     .position-relative {

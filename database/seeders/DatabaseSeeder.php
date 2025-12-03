@@ -19,13 +19,16 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             BankAccountSeeder::class,
             UsersSeeder::class,
-            PostinganSeeder::class,
-            ConsultationSeeder::class,
-            StaticPageSeeder::class,
             ItemCategorySeeder::class,
             LostItemSeeder::class,
             FoundItemSeeder::class,
-
+            PostinganSeeder::class,
+            ConsultationSeeder::class,
+            StaticPageSeeder::class,
+            FormBuilderSeeder::class,
+            GalleryAlbumSeeder::class,
+            GalleryPhotoSeeder::class,
+            JadwalKegiatanSeeder::class,
         ]);
     }
 }

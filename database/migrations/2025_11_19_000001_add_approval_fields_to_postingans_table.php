@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('postingans', function (Blueprint $table) {
-            $table->enum('approval_status', ['pending', 'approved', 'rejected', 'revision'])->default('pending')->after('status');
-            $table->text('approval_note')->nullable()->after('approval_status');
+            $table->text('approval_note')->nullable()->after('status');
             $table->foreignId('approved_by')->nullable()->constrained('users', 'id')->after('approval_note');
             $table->timestamp('approved_at')->nullable()->after('approved_by');
         });

@@ -11,15 +11,17 @@ class AdminKegiatanController extends Controller
     //Tampilkan daftar kegiatan (khusus admin)
     public function index()
     {
-        $events = JadwalKegiatan::orderBy('start_time', 'asc')->get();
+        $data = JadwalKegiatan::orderBy('start_time', 'asc')->paginate(50);
 
-        return view('admin.kegiatan.index', compact('events'));
+        return view('admin.kegiatan.index', compact('data'));
     }
 
     public function create()
     {
         // Ambil daftar ustadz dari tabel users
-        $ustadz = \App\Models\User::where('role', 'ustadz')->get();
+        $ustadz = \App\Models\User::whereHas('role', function ($q) {
+            $q->where('name', 'ustadz');
+        })->get();
         // Ambil daftar form dengan jumlah pertanyaan
         $forms = \App\Models\Form::withCount('fields')->get();
 
@@ -28,7 +30,7 @@ class AdminKegiatanController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'event_name' => 'required|string|max:200',
             'theme' => 'nullable|string|max:255',
             'poster' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -80,7 +82,7 @@ class AdminKegiatanController extends Controller
             'location' => $request->location,
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
-            'is_have_tamu_undangan' => ($request->daftar_tamu != null),
+            'is_have_tamu_undangan' => !empty(array_filter($request->daftar_tamu ?? [])),
             'created_by' => auth()->id(),
             'has_registration_form' => $request->has('has_registration_form'),
             'registration_form_id' => $request->registration_form_id,
@@ -106,7 +108,7 @@ class AdminKegiatanController extends Controller
             }
         }
 
-        $redirect = redirect()->route('admin.kegiatan')->with('success', 'Kegiatan berhasil ditambahkan!');
+        $redirect = redirect()->route('admin.kegiatan.index')->with('success', 'Kegiatan berhasil ditambahkan!');
 
         if ($pjCredentials) {
             $redirect->with('pj_credentials', $pjCredentials);
@@ -118,7 +120,9 @@ class AdminKegiatanController extends Controller
     public function edit($id)
     {
         $event = JadwalKegiatan::with(['tamuUndangan', 'pjUser'])->findOrFail($id);
-        $ustadz = \App\Models\User::where('role', 'ustadz')->get();
+        $ustadz = \App\Models\User::whereHas('role', function ($q) {
+            $q->where('name', 'ustadz');
+        })->get();
         $forms = \App\Models\Form::withCount('fields')->get();
 
         return view('admin.kegiatan.edit', compact('event', 'ustadz', 'forms'));
@@ -128,7 +132,7 @@ class AdminKegiatanController extends Controller
     {
         $event = JadwalKegiatan::findOrFail($id);
 
-        $validated = $request->validate([
+        $request->validate([
             'event_name' => 'required|string|max:200',
             'theme' => 'nullable|string|max:255',
             'poster' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -208,7 +212,7 @@ class AdminKegiatanController extends Controller
             }
         }
 
-        $redirect = redirect()->route('admin.kegiatan')->with('success', 'Kegiatan berhasil diperbarui!');
+        $redirect = redirect()->route('admin.kegiatan.index')->with('success', 'Kegiatan berhasil diperbarui!');
 
         if ($pjCredentials) {
             $redirect->with('pj_credentials', $pjCredentials);
@@ -231,7 +235,7 @@ class AdminKegiatanController extends Controller
         $event->delete();
 
         return redirect()
-            ->route('admin.kegiatan')
+            ->route('admin.kegiatan.index')
             ->with('success', 'Kegiatan berhasil dihapus!');
     }
 }

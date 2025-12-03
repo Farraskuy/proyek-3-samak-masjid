@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
@@ -30,7 +32,7 @@ use App\Http\Controllers\Donasi\Admin\BankController;
 use App\Http\Controllers\Donasi\Admin\DonationConfirmationController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\LostItemController;
+use App\Http\Controllers\LostItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,9 +56,8 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // OTP
-Route::get('/auth/send-otp/sent/{destination}', [AuthController::class, 'sentOtp'])->name('auth.sentOtp');
 Route::post('/auth/send-otp', [AuthController::class, 'sendOtp'])->name('auth.sendOtp');
-Route::post('/auth/resend-otp', [AuthController::class, 'sendOtp'])->name('auth.resendOtp');
+Route::post('/auth/resend-otp', [AuthController::class, 'reSendOtp'])->name('auth.resendOtp');
 Route::get('/auth/verify', [AuthController::class, 'showVerifyForm'])->name('auth.showVerifyForm');
 Route::post('/auth/verify', [AuthController::class, 'verifyOtp'])->name('auth.verifyOtp');
 
@@ -116,15 +117,10 @@ Route::post('/form/{slug}/submit', [FormBuilderController::class, 'submit'])->na
 // =============================== User Profile (Auth) ===============================
 Route::middleware('auth')->prefix('profil')->name('profile.')->group(function () {
     Route::get('/', [ProfileController::class, 'show'])->name('show');
-    Route::get('/general', [ProfileController::class, 'general'])->name('general');
-    Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
     Route::put('/', [ProfileController::class, 'update'])->name('update');
 
     Route::get('/password', [ProfileController::class, 'password'])->name('password');
     Route::put('/password', [ProfileController::class, 'changePassword'])->name('change-password');
-
-    Route::get('/preferensi', [ProfileController::class, 'preferences'])->name('preferences');
-    Route::put('/preferensi', [ProfileController::class, 'updatePreferences'])->name('update-preferences');
 });
 
 
@@ -144,26 +140,26 @@ Route::middleware('auth')->prefix('konsultasi-saya')->name('client.consultations
 // Protected by Auth and Permission Middleware
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
 
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware('role');
 
     // Role Management
     Route::prefix('roles')->name('roles.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Admin\RoleController::class, 'index'])->name('index')->middleware('permission:view_roles');
-        Route::get('/create', [\App\Http\Controllers\Admin\RoleController::class, 'create'])->name('create')->middleware('permission:create_roles');
-        Route::post('/', [\App\Http\Controllers\Admin\RoleController::class, 'store'])->name('store')->middleware('permission:create_roles');
-        Route::get('/{role}/edit', [\App\Http\Controllers\Admin\RoleController::class, 'edit'])->name('edit')->middleware('permission:edit_roles');
-        Route::put('/{role}', [\App\Http\Controllers\Admin\RoleController::class, 'update'])->name('update')->middleware('permission:edit_roles');
-        Route::delete('/{role}', [\App\Http\Controllers\Admin\RoleController::class, 'destroy'])->name('destroy')->middleware('permission:delete_roles');
+        Route::get('/', [RoleController::class, 'index'])->name('index')->middleware('permission:view_roles');
+        Route::get('/create', [RoleController::class, 'create'])->name('create')->middleware('permission:create_roles');
+        Route::post('/', [RoleController::class, 'store'])->name('store')->middleware('permission:create_roles');
+        Route::get('/{role}/edit', [RoleController::class, 'edit'])->name('edit')->middleware('permission:edit_roles');
+        Route::put('/{role}', [RoleController::class, 'update'])->name('update')->middleware('permission:edit_roles');
+        Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy')->middleware('permission:delete_roles');
     });
 
     // Let's define it more granularly to match the pattern
     Route::prefix('users')->name('users.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('index')->middleware('permission:view_users');
-        Route::get('/create', [\App\Http\Controllers\Admin\UserController::class, 'create'])->name('create')->middleware('permission:edit_users');
-        Route::post('/', [\App\Http\Controllers\Admin\UserController::class, 'store'])->name('store')->middleware('permission:edit_users');
-        Route::get('/{user}/edit', [\App\Http\Controllers\Admin\UserController::class, 'edit'])->name('edit')->middleware('permission:edit_users');
-        Route::put('/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('update')->middleware('permission:edit_users');
-        Route::delete('/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('destroy')->middleware('permission:delete_users');
+        Route::get('/', [UserController::class, 'index'])->name('index')->middleware('permission:view_users');
+        Route::get('/create', [UserController::class, 'create'])->name('create')->middleware('permission:edit_users');
+        Route::post('/', [UserController::class, 'store'])->name('store')->middleware('permission:edit_users');
+        Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit')->middleware('permission:edit_users');
+        Route::put('/{user}', [UserController::class, 'update'])->name('update')->middleware('permission:edit_users');
+        Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy')->middleware('permission:delete_users');
     });
 
     // Postingan
@@ -184,7 +180,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         });
     });
 
-    // Lost Found
+    // Lost Found Barang Temuan
     Route::middleware('permission:view_lost_items')->group(function () {
         Route::get('/barang-hilang', [LostFoundController::class, 'adminIndex'])->name('barang-hilang');
         Route::get('/barang-hilang/tambah', [LostFoundController::class, 'create'])->name('barang-hilang.tambah')->middleware('permission:create_lost_items');
@@ -192,6 +188,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::get('/barang-hilang/{id}/edit', [LostFoundController::class, 'edit'])->name('barang-hilang.edit')->middleware('permission:edit_lost_items');
         Route::put('/barang-hilang/{id}', [LostFoundController::class, 'update'])->name('barang-hilang.update')->middleware('permission:edit_lost_items');
         Route::delete('/barang-hilang/{id}', [LostFoundController::class, 'destroy'])->name('barang-hilang.destroy')->middleware('permission:delete_lost_items');
+    });
+
+    // Lost Found Barang Hilang
+    Route::middleware('permission:create_lost_items')->group(function () {
+        Route::resource('lost-items', LostItemController::class);
     });
 
     //  Admin Jadwal Kegiatan

@@ -49,7 +49,7 @@ class LostFoundController extends Controller
         }
 
         $items = $query->get();
-        return view('admin.lost-found.index', compact('items'));
+        return view('admin.lost-found.found.index', compact('items'));
     }
 
     public function publicIndex(Request $request)
@@ -105,7 +105,7 @@ class LostFoundController extends Controller
 
     public function create()
     {
-        return view('admin.lost-found.create');
+        return view('admin.lost-found.found.create');
     }
 
     public function store(Request $request)
@@ -121,7 +121,7 @@ class LostFoundController extends Controller
         ]);
 
         $item = FoundItem::create([
-            'inputted_by_admin_id' => auth::id(),
+            'inputted_by_user_id' => auth::id(),
             'item_name' => $request->item_name,
             'description' => $request->description,
             'location_found' => $request->location_found,
@@ -145,7 +145,7 @@ class LostFoundController extends Controller
     public function edit($item_id)
     {
         $item = FoundItem::with('photos')->findOrFail($item_id);
-        return view('admin.lost-found.edit', compact('item'));
+        return view('admin.lost-found.found.edit', compact('item'));
     }
 
     public function update(Request $request, $item_id)

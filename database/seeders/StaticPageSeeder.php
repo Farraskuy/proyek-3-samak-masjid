@@ -30,7 +30,7 @@ class StaticPageSeeder extends Seeder
 <li>Membangun solidaritas dan persatuan dalam komunitas</li>
 </ul>
 <p>Bergabunglah dengan kami dalam perjalanan ini untuk menciptakan perubahan positif.</p>',
-                'featured_image_url' => null,
+                'featured_image_url' => "static-pages/images/692f67f05d65a_masjid.jpg",
                 'updated_by_admin' => 1
             ]
         );

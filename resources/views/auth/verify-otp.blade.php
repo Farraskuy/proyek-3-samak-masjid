@@ -73,8 +73,7 @@
                 {{-- FORM --}}
                 <form method="POST" action="{{ route('auth.verifyOtp') }}" id="otpForm">
                     @csrf
-                    <input type="hidden" name="destination" value="{{ $destination }}">
-                    <input type="hidden" name="type" value="{{ $type }}">
+                    <input type="hidden" name="hash" value="{{ $hash }}">
                     <input type="hidden" name="code" id="code-full">
                     <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response">
 
@@ -98,11 +97,11 @@
                     <p class="mb-0 text-muted small">Tidak menerima kode?</p>
                     <form method="POST" action="{{ route('auth.resendOtp') }}" id="resendForm" class="d-inline">
                         @csrf
-                        <input type="hidden" name="destination" value="{{ $destination }}">
+                        <input type="hidden" name="hash" value="{{ $hash }}">
                         <input type="hidden" id="g-recaptcha-resend" name="g-recaptcha-response">
 
                         <button type="submit" class="btn btn-link p-0 resend-link disabled" id="resendBtn" disabled>
-                            Kirim Ulang (<span id="timer">60</span>s)
+                            Kirim Ulang (<span id="timer">{{ $secondsRemaining }}</span>s)
                         </button>
                     </form>
                 </div>
@@ -181,21 +180,37 @@
             });
 
             // === Resend Timer ===
-            let timeLeft = 60;
+            let timeLeft = {{ $secondsRemaining }};
             const timerSpan = document.getElementById('timer');
             const resendBtn = document.getElementById('resendBtn');
 
-            const countdown = setInterval(() => {
-                timeLeft--;
-                timerSpan.textContent = timeLeft;
-
+            function updateTimer() {
                 if (timeLeft <= 0) {
-                    clearInterval(countdown);
                     resendBtn.classList.remove('disabled');
                     resendBtn.disabled = false;
                     resendBtn.innerHTML = 'Kirim Ulang';
+                } else {
+                    resendBtn.classList.add('disabled');
+                    resendBtn.disabled = true;
+                    resendBtn.innerHTML = `Kirim Ulang (<span id="timer">${timeLeft}</span>s)`;
                 }
-            }, 1000);
+            }
+
+            updateTimer(); // Initial check
+
+            if (timeLeft > 0) {
+                const countdown = setInterval(() => {
+                    timeLeft--;
+                    if (document.getElementById('timer')) {
+                        document.getElementById('timer').textContent = timeLeft;
+                    }
+
+                    if (timeLeft <= 0) {
+                        clearInterval(countdown);
+                        updateTimer();
+                    }
+                }, 1000);
+            }
 
             // === Resend Submit ===
             const resendForm = document.getElementById('resendForm');

@@ -67,96 +67,79 @@
                     <form id="approvalForm" action="{{ route('admin.postingan.approval.update', ['id' => $post->id]) }}" method="POST">
                         @csrf
 
-                        <div class="mb-2">
+                        <div class="mb-3">
                             <label for="decision_select" class="form-label">Keputusan</label>
                             <select name="decision" id="decision_select" class="form-select form-control form-control-lg">
-                                <option value="approve">Setujui</option>
-                                <option value="reject">Tolak</option>
-                                <option value="revision">Minta Revisi</option>
+                                {{-- Pastikan value ini sesuai dengan yang dicek di JavaScript & Controller --}}
+                                <option value="published">Setujui (Publish)</option>
+                                <option value="revisi">Minta Revisi</option>
+                                <option value="arsip">Arsipkan</option>
+                                <option value="draft">Draft</option>
                             </select>
                         </div>
 
-                        <div class="mb-2">
-                            <label for="status_pub" class="form-label">Status Publikasi</label>
-                            {{-- Tabindex -1 agar tidak bisa difokuskan lewat keyboard --}}
-                            <select name="status" id="status_pub" class="form-select form-control form-control-lg" tabindex="-1">
-                                <option value="published">Publish</option>
-                                <option value="not published">Not Publish</option>
-                                <option value="revisi">Revisi</option>
-                            </select>
+                        {{-- Container Note: Default hidden (display: none) --}}
+                        <div class="mb-3" id="note_container" style="display:none;">
+                            <label for="note_field" class="form-label text-danger">Catatan / Instruksi Revisi *</label>
+                            <textarea id="note_field" name="note" class="form-control" rows="4" placeholder="Tuliskan detail revisi yang diperlukan..."></textarea>
                         </div>
 
-                        <div class="mb-2" id="note_container" style="display:none;">
-                            <label for="note_field" class="form-label">Catatan / Instruksi Revisi</label>
-                            <textarea id="note_field" name="note" class="form-control" rows="4"></textarea>
-                        </div>
-
-                        <div class="d-flex gap-2 mt-3">
-                            <button type="submit" class="btn btn-success">Simpan Keputusan</button>
-                            <a href="{{ route('admin.postingan.approval.index') }}" class="btn btn-secondary">Kembali</a>
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-success w-100">Simpan Keputusan</button>
                         </div>
                     </form>
                 </div>
 
                 <div class="card bg-white border-0 rounded-3 p-4">
                     <h6 class="fw-semibold">Informasi</h6>
-                    <p class="mb-1"><strong>Penulis:</strong> {{ optional($post->creator)->full_name ?? 'N/A'}}
-                    </p>
+                    <p class="mb-1"><strong>Penulis:</strong> {{ optional($post->creator)->full_name ?? 'N/A'}}</p>
                     <p class="mb-1"><strong>Kategori:</strong> {{ $post->kategori }}</p>
-                    <p class="mb-1"><strong>Dibuat:</strong> {{ $post->created_at }}</p>
+                    <p class="mb-1"><strong>Dibuat:</strong> {{ $post->created_at->format('d M Y, H:i') }}</p>
                 </div>
             </div>
         </div>
     </section>
 
     @push('scripts')
-        <script>
-            (function() {
-                const decision = document.getElementById('decision_select');
-                const statusPub = document.getElementById('status_pub');
-                const noteContainer = document.getElementById('note_container');
+    <script>
+        (function() {
+            // Ambil elemen
+            const decisionSelect = document.getElementById('decision_select');
+            const noteContainer = document.getElementById('note_container');
+            const noteField = document.getElementById('note_field');
 
-                function updateState() {
-                    const val = decision.value;
+            function updateState() {
+                const val = decisionSelect.value;
 
-                    // Kunci Status Publikasi agar tidak bisa dipilih manual
-                    // Kita gunakan style pointer-events: none dan background abu-abu
-                    // agar terlihat disabled TAPI nilainya tetap terkirim (beda dengan atribut disabled)
-                    statusPub.style.pointerEvents = 'none';
-                    statusPub.style.backgroundColor = '#e9ecef';
-
-                    if (val === 'approve') {
-                        // Jika Setujui -> Status wajib Publish
-                        statusPub.value = 'published';
-                        noteContainer.style.display = 'none';
-                    } else if (val === 'reject') {
-                        // Jika Tolak -> Status wajib Not Publish
-                        statusPub.value = 'not published';
-                        noteContainer.style.display = 'none';
-                    } else if (val === 'revision') {
-                        // Jika Revisi -> Status wajib Revisi & Munculkan Note
-                        statusPub.value = 'revisi';
-                        noteContainer.style.display = 'block';
-                    }
+                // Logika: Jika pilih 'revisi', munculkan kotak pesan. Selain itu sembunyikan.
+                if (val === 'revisi') {
+                    noteContainer.style.display = 'block';
+                    // Opsional: Buat textarea wajib diisi jika statusnya revisi
+                    noteField.setAttribute('required', 'required'); 
+                } else {
+                    noteContainer.style.display = 'none';
+                    noteField.removeAttribute('required');
+                    // Opsional: Kosongkan isi note jika user batal pilih revisi
+                    // noteField.value = ''; 
                 }
+            }
 
-                decision.addEventListener('change', updateState);
+            // Event Listener saat dropdown berubah
+            decisionSelect.addEventListener('change', updateState);
 
-                // Jalankan fungsi saat halaman pertama dimuat untuk set default awal
-                updateState();
+            // Jalankan sekali saat load agar status awal sesuai
+            updateState();
 
-                        // ================== DISABLE SUBMIT BUTTON ===================
-                const form = document.getElementById('approvalForm');
-                const submitBtn = form.querySelector("button[type='submit']");
+            // ================== DISABLE SUBMIT BUTTON SAAT KLIK ===================
+            const form = document.getElementById('approvalForm');
+            const submitBtn = form.querySelector("button[type='submit']");
 
-                form.addEventListener('submit', function() {
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Menyimpan...';
-                });
-
-
-            })();
-        </script>
+            form.addEventListener('submit', function() {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Menyimpan...';
+            });
+        })();
+    </script>
     @endpush
 
 @endsection

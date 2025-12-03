@@ -6,7 +6,7 @@
     <section class="p-3">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="fw-semibold mb-0">Manajemen Halaman Statis</h4>
-             @if (optional(auth()->user())->role === 'admin')
+             @if (optional(auth()->user())->hasPermission('view_pages') )
                 <a href="{{ route('admin.static-pages.tambah') }}" class="btn btn-success fw-semibold">
                     <i class="fas fa-plus me-1"></i> Tambah Data
                 </a>

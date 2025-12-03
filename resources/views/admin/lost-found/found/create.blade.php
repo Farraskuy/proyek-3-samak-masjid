@@ -1,5 +1,4 @@
 @extends('admin.layout')
-
 @section('title', 'Tambah Barang - Lost & Found')
 
 @section('content')

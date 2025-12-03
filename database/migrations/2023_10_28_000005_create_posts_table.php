@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('keterangan')->nullable();
             $table->text('content');
             $table->string('featured_image_url', 255)->nullable();
-            $table->enum('status', ['published', 'not published', 'pending', 'revisi']);
+            $table->enum('status', ['published', 'arsip', 'pending', 'revisi','draft']);
             $table->enum('kategori', ['Berita', 'Artikel', 'Tausiyah']);
             $table->timestamp('published_at')->nullable();
             $table->timestamps();

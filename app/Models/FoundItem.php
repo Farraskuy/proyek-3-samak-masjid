@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
-use App\Models\FoundItemPhoto;
 
 class FoundItem extends Model
 {
@@ -17,7 +16,7 @@ class FoundItem extends Model
     protected $keyType = 'int';
 
     protected $fillable = [
-        'inputted_by_admin_id',
+        'inputted_by_user_id',
         'item_name',
         'description',
         'location_found',

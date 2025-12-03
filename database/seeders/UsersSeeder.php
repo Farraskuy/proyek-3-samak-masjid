@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash; // Gunakan Facade Hash biar lebih rapi
+use Illuminate\Support\Facades\Hash;
 
 class UsersSeeder extends Seeder
 {
@@ -95,6 +95,21 @@ class UsersSeeder extends Seeder
                     'email' => 'jamaah@samak.com',
                     'password' => Hash::make('password123'),
                     'phone_number' => '081234567896'
+                ]
+            );
+        }
+
+        // 6. Koordinator Humas (BARU)
+        $koorHumasRole = \App\Models\Role::where('name', 'Koordinator Humas')->first();
+        if ($koorHumasRole) {
+            User::updateOrCreate(
+                ['username' => 'koordinator_humas'],
+                [
+                    'role_id' => $koorHumasRole->id,
+                    'full_name' => 'Koordinator Humas',
+                    'email' => 'koor_humas@samak.com',
+                    'password' => Hash::make('password123'),
+                    'phone_number' => '081234567897'
                 ]
             );
         }

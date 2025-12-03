@@ -106,6 +106,11 @@ class PostinganController extends Controller
     // Store uploaded article (previously AddPostinganController::upload)
     public function store(Request $request)
     {
+
+         if ( !optional($request->user())->hasPermission('create_posts')  ) {
+            abort(403, 'Unauthorized');
+        }
+
         $validated = $request->validate([
             'title_view' => 'required|string|max:255',
             'keterangan_view' => 'nullable|string',
@@ -136,7 +141,6 @@ class PostinganController extends Controller
             'content' => $content,
             'kategori' => $validated['kategori_view'],
             'created_at' => now(),
-            'approval_status' => 'pending',
             'status' => $request->status_view,
             'user_id' => auth()->id()
         ]);
@@ -184,6 +188,12 @@ class PostinganController extends Controller
     // Admin: list articles for edit (previously ShowPostingan::getEditArtikel)
     public function indexAdmin(Request $request)
     {
+
+
+        if ( !optional($request->user())->hasPermission('view_posts')  ) {
+            abort(403, 'Unauthorized');
+        }
+
         $perPage = $request->query('showing', 50);
         $keyword = $request->query('keyword', '');
         $status = $request->query('status', 'all');
@@ -201,7 +211,7 @@ class PostinganController extends Controller
 
         // Add status filter
         if ($status !== 'all') {
-            $query->where('approval_status', $status);
+            $query->where('status', $status);
         }
 
         if ($perPage === 'all') {
@@ -217,10 +227,16 @@ class PostinganController extends Controller
     // Approval index for super-admin: list postingans awaiting approval
     public function approvalIndex(Request $request)
     {
+
+        if (!optional($request->user())->hasPermission('approve_posts')) {
+            abort(403, 'Unauthorized');
+        }
+
+
         $perPage = $request->query('showing', 50);
         $status = $request->query('status', 'pending'); // Default to pending
 
-        $query = Postingan::where('approval_status', $status)->orderBy('created_at', 'desc');
+        $query = Postingan::where('status', $status)->orderBy('created_at', 'desc');
 
         if ($perPage === 'all') {
             $data = $query->get();
@@ -234,23 +250,23 @@ class PostinganController extends Controller
 
     // Show approval detail + preview
 
-    public function approvalShow($id)
-    {
+        public function approvalShow(Request $request, $id)
+        {
+            if (!optional($request->user())->hasPermission('approve_posts')) {
+                abort(403, 'Unauthorized');
+            }
 
-        $post = Postingan::where('id', $id)->firstOrFail();
+            $post = Postingan::where('id', $id)->firstOrFail();
 
-        // Tambahkan /storage/ hanya untuk tag <img>
-        $post->content = preg_replace(
-            '/<img\s+[^>]*src="(news\/[^"]+)"/i',
-            '<img src="/storage/$1"',
-            $post->content
-        );
+            // Tambahkan /storage/ hanya untuk tag <img>
+            $post->content = preg_replace(
+                '/<img\s+[^>]*src="(news\/[^"]+)"/i',
+                '<img src="/storage/$1"',
+                $post->content
+            );
 
-        return view('admin.postingan.approval_detail', compact('post'));
-
-
-
-    }
+            return view('admin.postingan.approval_detail', compact('post'));
+        }
 
 
 
@@ -259,51 +275,61 @@ class PostinganController extends Controller
     // Handle approval action (approve/reject/revision)
     public function approvalUpdate(Request $request, $id)
     {
-        $post = Postingan::where('id', (int) $id)->firstOrFail();
+        if (!optional($request->user())->hasPermission('approve_posts')) {
+            abort(403, 'Unauthorized');
+        }
 
+        // 1. Cari Postingan
+        $post = Postingan::findOrFail($id);
+
+        // 2. Validasi Input
+        // Value decision harus sesuai dengan <option> di HTML kamu
         $validated = $request->validate([
-            'decision' => 'required|in:approve,reject,revision',
-            'status' => 'nullable|in:published,not published,revisi',
-            'note' => 'nullable|string'
+            'decision' => 'required|in:published,revisi,arsip,draft',
+            'note'     => 'nullable|string', // Wajib diisi jika revisi (bisa ditambah required_if)
         ]);
 
         $decision = $validated['decision'];
 
-        if ($decision === 'approve') {
-            $post->approval_status = 'approved';
-            $post->approval_note = $validated['note'] ?? null;
-            $post->approved_by = optional($request->user())->id ?? null;
-            $post->approved_at = now();
-            // optionally change publication status if provided
-            if (!empty($validated['status']) && $validated['status'] === 'published') {
-                $post->status = 'published';
-                $post->published_at = now();
-            }
-        } elseif ($decision === 'reject') {
-            $post->approval_status = 'rejected';
-            $post->approval_note = $validated['note'] ?? null;
-            $post->approved_by = optional($request->user())->id ?? null;
-            $post->approved_at = now();
-        } else { // revision
-            $post->approval_status = 'revision';
-            $post->approval_note = $validated['note'] ?? null;
-             $post->approved_by = optional($request->user())->id ?? null;
-            // mark post status as 'revisi' so admin sees it needs edits
-            $post->status = 'revisi';
+        // 3. Update Status Utama
+        // Karena value form sama dengan enum database, kita langsung assign
+        $post->status = $decision;
+
+        // 4. Logika Tambahan (Side Effects)
+        if ($decision === 'published') {
+            // Jika disetujui/publish
+            $post->published_at = now();
+            $post->approved_by = auth()->id(); // Mencatat siapa admin yang menyetujui
+            $post->approval_note = null; // Hapus catatan revisi lama jika ada agar bersih
+            
+        } elseif ($decision === 'revisi') {
+            // Jika minta revisi
+            $post->approval_note = $validated['note']; // Simpan pesan revisi
+            $post->published_at = null; // Pastikan tanggal publish kosong
+            
+        } else {
+            // Untuk kondisi 'arsip' atau 'draft'
+            $post->published_at = null;
+            $post->approval_note = null;
+            // Opsional: Hapus note jika diarsipkan/draft
+            // $post->approval_note = null; 
         }
-        
+
+        // 5. Simpan Perubahan
         $post->save();
 
-        return redirect()->route('admin.postingan.approval.index')->with('success', 'Keputusan approval disimpan.');
+        return redirect()->route('admin.postingan.approval.index')
+            ->with('success', 'Status postingan berhasil diperbarui menjadi ' . ucfirst($decision));
     }
 
     // Delete article and associated images (previously ShowPostingan::deleteArtikel)
     public function deleteArtikel(Request $request, $id)
     {
-        // Only allow super admin to delete
-        if (optional($request->user())->role !== 'super admin') {
+
+        if ( !optional($request->user())->hasPermission('delete_posts')  ) {
             abort(403, 'Unauthorized');
         }
+
 
         $this->search_delete_featured_image($id);
         $this->search_delete_kontent_image($id);
@@ -346,19 +372,24 @@ class PostinganController extends Controller
         }
     }
 
-    public function edit($id)
-    {
-        $post = Postingan::where('id', $id)->firstOrFail();
 
-        // Tambahkan /storage/ hanya untuk tag <img>
-        $post->content = preg_replace(
-            '/<img\s+[^>]*src="(news\/[^"]+)"/i',
-            '<img src="/storage/$1"',
-            $post->content
-        );
-
-        return view('admin.postingan.edit', compact('post'));
+public function edit(Request $request, $id)
+{
+    if (!optional($request->user())->hasPermission('edit_posts')) {
+        abort(403, 'Unauthorized');
     }
+
+    $post = Postingan::where('id', $id)->firstOrFail();
+
+    // Tambahkan /storage/ hanya untuk tag <img>
+    $post->content = preg_replace(
+        '/<img\s+[^>]*src="(news\/[^"]+)"/i',
+        '<img src="/storage/$1"',
+        $post->content
+    );
+
+    return view('admin.postingan.edit', compact('post'));
+}
 
 
 
@@ -436,8 +467,7 @@ class PostinganController extends Controller
             'featured_image_url' => $featuredImagePath,
             'content' => $content ?? $post->content,
             'kategori' => $request->input('kategori_view') ?? $request->input('kategori') ?? $post->kategori,
-            'approval_status' => 'pending',
-            'status' => 'not published',
+            'status' => 'pending',
             'approved_by' => null,
             'approved_at' => null,
             'updated_at' => now()

@@ -14,17 +14,21 @@
                 class="btn btn-sm {{ ($status ?? 'pending') == 'pending' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
                 Menunggu Approval
             </a>
-            <a href="{{ route('admin.postingan.approval.index', ['status' => 'approved']) }}"
-                class="btn btn-sm {{ ($status ?? 'pending') == 'approved' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                Disetujui
+            <a href="{{ route('admin.postingan.approval.index', ['status' => 'published']) }}"
+                class="btn btn-sm {{ ($status ?? 'pending') == 'published' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                publish
             </a>
-            <a href="{{ route('admin.postingan.approval.index', ['status' => 'rejected']) }}"
-                class="btn btn-sm {{ ($status ?? 'pending') == 'rejected' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                Ditolak
+            <a href="{{ route('admin.postingan.approval.index', ['status' => 'draft']) }}"
+                class="btn btn-sm {{ ($status ?? 'pending') == 'draft' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                draft
             </a>
-            <a href="{{ route('admin.postingan.approval.index', ['status' => 'revision']) }}"
-                class="btn btn-sm {{ ($status ?? 'pending') == 'revision' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+            <a href="{{ route('admin.postingan.approval.index', ['status' => 'revisi']) }}"
+                class="btn btn-sm {{ ($status ?? 'pending') == 'revisi' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
                 Revisi
+            </a>
+            <a href="{{ route('admin.postingan.approval.index', ['status' => 'arsip']) }}"
+                class="btn btn-sm {{ ($status ?? 'pending') == 'arsip' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                archieve
             </a>
         </div>
 
