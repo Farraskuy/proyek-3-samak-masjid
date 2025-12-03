@@ -1,14 +1,14 @@
 @extends('admin.layout')
 
-@section('title', 'Page Builder')
+@section('title', 'Form Builder')
 
 @section('content')
     <div class="p-4">
         {{-- Header --}}
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h4 class="fw-semibold mb-1">Page Builder</h4>
-                <p class="text-muted mb-0">Desain halaman beranda dengan drag & drop</p>
+                <h4 class="fw-semibold mb-1">Form Builder</h4>
+                <p class="text-muted mb-0">Desain formulir dengan drag & drop</p>
             </div>
             <div class="d-flex gap-2">
                 <button type="button" class="btn btn-light border bg-white text-dark fw-medium"
@@ -28,7 +28,7 @@
         <div class="alert alert-success border-0 d-flex align-items-start mb-4" role="alert">
             <i class="fas fa-magic me-3 mt-1 fs-5"></i>
             <div>
-                <h6 class="fw-semibold mb-1">Panduan Page Builder</h6>
+                <h6 class="fw-semibold mb-1">Panduan Form Builder</h6>
                 <ol class="mb-0 ps-3 small" style="line-height: 1.6;">
                     <li>Pilih komponen dari panel kiri dan klik untuk menambahkan</li>
                     <li>Drag komponen di canvas untuk mengatur urutan</li>
@@ -40,13 +40,29 @@
 
         <form id="fb-form" method="POST" action="{{ route('admin.forms.store') }}">
             @csrf
-            {{-- Hidden Inputs for Form Title/Slug (Required by Controller) --}}
-            <input type="hidden" name="title" value="Form Builder {{ date('Y-m-d H:i') }}">
-            <input type="hidden" name="slug" value="form-{{ time() }}">
-
             <div class="row g-4">
                 {{-- Left Panel: Components --}}
                 <div class="col-lg-3">
+                    {{-- Form Settings --}}
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <h6 class="fw-bold mb-3">Pengaturan Form</h6>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Judul Form</label>
+                                <input type="text" name="title" class="form-control form-control-sm"
+                                    value="Form Builder {{ date('Y-m-d H:i') }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Slug (URL)</label>
+                                <input type="text" name="slug" class="form-control form-control-sm"
+                                    value="form-{{ time() }}">
+                            </div>
+                            <div class="mb-0">
+                                <label class="form-label small fw-semibold">Deskripsi</label>
+                                <textarea name="description" class="form-control form-control-sm" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
                     <div class="card border-0 shadow-sm h-100">
                         <div class="card-body p-4">
                             <h6 class="fw-bold mb-3">Komponen</h6>

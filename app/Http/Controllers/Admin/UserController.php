@@ -18,6 +18,10 @@ class UserController extends Controller
     {
         $query = User::with('role');
 
+        $query->whereDoesntHave('role', function ($q) {
+            $q->where('name', 'Admin');
+        });
+
         if ($request->has('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -38,6 +42,8 @@ class UserController extends Controller
                 $q->where('name', 'Jamaah');
             });
         }
+
+        
 
         $perPage = $request->query('showing', 10);
 

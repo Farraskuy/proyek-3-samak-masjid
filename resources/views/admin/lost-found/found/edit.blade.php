@@ -1,5 +1,4 @@
 @extends('admin.layout')
-
 @section('title', 'Edit Barang - Lost & Found')
 
 @section('content')
@@ -10,13 +9,11 @@
             <i class="fa-regular fa-arrow-left me-1"></i> Kembali
         </a>
     </div>
-
     <div class="card shadow-sm">
         <div class="card-body">
             <form action="{{ route('admin.barang-hilang.update', $item->item_id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
-
                 <div class="mb-3">
                     <label class="form-label">Nama Barang <span class="text-danger">*</span></label>
                     <input type="text" name="item_name" class="form-control" value="{{ old('item_name', $item->item_name) }}" required>
@@ -24,7 +21,6 @@
                     <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                 </div>
-
                 <div class="mb-3">
                     <label class="form-label">Deskripsi <span class="text-danger">*</span></label>
                     <textarea name="description" class="form-control" rows="3" required>{{ old('description', $item->description) }}</textarea>
@@ -32,7 +28,6 @@
                     <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                 </div>
-
                 <div class="mb-3">
                     <label class="form-label">Lokasi Ditemukan <span class="text-danger">*</span></label>
                     <input type="text" name="location_found" class="form-control" value="{{ old('location_found', $item->location_found) }}" required>
@@ -40,7 +35,6 @@
                     <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                 </div>
-
                 <div class="mb-3">
                     <label class="form-label">Kategori <span class="text-danger">*</span></label>
                     <select name="category" class="form-select" required>
@@ -55,7 +49,6 @@
                     <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                 </div>
-
                 <div class="mb-3">
                     <label class="form-label">Status <span class="text-danger">*</span></label>
                     <select name="status" class="form-select" required>
@@ -66,7 +59,6 @@
                     <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                 </div>
-
                 <div class="mb-3">
                     <label class="form-label">Foto Saat Ini</label>
                     <div class="d-flex flex-wrap gap-3 mt-2">
@@ -83,7 +75,6 @@
                     </div>
                     <small class="text-muted">Klik tanda × untuk menghapus foto tertentu.</small>
                 </div>
-
                 <div class="mb-3">
                     <label class="form-label">Tambah Foto Baru</label>
                     <input type="file" name="new_featured_images[]" class="form-control" accept="image/*" multiple>
@@ -95,7 +86,6 @@
                     <div class="text-danger mt-1">{{ $message }}</div>
                     @enderror
                 </div>
-
                 <button type="submit" class="btn btn-success">
                     <i class="fa-regular fa-floppy-disk me-1"></i> Simpan Perubahan
                 </button>
@@ -104,7 +94,6 @@
     </div>
 </div>
 @endsection
-
 @section('styles')
 <style>
     .position-relative {

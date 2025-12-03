@@ -22,16 +22,11 @@
 
             <!-- Kalender Sidebar -->
             <div class="col-lg-4 mb-4" data-aos="fade-right" data-aos-duration="700">
-                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                    <!-- Header Kalender -->
-                    <div class="text-center py-4 px-3" style="background: linear-gradient(135deg, #175C9E, #1a4d7a);">
-                        <h4 class="fw-bold mb-2 text-white">
-                            <i class="fas fa-calendar-alt me-2"></i>Jadwal Kegiatan
-                        </h4>
-                    </div>
-
-                    <!-- Kalender -->
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
                     <div class="card-body p-4">
+                        <h5 class="fw-bold mb-4 text-center" style="color: #175C9E;">
+                            <i class="fas fa-calendar-alt me-2"></i>Kalender Kegiatan
+                        </h5>
                         <div id="calendar"></div>
                     </div>
                 </div>
@@ -40,7 +35,8 @@
             <!-- Kegiatan Hari Ini -->
             <div class="col-lg-8 mb-4">
                 <div class="d-flex align-items-center mb-3">
-                    <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                    <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3"
+                        style="width: 45px; height: 45px; min-width: 45px;">
                         <i class="fas fa-star text-primary"></i>
                     </div>
                     <h4 class="fw-bold mb-0" id="event-title" style="color:#175C9E;">
@@ -63,7 +59,8 @@
             <div class="col-12">
                 <div data-aos="fade-up" data-aos-duration="700">
                     <div class="d-flex align-items-center mb-4">
-                        <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3"
+                            style="width: 45px; height: 45px; min-width: 45px;">
                             <i class="fas fa-list text-primary"></i>
                         </div>
                         <h4 class="fw-bold mb-0" style="color: #175C9E;">Daftar Kegiatan</h4>
@@ -80,7 +77,8 @@
                                             <div class="position-relative card-thumbnail-wrapper"
                                                 style="height: 140px; border-radius: 0.5rem;">
                                                 <img src="{{ asset('storage/' . $event->poster) }}"
-                                                    class="img-fluid w-100 h-100" style="object-fit: cover;">
+                                                    class="img-fluid w-100 h-100" style="object-fit: cover;"
+                                                    alt="{{ $event->event_name }}">
                                                 <i class="fas fa-image fallback-icon"></i>
                                                 <div class="position-absolute top-0 end-0 m-2">
                                                     <span class="badge bg-primary rounded-pill">

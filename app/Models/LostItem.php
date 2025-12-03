@@ -35,4 +35,9 @@ class LostItem extends Model
     {
         return $this->hasMany(LostItemPhoto::class, 'lost_item_id');
     }
+
+    public function reportedBy()
+    {
+        return $this->belongsTo(User::class, 'reported_by_admin_id');
+    }
 }
