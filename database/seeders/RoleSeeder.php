@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class RoleSeeder extends Seeder
 {
@@ -36,7 +35,7 @@ class RoleSeeder extends Seeder
             ['name' => 'edit_events', 'group' => 'Kegiatan'],
             ['name' => 'delete_events', 'group' => 'Kegiatan'],
 
-            // Postingan (Humas)
+            // Postingan (Humas & Koordinator)
             ['name' => 'view_posts', 'group' => 'Postingan'],
             ['name' => 'create_posts', 'group' => 'Postingan'],
             ['name' => 'edit_posts', 'group' => 'Postingan'],
@@ -86,14 +85,20 @@ class RoleSeeder extends Seeder
 
         // Admin
         $adminRole = Role::firstOrCreate(['name' => 'Admin'], ['alias' => 'Admin System', 'description' => 'Administrator Sistem']);
-        // Admin has Role, Master Data, User 
         $adminPermissions = Permission::whereIn('group', ['Role', 'Master Data', 'Pengguna'])->get();
         $adminRole->permissions()->sync($adminPermissions);
 
-        // Bidang Humas & Publikasi
+        // ==========================================
+        // PERBAIKAN: Humas (Staf Biasa)
+        // ==========================================
         $humasRole = Role::firstOrCreate(['name' => 'Humas'], ['alias' => 'Bidang Humas & Publikasi', 'description' => 'Mengelola konten, publikasi, dan konsultasi']);
+        
         // Humas manages Konsultasi, Kegiatan, Postingan, Galeri, Static Page
-        $humasPermissions = Permission::whereIn('group', ['Konsultasi', 'Kegiatan', 'Postingan', 'Galeri', 'Static Page'])->get();
+        // TAPI KITA EXCLUDE: approve_posts DAN delete_posts
+        $humasPermissions = Permission::whereIn('group', ['Konsultasi', 'Kegiatan', 'Postingan', 'Galeri', 'Static Page'])
+            ->whereNotIn('name', ['approve_posts', 'delete_posts']) // <--- Humas tidak bisa Approve & Delete Post
+            ->get();
+            
         $humasRole->permissions()->sync($humasPermissions);
 
         // Bendahara
@@ -108,6 +113,25 @@ class RoleSeeder extends Seeder
 
         // Jamaah (Existing)
         $jamaahRole = Role::firstOrCreate(['name' => 'Jamaah'], ['alias' => 'Jamaah', 'description' => 'Pengguna Umum']);
-        // Jamaah has NO admin permissions.
+
+        // ==========================================
+        // Koordinator Humas
+        // ==========================================
+        $koorHumasRole = Role::firstOrCreate(
+            ['name' => 'Koordinator Humas'], 
+            [
+                'alias' => 'Koor Humas', 
+                'description' => 'Bertanggung jawab memvalidasi dan menyetujui konten postingan sebelum dipublikasikan'
+            ]
+        );
+        
+        // Permission spesifik: view, approve, delete (sesuai request)
+        $koorPermissions = Permission::whereIn('name', [
+            'view_posts', 
+            'approve_posts', 
+            'delete_posts'
+        ])->get();
+        
+        $koorHumasRole->permissions()->sync($koorPermissions);
     }
 }

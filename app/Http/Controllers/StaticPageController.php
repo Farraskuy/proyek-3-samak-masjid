@@ -32,6 +32,8 @@ class StaticPageController extends Controller
      */
     public function indexAdmin(Request $request)
     {
+
+
         $perPage = $request->query('showing', 50);
         $keyword = $request->query('keyword', '');
 

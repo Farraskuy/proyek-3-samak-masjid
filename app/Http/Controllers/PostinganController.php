@@ -276,7 +276,7 @@ class PostinganController extends Controller
     public function approvalUpdate(Request $request, $id)
     {
         if (!optional($request->user())->hasPermission('approve_posts')) {
-            abort(403, 'Unauthorized ommak');
+            abort(403, 'Unauthorized');
         }
 
         // 1. Cari Postingan
