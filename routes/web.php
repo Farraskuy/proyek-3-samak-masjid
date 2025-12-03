@@ -30,7 +30,7 @@ use App\Http\Controllers\Donasi\Admin\BankController;
 use App\Http\Controllers\Donasi\Admin\DonationConfirmationController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\LostItemController;
+use App\Http\Controllers\LostItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -183,7 +183,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         });
     });
 
-    // Lost Found
+    // Lost Found Barang Temuan
     Route::middleware('permission:view_lost_items')->group(function () {
         Route::get('/barang-hilang', [LostFoundController::class, 'adminIndex'])->name('barang-hilang');
         Route::get('/barang-hilang/tambah', [LostFoundController::class, 'create'])->name('barang-hilang.tambah')->middleware('permission:create_lost_items');
@@ -191,6 +191,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::get('/barang-hilang/{id}/edit', [LostFoundController::class, 'edit'])->name('barang-hilang.edit')->middleware('permission:edit_lost_items');
         Route::put('/barang-hilang/{id}', [LostFoundController::class, 'update'])->name('barang-hilang.update')->middleware('permission:edit_lost_items');
         Route::delete('/barang-hilang/{id}', [LostFoundController::class, 'destroy'])->name('barang-hilang.destroy')->middleware('permission:delete_lost_items');
+    });
+
+    // Lost Found Barang Hilang
+    Route::middleware('permission:create_lost_items')->group(function () {
+        Route::resource('lost-items', LostItemController::class);
     });
 
     //  Admin Jadwal Kegiatan
