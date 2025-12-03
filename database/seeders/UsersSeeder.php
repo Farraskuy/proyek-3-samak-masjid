@@ -41,14 +41,28 @@ class UsersSeeder extends Seeder
         }
 
         // 3. Bendahara
-        $bendaharaRole = \App\Models\Role::where('name', 'Bendahara')->first();
-        if ($bendaharaRole) {
+        $bendaharaMRole = \App\Models\Role::where('name', 'Bendahara Pemasukan')->first();
+        if ($bendaharaMRole) {
             User::updateOrCreate(
-                ['username' => 'bendahara'],
+                ['username' => 'bendaharaPemasukan'],
                 [
-                    'role_id' => $bendaharaRole->id,
+                    'role_id' => $bendaharaMRole->id,
                     'full_name' => 'Bendahara Masjid',
-                    'email' => 'bendahara@samak.com',
+                    'email' => 'bendaharaM@samak.com',
+                    'password' => Hash::make('password123'),
+                    'phone_number' => '081234567894'
+                ]
+            );
+        }
+
+        $bendaharaKRole = \App\Models\Role::where('name', 'Bendahara Pengeluaran')->first();
+        if ($bendaharaKRole) {
+            User::updateOrCreate(
+                ['username' => 'bendaharaPengeluaran'],
+                [
+                    'role_id' => $bendaharaKRole->id,
+                    'full_name' => 'Bendahara Masjid',
+                    'email' => 'bendaharaK@samak.com',
                     'password' => Hash::make('password123'),
                     'phone_number' => '081234567894'
                 ]

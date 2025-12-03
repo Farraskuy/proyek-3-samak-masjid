@@ -55,6 +55,22 @@
                 data-aos-delay="200">
                 Transparansi pengelolaan dana Infaq, Shadaqah, dan Operasional demi kemaslahatan umat dan kemakmuran masjid.
             </p>
+
+            <div class="mt-4" data-aos="fade-up" data-aos-delay="400">
+                <form action="{{ route('client.keuangan') }}" method="GET" class="d-inline-block">
+                    <select name="bank"
+                        class="form-select form-select-lg rounded-pill px-4 shadow-sm text-center fw-bold text-primary"
+                        style="min-width: 300px; cursor: pointer;" onchange="this.form.submit()">
+                        <option value="global" {{ $selectedBank == 'global' ? 'selected' : '' }}>Semua Bank</option>
+                        @foreach ($banks as $bank)
+                            <option value="{{ $bank->bank_name }}"
+                                {{ $selectedBank == $bank->bank_name ? 'selected' : '' }}>
+                                {{ $bank->bank_name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+            </div>
         </div>
     </section>
 
@@ -130,7 +146,6 @@
                                     <tr>
                                         <th class="ps-4">Tanggal</th>
                                         <th>Kategori</th>
-                                        <th>Keterangan</th>
                                         <th>Jenis</th>
                                         <th class="text-end pe-4">Nominal</th>
                                     </tr>
@@ -147,7 +162,6 @@
                                                     {{ $item->category }}
                                                 </span>
                                             </td>
-                                            <td class="text-muted small">{{ $item->description ?? '-' }}</td>
                                             <td>
                                                 @if ($item->type == 'pemasukan')
                                                     <span class="text-success fw-bold small"><i

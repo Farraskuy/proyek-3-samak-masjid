@@ -38,6 +38,33 @@
                             <input type="text" class="form-control" placeholder="Cari Nama / Bank..."
                                 value="{{ request()->query('keyword', '') }}" name="keyword">
 
+                            <select name="status" class="form-select" style="width: 130px" onchange="this.form.submit()">
+                                <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>Semua Status
+                                </option>
+                                <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending
+                                </option>
+                                <option value="Verified" {{ request('status') == 'Verified' ? 'selected' : '' }}>Diterima
+                                </option>
+                                <option value="Rejected" {{ request('status') == 'Rejected' ? 'selected' : '' }}>Ditolak
+                                </option>
+                            </select>
+
+                            <select name="donation_type" class="form-select" style="width: 130px"
+                                onchange="this.form.submit()">
+                                <option value="all" {{ request('donation_type') == 'all' ? 'selected' : '' }}>Semua Tipe
+                                </option>
+                                <option value="Infaq" {{ request('donation_type') == 'Infaq' ? 'selected' : '' }}>Infaq
+                                </option>
+                                <option value="Shodaqoh" {{ request('donation_type') == 'Shodaqoh' ? 'selected' : '' }}>
+                                    Shodaqoh</option>
+                                <option value="Zakat" {{ request('donation_type') == 'Zakat' ? 'selected' : '' }}>Zakat
+                                </option>
+                                <option value="Wakaf" {{ request('donation_type') == 'Wakaf' ? 'selected' : '' }}>Wakaf
+                                </option>
+                                <option value="Lainnya" {{ request('donation_type') == 'Lainnya' ? 'selected' : '' }}>
+                                    Lainnya</option>
+                            </select>
+
                             {{-- Tombol Sorting --}}
                             <div class="sort-toggle">
                                 <input type="radio" name="ordered_by" value="asc" id="ordered_by_asc"
@@ -68,6 +95,7 @@
                             <th>#</th>
                             <th>Donatur</th>
                             <th>Info Transfer</th>
+                            <th>Tipe</th>
                             <th>Jumlah</th>
                             <th>Tanggal Trf</th>
                             <th>Bukti</th>
@@ -93,6 +121,13 @@
                                             class="text-dark fw-bold">{{ $row->source_bank }}</span></small>
                                     <small class="d-block text-muted">Ke: <span
                                             class="text-primary fw-bold">{{ $row->destinationAccount->bank_name ?? 'Bank Kita' }}</span></small>
+                                </td>
+
+                                {{-- Tipe --}}
+                                <td>
+                                    <small class="d-block text-muted">
+                                        <span>{{ $row->donation_type }}</span>
+                                    </small>
                                 </td>
 
                                 {{-- Jumlah --}}
@@ -131,21 +166,26 @@
                                     @if ($row->status == 'Pending')
                                         <div class="d-flex justify-content-end gap-1">
 
-                                            <form action="{{ route('admin.donasi.approve', $row->confirmation_id) }}"
-                                                method="POST" onsubmit="return confirm('Yakin terima donasi ini?');">
-                                                @csrf
-                                                <button type="submit" class="btn btn-sm btn-success" title="Terima">
-                                                    <i class="fa-solid fa-check"></i>
-                                                </button>
-                                            </form>
+                                            {{-- 1. TOMBOL TERIMA  --}}
+                                            @can('verify_donation')
+                                                <form action="{{ route('admin.donasi.approve', $row->confirmation_id) }}"
+                                                    method="POST"
+                                                    onsubmit="return confirm('Yakin terima donasi ini? Dana akan otomatis masuk ke Laporan Keuangan.');">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-success" title="Terima">
+                                                        <i class="fa-solid fa-check"></i>
+                                                    </button>
+                                                </form>
 
-                                            <form action="{{ route('admin.donasi.reject', $row->confirmation_id) }}"
-                                                method="POST" onsubmit="return confirm('Yakin tolak donasi ini?');">
-                                                @csrf
-                                                <button type="submit" class="btn btn-sm btn-danger" title="Tolak">
-                                                    <i class="fa-solid fa-xmark"></i>
-                                                </button>
-                                            </form>
+                                                {{-- 3. TOMBOL TOLAK --}}
+                                                <form action="{{ route('admin.donasi.reject', $row->confirmation_id) }}"
+                                                    method="POST" onsubmit="return confirm('Yakin tolak donasi ini?');">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="Tolak">
+                                                        <i class="fa-solid fa-xmark"></i>
+                                                    </button>
+                                                </form>
+                                            @endcan
 
                                         </div>
                                     @else

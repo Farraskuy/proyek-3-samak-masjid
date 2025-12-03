@@ -57,6 +57,7 @@ class RoleSeeder extends Seeder
             ['name' => 'view_finance', 'group' => 'Keuangan'],
             ['name' => 'manage_income', 'group' => 'Keuangan'], // Uang masuk
             ['name' => 'manage_expense', 'group' => 'Keuangan'], // Uang keluar
+            ['name' => 'delete_finance', 'group' => 'Keuangan'], // Hapus transaksi
             ['name' => 'verify_donation', 'group' => 'Keuangan'], // Konfirmasi donasi
 
             // Bank (Bendahara)
@@ -97,9 +98,13 @@ class RoleSeeder extends Seeder
         $humasRole->permissions()->sync($humasPermissions);
 
         // Bendahara
-        $bendaharaRole = Role::firstOrCreate(['name' => 'Bendahara'], ['alias' => 'Bendahara', 'description' => 'Mengelola keuangan']);
-        $bendaharaPermissions = Permission::whereIn('group', ['Keuangan', 'Bank'])->get();
-        $bendaharaRole->permissions()->sync($bendaharaPermissions);
+        $bendaharaMRole = Role::firstOrCreate(['name' => 'Bendahara Pemasukan'], ['alias' => 'Bendahara Pemasukan', 'description' => 'Mengelola keuangan yang masuk']);
+        $bendaharaMPermissions = Permission::whereIn('group', ['Keuangan', 'Bank'])->get();
+        $bendaharaMRole->permissions()->sync($bendaharaMPermissions);
+
+        $bendaharaKRole = Role::firstOrCreate(['name' => 'Bendahara Pengeluaran'], ['alias' => 'Bendahara Pengeluaran', 'description' => 'Mengelola keuangan yang keluar']);
+        $bendaharaKPermissions = Permission::whereIn('group', ['Keuangan', 'Bank'])->get();
+        $bendaharaKRole->permissions()->sync($bendaharaKPermissions);
 
         // Divisi Sarana & Prasarana
         $sarprasRole = Role::firstOrCreate(['name' => 'Sarpras'], ['alias' => 'Divisi Sarana & Prasarana', 'description' => 'Mengelola aset dan barang hilang']);

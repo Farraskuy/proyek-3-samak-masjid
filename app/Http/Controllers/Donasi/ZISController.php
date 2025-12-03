@@ -69,6 +69,7 @@ class ZISController extends Controller
         DonationConfirmation::create([
             'user_id' => $userId,
             'guest_name' => $guestName,
+            'donation_type' => $request->donation_type,
             'amount' => $request->amount,
             'transfer_date' => $request->transfer_date,
             'destination_account_id' => $request->destination_account_id,

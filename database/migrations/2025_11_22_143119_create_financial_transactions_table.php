@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('category');
             $table->text('description')->nullable();
             $table->date('transaction_date');
+            $table->string('proof_image_url', 255);
             $table->foreignId('user_id')->constrained('users');
             $table->timestamps();
         });

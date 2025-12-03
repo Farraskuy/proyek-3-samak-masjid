@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DonationConfirmation;
 use Illuminate\Support\Facades\Auth;
+use App\Models\FinancialTransaction; 
+use App\Models\Donation; 
+use Illuminate\Support\Facades\DB;
+use App\Models\BankAccount;
 
 class DonationConfirmationController extends Controller
 {
@@ -25,6 +29,14 @@ class DonationConfirmationController extends Controller
             });
         }
 
+        if ($request->has('status') && $request->status != 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('donation_type') && $request->donation_type != 'all') {
+            $query->where('donation_type', $request->donation_type);
+        }
+
         // Sorting
         $sortDirection = $request->query('ordered_by', 'desc'); 
         $query->orderBy('created_at', $sortDirection);
@@ -36,20 +48,42 @@ class DonationConfirmationController extends Controller
             $data = $query->paginate($showing)->withQueryString();
         }
 
-        return view('admin.donasi.index', compact('data'));
+        $banks = BankAccount::all();;
+
+        return view('admin.donasi.index', compact('data', 'banks'));
     }
 
     public function approve($id)
     {
-        $donasi = DonationConfirmation::findOrFail($id);
+        // Gunakan Database Transaction agar data aman
+        DB::transaction(function () use ($id) {
+            
+            // Ambil Data Donasi beserta relasi akun bank tujuannya
+            $donation = DonationConfirmation::with('destinationAccount')->findOrFail($id);
+            
+            $donation->update([
+                'status' => 'Verified',
+                'verified_by' => Auth::id(),
+                'verified_at' => now(),
+            ]);
 
-        $donasi->update([
-            'status' => 'Verified',
-            'verified_by' => Auth::id(),
-            'verified_at' => now(),
-        ]);
+            // Ambil nama bank dari relasi destinationAccount
+            $bankName = $donation->destinationAccount->bank_name ?? 'Bank Umum';
 
-        return redirect()->back()->with('success', 'Donasi berhasil diverifikasi/diterima.');
+            FinancialTransaction::create([
+                'type' => 'pemasukan',
+                'bank_name' => $bankName, 
+                'amount' => $donation->amount,
+                'category' => 'Donasi Online',
+                'description' => 'Donasi dari ' . ($donation->user->name ?? $donation->guest_name) . ' (ID: ' . $donation->confirmation_id . ')',
+                'transaction_date' => now(),
+                'proof_image_url' => $donation->proof_image_url,
+                'user_id' => Auth::id(),
+            ]);
+
+        });
+
+        return redirect()->back()->with('success', 'Donasi disetujui & dana otomatis masuk ke Laporan Keuangan.');
     }
 
     public function reject($id)

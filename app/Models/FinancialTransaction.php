@@ -14,9 +14,11 @@ class FinancialTransaction extends Model
     protected $fillable = [
         'type',
         'amount',
+        'bank_name',
         'category',
         'description',
         'transaction_date',
+        'proof_image_url',
         'user_id'
     ];
 
