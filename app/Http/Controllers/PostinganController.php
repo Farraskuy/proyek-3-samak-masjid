@@ -289,6 +289,7 @@ class PostinganController extends Controller
         } else {
             // Untuk kondisi 'arsip' atau 'draft'
             $post->published_at = null;
+            $post->approval_note = null;
             // Opsional: Hapus note jika diarsipkan/draft
             // $post->approval_note = null; 
         }
