@@ -116,7 +116,6 @@
 @section('content')
     <div class="container py-5">
         <div class="row align-items-center">
-            <!-- Left Side: Form -->
             <div class="col-lg-6 form-section">
                 <div class="section-label">Konsultasi Syariah</div>
                 <h1 class="main-heading">Tanya Jawab Agama Bersama Ustadz</h1>
@@ -140,8 +139,6 @@
                             <input id="emailInput" type="email" class="form-control auth-check" placeholder="Alamat email"
                                 value="{{ Auth::check() ? Auth::user()->email : '' }}" readonly>
                         </div>
-
-                        <!-- Hidden Subject Field (Required by Controller) -->
                         <input type="hidden" name="question_subject" value="Pertanyaan dari Halaman Konsultasi">
 
                         <div class="col-12">
@@ -157,11 +154,9 @@
                 </form>
             </div>
 
-            <!-- Right Side: Image & Info -->
             <div class="col-lg-6">
                 <div class="image-section p-4">
                     <div class="circle-bg"></div>
-                    <!-- Placeholder Image - You might want to replace this with a real asset -->
                     <img src="{{ asset('assets/images/undraw_online-messaging_gjnh.png') }}" alt="Konsultasi Ustadz"
                         class="img-fluid rounded-3 mb-4" style="object-fit: cover;">
                 </div>
@@ -205,7 +200,6 @@
                     <p class="text-muted mb-4 small">Anda harus memverifikasi email terlebih dahulu untuk melakukan
                         konsultasi.</p>
                     <div class="d-grid gap-2">
-                        <!-- Assuming we have a route to resend verification or go to profile -->
                         <a href="{{ route('profile.show') }}" class="btn btn-warning btn-sm rounded-pill text-white">Ke
                             Profil Saya</a>
                         <button type="button" class="btn btn-light btn-sm rounded-pill text-muted"
@@ -243,7 +237,6 @@
                 return true;
             }
 
-            // Add event listeners to all inputs with class 'auth-check'
             const inputs = document.querySelectorAll('.auth-check');
             inputs.forEach(input => {
                 input.addEventListener('focus', checkAuth);
@@ -271,7 +264,6 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.error) {
-                                // Handle specific error for verification if backend catches it too
                                 if (data.error === 'Email belum diverifikasi') {
                                     verificationModal.show();
                                 } else {

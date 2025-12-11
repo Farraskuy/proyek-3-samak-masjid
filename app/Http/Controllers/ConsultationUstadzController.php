@@ -178,9 +178,10 @@ class ConsultationUstadzController extends Controller
                 'attachment_url' => $attachmentUrl,
             ]);
 
-            event(new \App\Events\ConsultationMessageSent($message, Auth::user(), $id));
             DB::commit();
+            event(new \App\Events\ConsultationMessageSent($message, Auth::user(), $id));
 
+            $message->load('user');
             return response()->json(['success' => true, 'message' => $message]);
         } catch (\Exception $e) {
             DB::rollBack();

@@ -14,7 +14,9 @@ Broadcast::channel('consultation.{id}', function ($user, $id) {
 
     // Allow if user is the owner or the assigned ustadz (or any ustadz if pending?? maybe restrict to assigned)
     // For simplicity and based on controller logic:
-    if ($user->role === 'ustadz') {
+    $roleName = $user->role->name ?? '';
+
+    if ($roleName === 'Humas') {
         return true; // Ustadz can view any consultation for now, or refine logic
     }
 
