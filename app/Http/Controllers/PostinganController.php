@@ -234,7 +234,7 @@ class PostinganController extends Controller
 
 
         $perPage = $request->query('showing', 50);
-        $status = $request->query('status', 'pending'); // Default to pending
+        $status = $request->query('status', 'draft'); // Default to 
 
         $query = Postingan::where('status', $status)->orderBy('created_at', 'desc');
 
@@ -270,57 +270,108 @@ class PostinganController extends Controller
 
 
 
-
-
-    // Handle approval action (approve/reject/revision)
-    public function approvalUpdate(Request $request, $id)
+public function approvalUpdate(Request $request, $id)
     {
+        // 1. Cek Permission
         if (!optional($request->user())->hasPermission('approve_posts')) {
             abort(403, 'Unauthorized');
         }
 
-        // 1. Cari Postingan
+        // 2. Cari Postingan
         $post = Postingan::findOrFail($id);
+        $currentStatus = strtolower($post->status);
 
-        // 2. Validasi Input
-        // Value decision harus sesuai dengan <option> di HTML kamu
+        // 3. Validasi Input Form
         $validated = $request->validate([
+            // Pastikan decision adalah salah satu status yang valid secara umum
             'decision' => 'required|in:published,revisi,arsip,draft',
-            'note'     => 'nullable|string', // Wajib diisi jika revisi (bisa ditambah required_if)
+            // Note WAJIB diisi jika decision == 'revisi'
+            'note'     => 'required_if:decision,revisi|nullable|string', 
+        ], [
+            'note.required_if' => 'Catatan revisi wajib diisi jika status diubah menjadi Revisi.',
         ]);
 
-        $decision = $validated['decision'];
+        $decision = strtolower($validated['decision']);
 
-        // 3. Update Status Utama
-        // Karena value form sama dengan enum database, kita langsung assign
-        $post->status = $decision;
+        // 4. Validasi Business Rule (State Transition Check)
+        // Ini memastikan status hanya bisa berubah sesuai alur yang kamu minta
+        $isAllowed = false;
 
-        // 4. Logika Tambahan (Side Effects)
-        if ($decision === 'published') {
-            // Jika disetujui/publish
-            $post->published_at = now();
-            $post->approved_by = auth()->id(); // Mencatat siapa admin yang menyetujui
-            $post->approval_note = null; // Hapus catatan revisi lama jika ada agar bersih
-            
-        } elseif ($decision === 'revisi') {
-            // Jika minta revisi
-            $post->approval_note = $validated['note']; // Simpan pesan revisi
-            $post->published_at = null; // Pastikan tanggal publish kosong
-            
-        } else {
-            // Untuk kondisi 'arsip' atau 'draft'
-            $post->published_at = null;
-            $post->approval_note = null;
-            // Opsional: Hapus note jika diarsipkan/draft
-            // $post->approval_note = null; 
+        switch ($currentStatus) {
+            case 'draft':
+                // Draft -> Revisi atau Published
+                if (in_array($decision, ['revisi', 'published'])) {
+                    $isAllowed = true;
+                }
+                break;
+
+            case 'published':
+                // Published -> Arsip saja
+                if ($decision === 'arsip') {
+                    $isAllowed = true;
+                }
+                break;
+
+            case 'arsip':
+                // Arsip -> Published atau Revisi
+                if (in_array($decision, ['published', 'revisi'])) {
+                    $isAllowed = true;
+                }
+                break;
+
+            case 'revisi':
+                // Revisi -> Published (approve) atau Draft (kembalikan)
+                if (in_array($decision, ['published', 'draft'])) {
+                    $isAllowed = true;
+                }
+                break;
+                
+            default:
+                // Jika status lama tidak dikenali, block demi keamanan
+                $isAllowed = false;
+                break;
         }
 
-        // 5. Simpan Perubahan
+        // Jika alur tidak valid, lempar error kembali ke form
+        if (!$isAllowed) {
+            return back()->withErrors([
+                'decision' => "Perubahan status dari '$currentStatus' ke '$decision' tidak diizinkan oleh sistem."
+            ])->withInput();
+        }
+
+        // 5. Eksekusi Perubahan Status & Side Effects
+        $post->status = $decision;
+
+        if ($decision === 'published') {
+            // Jika Published
+            $post->published_at  = now();
+            $post->approved_by   = auth()->id();
+            $post->approved_at   = now(); 
+            $post->approval_note = null; // Hapus catatan revisi (bersih)
+
+        } elseif ($decision === 'revisi') {
+            // Jika Revisi
+            $post->approval_note = $validated['note'];
+            $post->published_at  = null; 
+            // Reset approval info karena status turun jadi revisi
+            $post->approved_by   = null; 
+            $post->approved_at   = null;
+
+        } else {
+            // Jika Arsip atau Draft
+            $post->published_at = null;
+            // $post->approval_note = null; // Opsional: mau dihapus atau dibiarkan history-nya
+        }
+
         $post->save();
 
-        return redirect()->route('admin.postingan.approval.index')
+        // 6. Redirect ke Index Utama
+        return redirect()->route('admin.postingan.index')
             ->with('success', 'Status postingan berhasil diperbarui menjadi ' . ucfirst($decision));
     }
+
+
+
 
     // Delete article and associated images (previously ShowPostingan::deleteArtikel)
     public function deleteArtikel(Request $request, $id)
@@ -380,6 +431,13 @@ public function edit(Request $request, $id)
     }
 
     $post = Postingan::where('id', $id)->firstOrFail();
+
+    // --- ATURAN BARU ---
+    // Cegah user masuk ke edit apabila postingan tidak berstatus revisi
+    if (strtolower($post->status) !== 'revisi') {
+        abort(403, 'Postingan hanya dapat diedit jika statusnya "Revisi".');
+    }
+    // -------------------
 
     // Tambahkan /storage/ hanya untuk tag <img>
     $post->content = preg_replace(
@@ -459,7 +517,7 @@ public function edit(Request $request, $id)
         }
 
         // 6. Update ke database
-        // Update: set approval_status to pending and mark not published to require re-approval
+        // Update: set approval_status to  and mark not published to require re-approval
         $post->update([
             'title' => $newTitle ?? ($validated['title_view'] ?? $post->title),
             'slug' => $slug,
@@ -467,7 +525,7 @@ public function edit(Request $request, $id)
             'featured_image_url' => $featuredImagePath,
             'content' => $content ?? $post->content,
             'kategori' => $request->input('kategori_view') ?? $request->input('kategori') ?? $post->kategori,
-            'status' => 'pending',
+            'status' => 'draft',
             'approved_by' => null,
             'approved_at' => null,
             'updated_at' => now()

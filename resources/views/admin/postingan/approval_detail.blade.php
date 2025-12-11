@@ -14,6 +14,7 @@
         </div>
 
         <div class="row g-4">
+            {{-- Kolom Kiri: Preview (TETAP SAMA) --}}
             <div class="col-md-8">
                 <div class="card bg-white border-0 rounded-3 p-4 mb-4">
                     <h5 class="fw-semibold">Preview Postingan</h5>
@@ -60,6 +61,7 @@
                 </div>
             </div>
 
+            {{-- Kolom Kanan: Form Approval (DIUBAH LOGIKANYA) --}}
             <div class="col-md-4">
                 <div class="card bg-white border-0 rounded-3 p-4 mb-4">
                     <h5 class="fw-semibold">Publikasi / Keputusan Approval</h5>
@@ -70,20 +72,48 @@
 
                         <div class="mb-3">
                             <label for="decision_select" class="form-label">Keputusan</label>
+                            
+                            {{-- Normalisasi status saat ini --}}
+                            @php $currentStatus = strtolower($post->status); @endphp
+
                             <select name="decision" id="decision_select" class="form-select form-control form-control-lg">
-                                {{-- Pastikan value ini sesuai dengan yang dicek di JavaScript & Controller --}}
-                                <option value="published">Setujui (Publish)</option>
-                                <option value="revisi">Minta Revisi</option>
-                                <option value="arsip">Arsipkan</option>
-                                <option value="draft">Draft</option>
+                                {{-- Opsi default: Status saat ini --}}
+                                <option value="{{ $currentStatus }}" selected hidden>Pilih Aksi (Saat ini: {{ ucfirst($currentStatus) }})</option>
+
+                                {{-- ATURAN BISNIS --}}
+                                
+                                {{-- 1. Jika status DRAFT: Bisa ke Revisi atau Published --}}
+                                @if($currentStatus === 'draft')
+                                    <option value="published">Setujui (Publish)</option>
+                                    <option value="revisi">Minta Revisi</option>
+                                @endif
+
+                                {{-- 2. Jika status PUBLISHED: Hanya bisa ke Arsip --}}
+                                @if($currentStatus === 'published')
+                                    <option value="arsip">Arsipkan</option>
+                                @endif
+
+                                {{-- 3. Jika status ARSIP: Bisa ke Published atau Revisi --}}
+                                @if($currentStatus === 'arsip')
+                                    <option value="published">Publish Kembali</option>
+                                    <option value="revisi">Kembalikan ke Revisi</option>
+                                @endif
+
+                                {{-- 4. Jika status REVISI: (Biasanya menunggu user edit, tapi jika Admin ingin override) --}}
+                                {{-- Jika user sudah edit, admin bisa Publish atau kembalikan ke Draft --}}
+                                @if($currentStatus === 'revisi')
+                                    <option value="published">Setujui (Publish)</option>
+                                    <option value="draft">Kembalikan ke Draft</option>
+                                @endif
+
                             </select>
                         </div>
 
-                        {{-- Container Note: Default hidden (display: none) --}}
+                        {{-- Container Note: Muncul jika pilih 'Revisi' --}}
                         <div class="mb-3" id="note_container" style="display:none;">
                             <label for="note_field" class="form-label text-danger">Catatan / Instruksi Revisi *</label>
                             <textarea id="note_field" name="note" class="form-control" rows="4"
-                                placeholder="Tuliskan detail revisi yang diperlukan..."></textarea>
+                                placeholder="Tuliskan detail revisi yang diperlukan...">{{ $post->approval_note }}</textarea>
                         </div>
 
                         <div class="d-flex gap-2 mt-4">
@@ -94,6 +124,9 @@
 
                 <div class="card bg-white border-0 rounded-3 p-4">
                     <h6 class="fw-semibold">Informasi</h6>
+                    <p class="mb-1"><strong>Status Saat Ini:</strong> 
+                        <span class="badge bg-secondary">{{ ucfirst($post->status) }}</span>
+                    </p>
                     <p class="mb-1"><strong>Penulis:</strong> {{ optional($post->creator)->full_name ?? 'N/A' }}</p>
                     <p class="mb-1"><strong>Kategori:</strong> {{ $post->kategori }}</p>
                     <p class="mb-1"><strong>Dibuat:</strong> {{ $post->created_at->format('d M Y, H:i') }}</p>
@@ -105,37 +138,28 @@
     @push('scripts')
         <script>
             (function() {
-                // Ambil elemen
                 const decisionSelect = document.getElementById('decision_select');
                 const noteContainer = document.getElementById('note_container');
                 const noteField = document.getElementById('note_field');
 
                 function updateState() {
                     const val = decisionSelect.value;
-
-                    // Logika: Jika pilih 'revisi', munculkan kotak pesan. Selain itu sembunyikan.
+                    // Jika user memilih 'revisi', tampilkan kolom catatan
                     if (val === 'revisi') {
                         noteContainer.style.display = 'block';
-                        // Opsional: Buat textarea wajib diisi jika statusnya revisi
                         noteField.setAttribute('required', 'required');
                     } else {
                         noteContainer.style.display = 'none';
                         noteField.removeAttribute('required');
-                        // Opsional: Kosongkan isi note jika user batal pilih revisi
-                        // noteField.value = ''; 
                     }
                 }
 
-                // Event Listener saat dropdown berubah
                 decisionSelect.addEventListener('change', updateState);
+                updateState(); // Jalankan saat load
 
-                // Jalankan sekali saat load agar status awal sesuai
-                updateState();
-
-                // ================== DISABLE SUBMIT BUTTON SAAT KLIK ===================
+                // Disable button on submit
                 const form = document.getElementById('approvalForm');
                 const submitBtn = form.querySelector("button[type='submit']");
-
                 form.addEventListener('submit', function() {
                     submitBtn.disabled = true;
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Menyimpan...';

@@ -20,26 +20,23 @@
                 class="btn btn-sm {{ ($status ?? 'all') == 'all' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
                 Semua
             </a>
-            <a href="{{ route('admin.postingan.index', ['status' => 'pending']) }}"
-                class="btn btn-sm {{ ($status ?? 'all') == 'pending' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                Menunggu Approval(pending)
-            </a>
-            <a href="{{ route('admin.postingan.index', ['status' => 'published']) }}"
-                class="btn btn-sm {{ ($status ?? 'all') == 'published' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                publish
-            </a>
-            <a href="{{ route('admin.postingan.index', ['status' => 'arsip']) }}"
-                class="btn btn-sm {{ ($status ?? 'all') == 'arsip' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                archieve
+            <a href="{{ route('admin.postingan.index', ['status' => 'draft']) }}"
+                class="btn btn-sm {{ ($status ?? 'all') == 'draft' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                draft
             </a>
             <a href="{{ route('admin.postingan.index', ['status' => 'revisi']) }}"
                 class="btn btn-sm {{ ($status ?? 'all') == 'revisi' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
                 Revisi
             </a>
-            <a href="{{ route('admin.postingan.index', ['status' => 'draft']) }}"
-                class="btn btn-sm {{ ($status ?? 'all') == 'draft' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                draft
+            <a href="{{ route('admin.postingan.index', ['status' => 'published']) }}"
+                class="btn btn-sm {{ ($status ?? 'all') == 'published' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                published
             </a>
+            <a href="{{ route('admin.postingan.index', ['status' => 'arsip']) }}"
+                class="btn btn-sm {{ ($status ?? 'all') == 'arsip' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                archieve
+            </a>
+
         </div>
 
 
@@ -109,11 +106,7 @@
                                                 {{ $row->status }}
                                             </span>
 
-                                        @elseif($status == 'pending')
-                                            {{-- Warna Kuning (Warning) untuk Pending --}}
-                                            <span class="badge rounded-pill text-bg-warning text-dark">
-                                                {{ $row->status }}
-                                            </span>
+
 
                                         @elseif($status == 'revisi')
                                             {{-- Warna Merah (Danger) atau Biru (Info) untuk Revisi. 
@@ -150,48 +143,30 @@
                                     {{-- Aksi --}}
                                     <td class="text-nowrap text-end">
 
-
-
-
-
-
-
-
-                                    
-                                    {{-- Revisi Msg (Kolom Baru) --}}
-                                    @can('create_posts')
-                                       
+                                        {{-- Revisi Msg (Kolom Baru) --}}
+                                        @can('create_posts')
                                             @if (strtolower($row->status ?? '') === 'revisi')
-                                                {{-- Tombol Detail Revisi --}}
-                                                {{-- HAPUS: py-0, px-2, dan style font-size --}}
-                                                {{-- TAMBAH: border (supaya konsisten dengan tombol approval) --}}
-                                                
-                                                <button type="button" class="btn btn-info btn-sm text-white border" 
+                                                <button type="button" class="btn btn-info btn-sm text-white border"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#modalRevision{{ $row->id }}">
-                                                    {{-- Opsional: Tambahkan icon agar makin mirip style-nya --}}
                                                     <i class="fas fa-info-circle"></i> Detail Revisi
                                                 </button>
 
-                                                {{-- MODAL REVISI --}}
+                                                {{-- MODAL REVISI (Tetap sama seperti kodemu) --}}
                                                 <div class="modal fade text-dark" id="modalRevision{{ $row->id }}"
                                                     tabindex="-1" aria-labelledby="modalRevisionLabel{{ $row->id }}"
                                                     aria-hidden="true">
                                                     <div class="modal-dialog modal-dialog-centered">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
-                                                                <h5 class="modal-title"
-                                                                    id="modalRevisionLabel{{ $row->id }}">
+                                                                <h5 class="modal-title" id="modalRevisionLabel{{ $row->id }}">
                                                                     Detail Revisi
                                                                 </h5>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                                     aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body">
-                                                                {{-- Tambahkan class 'text-start' agar teks dipaksa rata kiri --}}
                                                                 <p class="text-start">Catatan Revisi:</p>
-                                                                
-                                                                {{-- Tambahkan class 'text-start' disini juga --}}
                                                                 <div class="alert alert-warning border text-break text-wrap text-start" role="alert">
                                                                     <strong style="white-space: pre-wrap;">{{ $row->approval_note ?? 'Tidak ada catatan revisi.' }}</strong>
                                                                 </div>
@@ -200,35 +175,29 @@
                                                     </div>
                                                 </div>
                                                 {{-- MODAL END --}}
-                                            @else
-                                                
                                             @endif
-                                     
-                                    @endcan
+                                        @endcan
 
-
-
-
-
-
-                                        {{-- 1. Approval (Super Admin Only) --}}
-                                        @if ($row->status === 'pending')
-                                            @can('approve_posts')
-                                                <a href="{{ route('admin.postingan.approval.show', $row->id) }}"
-                                                    class="btn btn-primary btn-sm border" aria-label="Approval">
-                                                    <i class="fas fa-check-to-slot"></i> Approval
-                                                </a>
-                                            @endcan
-                                        @endif
-
-                                        {{-- 2. Edit (Admin Only) --}}
-                                        @can('edit_posts')
-                                            <a href="/admin/postingan/edit/{{ $row->id }}"
-                                                class="btn btn-light btn-sm border" aria-label="Edit">
-                                                <i class="fas fa-pen text-muted"></i>
+                                        {{-- 1. Approval (TAMPIL DI SEMUA STATUS untuk user yang punya izin approve) --}}
+                                        {{-- Syarat: pending sudah dihapus, jadi tombol ini muncul terus agar admin bisa ubah status kapanpun --}}
+                                        @can('approve_posts')
+                                            <a href="{{ route('admin.postingan.approval.show', $row->id) }}"
+                                                class="btn btn-primary btn-sm border" aria-label="Approval">
+                                                <i class="fas fa-check-to-slot"></i> Approval
                                             </a>
                                         @endcan
 
+                                        {{-- 2. Edit (HANYA JIKA STATUS REVISI) --}}
+                                        @can('edit_posts')
+                                            @if(strtolower($row->status ?? '') === 'revisi')
+                                                <a href="/admin/postingan/edit/{{ $row->id }}"
+                                                    class="btn btn-light btn-sm border" aria-label="Edit">
+                                                    <i class="fas fa-pen text-muted"></i>
+                                                </a>
+                                            @endif
+                                        @endcan
+
+                                        {{-- 3. Delete --}}
                                         @can('delete_posts')
                                             <button type="button" class="btn btn-danger btn-sm btn-delete-article"
                                                 data-action="{{ url('/admin/postingan/delete/' . $row->id) }}"

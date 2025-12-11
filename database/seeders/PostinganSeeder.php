@@ -60,7 +60,7 @@ class PostinganSeeder extends Seeder
             [
                 'title' => 'Gotong Royong Membersihkan Area Parkir',
                 'kategori' => 'Berita',
-                'status' => 'pending', // Contoh Pending
+                'status' => 'draft', // Contoh draft
                 'keterangan' => 'Aksi bersih-bersih remaja masjid minggu pagi.',
                 'content' => '<p>Remaja Masjid (RISMA) akan mengadakan kegiatan kerja bakti membersihkan area parkir dan selokan depan masjid pada hari Minggu besok. Diharapkan partisipasi seluruh pemuda untuk membawa alat kebersihan masing-masing.</p><p>Kegiatan ini bertujuan agar jamaah merasa lebih nyaman saat memarkirkan kendaraannya dan mencegah banjir saat musim hujan tiba.</p>',
             ],
@@ -130,7 +130,7 @@ class PostinganSeeder extends Seeder
             [
                 'title' => 'Buka Puasa Bersama (Iftar) Senin Kamis',
                 'kategori' => 'Berita',
-                'status' => 'published',
+                'status' => 'arsip',
                 'keterangan' => 'Fasilitas takjil gratis bagi jamaah yang berpuasa.',
                 'content' => '<p>Mulai pekan ini, Masjid menyediakan hidangan buka puasa sederhana bagi jamaah yang menjalankan puasa sunnah Senin dan Kamis. Silakan merapat ke serambi masjid menjelang waktu Maghrib.</p><p>Bagi jamaah yang ingin bersedekah makanan (takjil), bisa menghubungi marbot masjid sebelum pukul 17.00 WIB.</p>',
             ],
@@ -144,7 +144,7 @@ class PostinganSeeder extends Seeder
             [
                 'title' => 'Renovasi Tempat Wudhu Wanita',
                 'kategori' => 'Berita',
-                'status' => 'pending', // Contoh Pending
+                'status' => 'draft', // Contoh draft
                 'keterangan' => 'Update progres pembangunan fasilitas masjid.',
                 'content' => '<p>Alhamdulillah, renovasi tempat wudhu khusus akhwat (wanita) sudah mencapai 80%. Pemasangan keramik dan kran air baru telah selesai dilakukan.</p><p>Mohon maaf atas ketidaknyamanan selama proses pengerjaan. Insya Allah minggu depan fasilitas ini sudah bisa digunakan kembali dengan lebih nyaman dan bersih.</p>',
             ],

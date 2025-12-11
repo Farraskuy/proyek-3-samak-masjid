@@ -86,7 +86,6 @@
             </div>
 
             <div class="row g-4">
-                <!-- Left Column: Tentang Kami Content -->
                 <div class="col-lg-8">
                     <div class="card bg-white border-0 rounded-3 p-4 mb-4">
                         <h5 class="fw-semibold mb-3">Halaman Tentang Kami</h5>
@@ -122,9 +121,7 @@
                     </div>
                 </div>
 
-                <!-- Right Column: Footer Info & Featured Image -->
                 <div class="col-lg-4">
-                    <!-- Featured Image -->
                     <div class="card bg-white border-0 rounded-3 p-4 mb-4">
                         <h5 class="fw-semibold mb-3">Gambar Utama (Hero)</h5>
 
@@ -149,7 +146,6 @@
                         @enderror
                     </div>
 
-                    <!-- Footer Information -->
                     <div class="card bg-white border-0 rounded-3 p-4">
                         <h5 class="fw-semibold mb-3">Informasi Footer</h5>
 
@@ -174,21 +170,16 @@
                         <h6 class="fw-semibold mb-2">Media Sosial</h6>
                         <div id="social-media-container">
                             @php
-                                $socials = old('footer_social_links', $page->footer_social_links ?? []);
-                                // Ensure it's an array of objects/arrays, if it was key-value before, convert it or handle it.
-// For simplicity, if it's key-value (old format), we might need to migrate it or just reset.
-                                // Let's assume we are starting fresh or the user will re-enter if format changes.
-// Actually, let's try to support both or just render what we have.
-                                // If it's associative (old way), convert to indexed for the view loop
-if (is_array($socials) && !array_is_list($socials) && !empty($socials)) {
-    $newSocials = [];
-    foreach ($socials as $key => $val) {
-        if ($val) {
-            $newSocials[] = ['platform' => $key, 'url' => $val];
-                                        }
-                                    }
-                                    $socials = $newSocials;
+                                // 1. Ambil data mentah (bisa dari old input saat validasi error, atau dari database)
+                                $rawSocials = old('footer_social_links', $page->footer_social_links ?? []);
+
+                                // 2. PENYELAMAT: Jika entah kenapa data masih String (JSON), paksa decode jadi Array
+                                if (is_string($rawSocials)) {
+                                    $rawSocials = json_decode($rawSocials, true);
                                 }
+
+                                // 3. Pastikan outputnya Array, kalau null jadikan array kosong
+                                $socials = is_array($rawSocials) ? $rawSocials : [];
                             @endphp
 
                             @foreach ($socials as $index => $social)

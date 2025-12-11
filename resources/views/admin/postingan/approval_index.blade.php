@@ -5,29 +5,29 @@
 @section('content')
     <section class="p-3">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="fw-semibold mb-0">Daftar Postingan ({{ ucfirst($status ?? 'Pending') }})</h4>
+            <h4 class="fw-semibold mb-0">Daftar Postingan ({{ ucfirst($status ?? 'draft') }})</h4>
         </div>
 
         
         <div class="d-flex gap-2 mb-4 p-2 rounded-pill" style="background-color: rgba(0,0,0,0.05); width: fit-content;">
-            <a href="{{ route('admin.postingan.approval.index', ['status' => 'pending']) }}"
-                class="btn btn-sm {{ ($status ?? 'pending') == 'pending' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                Menunggu Approval
-            </a>
-            <a href="{{ route('admin.postingan.approval.index', ['status' => 'published']) }}"
-                class="btn btn-sm {{ ($status ?? 'pending') == 'published' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                publish
-            </a>
             <a href="{{ route('admin.postingan.approval.index', ['status' => 'draft']) }}"
-                class="btn btn-sm {{ ($status ?? 'pending') == 'draft' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                class="btn btn-sm {{ ($status ?? 'draft') == 'draft' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
                 draft
             </a>
+
             <a href="{{ route('admin.postingan.approval.index', ['status' => 'revisi']) }}"
-                class="btn btn-sm {{ ($status ?? 'pending') == 'revisi' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                class="btn btn-sm {{ ($status ?? 'draft') == 'revisi' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
                 Revisi
             </a>
+
+            <a href="{{ route('admin.postingan.approval.index', ['status' => 'published']) }}"
+                class="btn btn-sm {{ ($status ?? 'draft') == 'published' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                published
+            </a>
+
+
             <a href="{{ route('admin.postingan.approval.index', ['status' => 'arsip']) }}"
-                class="btn btn-sm {{ ($status ?? 'pending') == 'arsip' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                class="btn btn-sm {{ ($status ?? 'draft') == 'arsip' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
                 archieve
             </a>
         </div>
