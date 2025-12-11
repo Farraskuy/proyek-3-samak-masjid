@@ -67,10 +67,7 @@ class Consultation extends Model
         return $this->belongsTo(User::class, 'answered_by_ustadz_id');
     }
 
-    public function messages()
-    {
-        return $this->hasMany(ConsultationMessage::class, 'consultation_id', 'id');
-    }
+
 
     // Deprecated relationships (kept for backward compatibility if needed, but better to remove)
     public function inputter()
