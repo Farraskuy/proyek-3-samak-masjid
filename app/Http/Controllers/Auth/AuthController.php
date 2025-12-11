@@ -14,7 +14,8 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Otp;
 use App\Mail\OtpMail;
-use Session;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
@@ -82,35 +83,46 @@ class AuthController extends Controller
             return back()->withErrors(['error' => 'Verifikasi reCAPTCHA gagal.'])->withInput();
         }
 
-        $user = User::create([
-            'full_name' => $data['full_name'],
-            'username' => $data['username'],
-            'email' => $data['email'],
-            'phone_number' => $data['phone_number'],
-            'password' => Hash::make($data['password']),
-            'role_id' => Role::where('name', 'jamaah')->first()->id,
-        ]);
+        DB::beginTransaction();
+        try {
+            $user = User::create([
+                'full_name' => $data['full_name'],
+                'username' => $data['username'],
+                'email' => $data['email'],
+                'phone_number' => $data['phone_number'],
+                'password' => Hash::make($data['password']),
+                'role_id' => Role::where('name', 'Jamaah')->first()->id,
+            ]);
 
-        event(new \Illuminate\Auth\Events\Registered($user));
+            Session::put('otp_return_url', route('home'));
+            
+            Auth::login($user);
+            
+            Otp::where('destination', $user->email)->delete();
+            
+            $code = rand(111111, 999999);
+            
+            Otp::create([
+                'user_id' => $user->id,
+                'destination' => $user->email,
+                'type' => 'email',
+                'code' => Hash::make($code),
+                'attempts' => 0,
+                'expires_at' => now()->addMinutes(10),
+            ]);
 
-        Session::put('otp_return_url', route('home'));
+            Mail::to($user->email)->queue(new OtpMail($code, $user->email));
+            
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
 
-        Auth::login($user);
-
-        Otp::where('destination', $user->email)->delete();
-
-        $code = rand(111111, 999999);
-
-        Otp::create([
-            'user_id' => $user->id,
-            'destination' => $user->email,
-            'type' => 'email',
-            'code' => Hash::make($code),
-            'attempts' => 0,
-            'expires_at' => now()->addMinutes(10),
-        ]);
-
-        Mail::to($user->email)->queue(new OtpMail($code, $user->email));
+            Session::forget('otp_return_url');
+            
+            Auth::logout();
+            
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan. ' . $th->getMessage()])->withInput();
+        }
 
         // Redirect directly to verify form with encrypted email (hash)
         $hash = \Illuminate\Support\Facades\Crypt::encryptString($user->email);

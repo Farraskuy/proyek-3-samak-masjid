@@ -31,7 +31,7 @@ class UserController extends Controller
             });
         }
 
-        if ($request->has('status') && $request->status == 'jamaah') {
+        if ($request->has('status') && $request->status == 'Jamaah') {
             $status = $request->status;
             $query->whereHas('role', function ($q) {
                 $q->where('name', 'Jamaah');

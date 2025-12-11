@@ -45,7 +45,7 @@
                             <hr class="dropdown-divider my-1 mx-3">
                         </li>
 
-                        @if (!Auth::user()->hasRole('jamaah'))
+                        @if (!Auth::user()->hasRole('Jamaah'))
                             <li>
                                 <a class="dropdown-item py-2" href="{{ route('admin.dashboard') }}">
                                     <div class="d-flex align-items-center">
