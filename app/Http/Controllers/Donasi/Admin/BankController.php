@@ -23,22 +23,27 @@ class BankController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'bank_name' => 'required',
-            'account_number' => 'required',
-            'account_holder_name' => 'required',
-            'category' => 'required',
+            'bank_name' => 'required|max:50',
+            'account_number' => 'required|max:50',
+            'account_holder_name' => 'required|max:100',
+            'category' => 'required|in:zakat,infaq',
             'logo' => 'required|image|max:2048'
         ]);
 
         // Upload Logo
         $path = $request->file('logo')->store('bank_logos', 'public');
 
+        // Determine type based on category
+        $type = $request->category === 'zakat' ? 'bank_zakat' : 'bank_infaq';
+
         BankAccount::create([
             'bank_name' => $request->bank_name,
             'account_number' => $request->account_number,
             'account_holder_name' => $request->account_holder_name,
             'category' => $request->category,
+            'type' => $type,
             'logo_url' => '/storage/' . $path,
+            'is_deletable' => true,
             'is_active' => true
         ]);
 
@@ -54,16 +59,37 @@ class BankController extends Controller
     public function update(Request $request, $id)
     {
         $bank = BankAccount::findOrFail($id);
-        
-        $data = $request->all();
+
+        $request->validate([
+            'bank_name' => 'required|max:50',
+            'account_number' => 'nullable|max:50',
+            'account_holder_name' => 'required|max:100',
+            'category' => 'required|in:zakat,infaq',
+            'logo' => 'nullable|image|max:2048'
+        ]);
+
+        // Only allow editing certain fields (NOT balance)
+        $data = [
+            'bank_name' => $request->bank_name,
+            'account_holder_name' => $request->account_holder_name,
+            'is_active' => $request->has('is_active'),
+        ];
+
+        // Only update account_number if bank is not Kas type
+        if ($bank->type !== 'kas') {
+            $data['account_number'] = $request->account_number;
+            $data['category'] = $request->category;
+            $data['type'] = $request->category === 'zakat' ? 'bank_zakat' : 'bank_infaq';
+        }
 
         if ($request->hasFile('logo')) {
+            // Delete old logo if exists
+            if ($bank->logo_url && Storage::disk('public')->exists(str_replace('/storage/', '', $bank->logo_url))) {
+                Storage::disk('public')->delete(str_replace('/storage/', '', $bank->logo_url));
+            }
             $path = $request->file('logo')->store('bank_logos', 'public');
             $data['logo_url'] = '/storage/' . $path;
         }
-
-        // Handle checkbox is_active
-        $data['is_active'] = $request->has('is_active');
 
         $bank->update($data);
 
@@ -72,7 +98,24 @@ class BankController extends Controller
 
     public function destroy($id)
     {
-        BankAccount::destroy($id);
-        return redirect()->back()->with('success', 'Rekening dihapus');
+        $bank = BankAccount::findOrFail($id);
+
+        // Check if bank can be deleted
+        if (!$bank->canBeDeleted()) {
+            $message = 'Rekening tidak dapat dihapus.';
+
+            if (!$bank->is_deletable) {
+                $message = 'Rekening Kas tidak dapat dihapus.';
+            } elseif ($bank->balance > 0) {
+                $message = 'Rekening dengan saldo tidak dapat dihapus. Saldo saat ini: ' . $bank->formatted_balance;
+            }
+
+            return redirect()->back()->with('error', $message);
+        }
+
+        // Soft delete
+        $bank->delete();
+
+        return redirect()->back()->with('success', 'Rekening berhasil dihapus');
     }
 }

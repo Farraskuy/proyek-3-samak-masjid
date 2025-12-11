@@ -9,38 +9,69 @@
             </a>
         </div>
 
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-0">
-                <div class="d-flex gap-2 justify-content-end mb-2">
-                    <input type="text" class="form-control" placeholder="Cari Bank / Pemilik..."
-                        value="{{ request()->query('keyword', '') }}" name="keyword">
+        {{-- Quick Filter --}}
+        <div class="d-flex gap-2 mb-4 p-2 rounded-pill" style="background-color: rgba(0,0,0,0.05); width: fit-content;">
+            <a href="?status=all"
+                class="btn btn-sm {{ request('status', 'all') == 'all' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                Semua
+            </a>
+            <a href="?status=active"
+                class="btn btn-sm {{ request('status') == 'active' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                Aktif
+            </a>
+            <a href="?status=inactive"
+                class="btn btn-sm {{ request('status') == 'inactive' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                Non-Aktif
+            </a>
+        </div>
 
-                    {{-- Sort Toggle --}}
-                    <div class="sort-toggle">
-                        <input type="radio" name="ordered_by" value="asc" id="ordered_by_asc"
-                            {{ request('ordered_by') == 'asc' ? 'checked' : '' }} onchange="this.form.submit()" hidden>
-                        <label for="ordered_by_asc" class="btn btn-outline-secondary" title="Urutkan A-Z">
-                            <i class="fas fa-sort-alpha-down"></i>
-                        </label>
+        <div class="row g-0 gap-3">
+            <form method="get" class="col rounded-3 bg-white p-3 pt-0 form-filter" style="height: fit-content">
+                <input type="hidden" name="status" value="{{ request('status', 'all') }}">
 
-                        <input type="radio" name="ordered_by" value="desc" id="ordered_by_desc"
-                            {{ request('ordered_by', 'desc') == 'desc' ? 'checked' : '' }} onchange="this.form.submit()"
-                            hidden>
-                        <label for="ordered_by_desc" class="btn btn-outline-secondary" title="Urutkan Z-A">
-                            <i class="fas fa-sort-alpha-up"></i>
-                        </label>
+                <div class="bg-white position-sticky pt-3 pb-2" style="top: 61px; z-index: 10">
+                    <div class="d-flex gap-2 justify-content-end mb-2 align-items-center">
+                        <input type="text" class="form-control" placeholder="Cari Bank / Pemilik..."
+                            value="{{ request('keyword') }}" name="keyword">
+
+                        <select name="sort_by" class="form-select fs-14px h-100 w-auto" style="line-height: 1.7"
+                            onchange="this.form.submit()">
+                            <option value="created_at" {{ request('sort_by') == 'created_at' ? 'selected' : '' }}>Terbaru
+                            </option>
+                            <option value="bank_name" {{ request('sort_by') == 'bank_name' ? 'selected' : '' }}>Nama Bank
+                            </option>
+                            <option value="account_holder_name"
+                                {{ request('sort_by') == 'account_holder_name' ? 'selected' : '' }}>Pemilik</option>
+                        </select>
+
+                        <div class="sort-toggle">
+                            <input type="radio" name="ordered_by" value="asc" id="ordered_by_asc"
+                                {{ request('ordered_by') == 'asc' ? 'checked' : '' }} onchange="this.form.submit()" hidden>
+                            <label for="ordered_by_asc" class="btn btn-outline-secondary" title="Urutkan A-Z">
+                                <i class="fas fa-sort-alpha-down"></i>
+                            </label>
+
+                            <input type="radio" name="ordered_by" value="desc" id="ordered_by_desc"
+                                {{ request('ordered_by', 'desc') == 'desc' ? 'checked' : '' }}
+                                onchange="this.form.submit()" hidden>
+                            <label for="ordered_by_desc" class="btn btn-outline-secondary" title="Urutkan Z-A">
+                                <i class="fas fa-sort-alpha-up"></i>
+                            </label>
+                        </div>
                     </div>
                 </div>
-                <div class="table-responsive position-relative" style="min-height: 200px">
-                    <table class="table table-sm table-hover fs-14px m-0">
-                        <thead class="bg-light">
+
+                <div class="table-responsive position-relative mb-3" style="min-height: 200px">
+                    <table class="table table-sm table-hover fs-14px align-middle">
+                        <thead>
                             <tr>
-                                <th class="p-3">Logo</th>
-                                <th class="p-3">Bank</th>
-                                <th class="p-3">No. Rekening</th>
-                                <th class="p-3">Kategori</th>
-                                <th class="p-3">Status</th>
-                                <th class="p-3">Aksi</th>
+                                <th class="p-3 fw-semibold">Logo</th>
+                                <th class="p-3 fw-semibold">Bank</th>
+                                <th class="p-3 fw-semibold">No. Rekening</th>
+                                <th class="p-3 fw-semibold">Saldo</th>
+                                <th class="p-3 fw-semibold">Kategori</th>
+                                <th class="p-3 fw-semibold">Status</th>
+                                <th class="p-3 fw-semibold">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -53,6 +84,7 @@
                                         <small class="text-muted">{{ $bank->account_holder_name }}</small>
                                     </td>
                                     <td class="p-3 align-middle font-monospace">{{ $bank->account_number }}</td>
+                                    <td class="p-3 align-middle fw-semibold">{{ $bank->formatted_balance }}</td>
                                     <td class="p-3 align-middle"><span
                                             class="badge bg-info text-dark bg-opacity-10 border border-info">{{ strtoupper($bank->category) }}</span>
                                     </td>
@@ -66,19 +98,38 @@
                                     <td class="p-3 align-middle">
                                         <a href="{{ route('admin.banks.edit', $bank->account_id) }}"
                                             class="btn btn-sm btn-light border"><i class="fas fa-pen text-muted"></i></a>
-                                        <form action="{{ route('admin.banks.destroy', $bank->account_id) }}" method="POST"
-                                            class="d-inline">
-                                            @csrf @method('DELETE')
-                                            <button class="btn btn-sm btn-light border text-danger"
-                                                onclick="return confirm('Hapus?')"><i class="fas fa-trash"></i></button>
-                                        </form>
+                                        {{-- Form Delete harus di luar loop jika pakai ID unik, tapi di sini langsung submit --}}
+                                        {{-- Sebaiknya pakai button type submit di dalam form --}}
+                                        <button type="button"
+                                            class="btn btn-sm btn-light border text-danger btn-delete-article"
+                                            data-action="{{ route('admin.banks.destroy', $bank->account_id) }}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
-            </div>
+                {{-- Pagination (Visual Only for Banks if not paginated) --}}
+                <div class="d-flex justify-content-between gap-2 flex-wrap">
+                    <div class="d-flex justify-content-between showing-wrapper-bawah">
+                        <div class="d-flex fs-14px align-items-center gap-1">
+                            Menampilkan
+                            <select class="form-select form-select-sm w-auto" name="showing" onchange="this.form.submit()">
+                                <option value="all" selected>Semua</option>
+                            </select>
+                            Data
+                        </div>
+                    </div>
+                    <div class="paginate">
+                        {{-- No pagination links for banks usually --}}
+                    </div>
+                </div>
+            </form>
         </div>
+
+
+
     </section>
 @endsection
