@@ -104,11 +104,11 @@ class RoleSeeder extends Seeder
 
         // Bendahara
         $bendaharaMRole = Role::firstOrCreate(['name' => 'Bendahara Pemasukan'], ['alias' => 'Bendahara Pemasukan', 'description' => 'Mengelola keuangan yang masuk']);
-        $bendaharaMPermissions = Permission::whereIn('group', ['Keuangan', 'Bank'])->except(['delete_finance'])->get();
+        $bendaharaMPermissions = Permission::whereIn('group', ['Keuangan', 'Bank'])->whereNotIn('name',['delete_finance'])->get();
         $bendaharaMRole->permissions()->sync($bendaharaMPermissions);
 
         $bendaharaKRole = Role::firstOrCreate(['name' => 'Bendahara Pengeluaran'], ['alias' => 'Bendahara Pengeluaran', 'description' => 'Mengelola keuangan yang keluar']);
-        $bendaharaKPermissions = Permission::whereIn('group', ['Keuangan', 'Bank'])->except(['manage_income', 'delete_finance', 'verify_donation'])->get();
+        $bendaharaKPermissions = Permission::whereIn('group', ['Keuangan', 'Bank'])->whereNotIn('name',['manage_income', 'delete_finance', 'verify_donation'])->get();
         $bendaharaKRole->permissions()->sync($bendaharaKPermissions);
 
         // Divisi Sarana & Prasarana
