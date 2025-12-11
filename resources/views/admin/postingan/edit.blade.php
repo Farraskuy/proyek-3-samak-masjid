@@ -165,7 +165,7 @@
             Draft
         </option>
         <option value="pending" {{ old('status_view', $post->status_view) == 'pending' ? 'selected' : '' }}>
-            Ajukan Publikasikan
+            Mengajukan Publikasi
         </option>
     </select>
 

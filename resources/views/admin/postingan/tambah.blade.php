@@ -105,7 +105,7 @@
                         <label class="form-label fw-semibold">Status</label>
                         <select name="status_view" class="form-select form-control form-control-lg" required>
                             <option value="draft">draft</option>
-                            <option value="pending">Ajukan Publikasikan</option>
+                            <option value="pending">Mengajukan Publikasi</option>
                         </select>
 
                         <button type="submit" class="btn btn-success w-100 mt-3">
