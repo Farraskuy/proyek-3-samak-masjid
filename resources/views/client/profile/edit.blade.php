@@ -92,7 +92,7 @@
     </div>
 
     <!-- Hidden form for verification -->
-    <form id="verify-email-form" action="{{ route('auth.sendOtp') }}" method="POST" class="d-none">
+    <form id="verify-email-form" action="{{ route('auth.resendVerification') }}" method="POST" class="d-none">
         @csrf
         <input type="hidden" name="destination" value="{{ $user->email }}">
         <input type="hidden" name="return_url" value="{{ route('profile.show') }}">

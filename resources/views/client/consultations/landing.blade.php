@@ -171,22 +171,45 @@
 
     <!-- Login Modal -->
     <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow rounded-4">
-                <div class="modal-body p-5 text-center">
-                    <div class="mb-4">
-                        <i class="fas fa-lock fa-3x text-muted opacity-50"></i>
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow-sm rounded-3">
+                <div class="modal-body p-4 text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-lock fa-2x text-muted opacity-50"></i>
                     </div>
-                    <h4 class="fw-bold mb-2">Login Diperlukan</h4>
+                    <h5 class="fw-bold mb-2">Login Diperlukan</h5>
                     <p class="text-muted mb-4 small">Silakan login untuk melanjutkan konsultasi.</p>
-                    <div class="d-grid gap-2 col-10 mx-auto">
-                        <a href="{{ route('login') }}" class="btn btn-primary rounded-pill">Login</a>
-                        <button type="button" class="btn btn-light rounded-pill text-muted"
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('login') }}" class="btn btn-primary btn-sm rounded-pill">Login</a>
+                        <button type="button" class="btn btn-light btn-sm rounded-pill text-muted"
                             data-bs-dismiss="modal">Batal</button>
                     </div>
-                    <div class="mt-4">
+                    <div class="mt-3">
                         <small class="text-muted">Belum punya akun? <a href="{{ route('register') }}"
                                 class="fw-bold text-decoration-none">Daftar</a></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Verification Modal -->
+    <div class="modal fade" id="verificationModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow-sm rounded-3">
+                <div class="modal-body p-4 text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-envelope fa-2x text-warning opacity-75"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Verifikasi Email</h5>
+                    <p class="text-muted mb-4 small">Anda harus memverifikasi email terlebih dahulu untuk melakukan
+                        konsultasi.</p>
+                    <div class="d-grid gap-2">
+                        <!-- Assuming we have a route to resend verification or go to profile -->
+                        <a href="{{ route('profile.show') }}" class="btn btn-warning btn-sm rounded-pill text-white">Ke
+                            Profil Saya</a>
+                        <button type="button" class="btn btn-light btn-sm rounded-pill text-muted"
+                            data-bs-dismiss="modal">Tutup</button>
                     </div>
                 </div>
             </div>
@@ -198,7 +221,10 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const isAuth = {{ Auth::check() ? 'true' : 'false' }};
+            const isVerified = {{ Auth::check() && Auth::user()->hasVerifiedEmail() ? 'true' : 'false' }};
+
             const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            const verificationModal = new bootstrap.Modal(document.getElementById('verificationModal'));
 
             // Function to handle auth check
             function checkAuth(e) {
@@ -206,7 +232,15 @@
                     e.preventDefault();
                     e.target.blur(); // Remove focus
                     loginModal.show();
+                    return false;
                 }
+                if (!isVerified) {
+                    e.preventDefault();
+                    e.target.blur();
+                    verificationModal.show();
+                    return false;
+                }
+                return true;
             }
 
             // Add event listeners to all inputs with class 'auth-check'
@@ -220,11 +254,7 @@
             const submitBtn = document.querySelector('.auth-check-btn');
             if (submitBtn) {
                 submitBtn.addEventListener('click', function(e) {
-                    if (!isAuth) {
-                        e.preventDefault();
-                        loginModal.show();
-                        return;
-                    }
+                    if (!checkAuth(e)) return;
 
                     // AJAX Submit
                     const form = document.getElementById('consultationForm');
@@ -241,10 +271,15 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.error) {
-                                Toast.fire({
-                                    icon: 'error',
-                                    title: data.error
-                                });
+                                // Handle specific error for verification if backend catches it too
+                                if (data.error === 'Email belum diverifikasi') {
+                                    verificationModal.show();
+                                } else {
+                                    Toast.fire({
+                                        icon: 'error',
+                                        title: data.error
+                                    });
+                                }
                             } else if (data.success) {
                                 Toast.fire({
                                     icon: 'success',
