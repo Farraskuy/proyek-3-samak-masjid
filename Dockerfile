@@ -1,46 +1,71 @@
-FROM php:8.4-fpm
+FROM php:8.2-fpm
 
-# Update package list and install dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     libzip-dev \
     libpng-dev \
-    postgresql-client \
     libpq-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    git \
+    curl \
+    nginx \
+    supervisor \
     nodejs \
     npm \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_pgsql pgsql gd bcmath zip mbstring xml pcntl
+
+# Install Redis extension
+RUN pecl install redis && docker-php-ext-enable redis
+
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
-
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Install required packages
-RUN docker-php-ext-install pdo pgsql pdo_pgsql gd bcmath zip \
-    && pecl install redis \
-    && docker-php-ext-enable redis
+# Set working directory
+WORKDIR /var/www/html
 
-WORKDIR /usr/share/nginx/html/
+# Copy application files
+COPY . .
 
-# Copy the codebase
-COPY . ./
+# Install PHP dependencies (skip scripts to avoid env var issues during build)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-# Run composer install for production and give permissions
-RUN sed 's_@php artisan package:discover_/bin/true_;' -i composer.json \
-    && composer install --ignore-platform-req=php --no-dev --optimize-autoloader \
-    && composer clear-cache \
-    && php artisan package:discover --ansi \
-    && chmod -R 775 storage \
-    && chown -R www-data:www-data storage \
-    && mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache
+# Clear bootstrap cache (removes dev dependency providers)
+RUN rm -f bootstrap/cache/*.php
 
-# Copy entrypoint
-COPY ./scripts/php-fpm-entrypoint /usr/local/bin/php-entrypoint
+# Install Node dependencies and build assets
+RUN npm ci && npm run build
 
-# Give permisisons to everything in bin/
-RUN chmod a+x /usr/local/bin/*
+# Copy Nginx config
+COPY docker/nginx/default.conf /etc/nginx/sites-available/default
 
-ENTRYPOINT ["/usr/local/bin/php-entrypoint"]
+# Copy Supervisor config
+COPY docker/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-CMD ["php-fpm"]
+# Copy and prepare entrypoint
+COPY scripts/fly-entrypoint.sh /usr/local/bin/fly-entrypoint
+RUN chmod +x /usr/local/bin/fly-entrypoint
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Create required directories
+RUN mkdir -p /var/log/supervisor \
+    && mkdir -p /var/www/html/storage/framework/cache/data \
+    && mkdir -p /var/www/html/storage/framework/sessions \
+    && mkdir -p /var/www/html/storage/framework/views
+
+# Expose port 8080
+EXPOSE 8080
+
+# Start via entrypoint
+ENTRYPOINT ["/usr/local/bin/fly-entrypoint"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
