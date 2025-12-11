@@ -14,11 +14,15 @@ return new class extends Migration
         Schema::create('bank_accounts', function (Blueprint $table) {
             $table->id('account_id');
             $table->string('bank_name', 50);
-            $table->string('account_number', 50);
+            $table->string('account_number', 50)->nullable(); // Nullable for Kas
             $table->string('account_holder_name', 100);
-            $table->string('logo_url', 255);
+            $table->string('logo_url', 255)->nullable();
             $table->enum('category', ['zakat', 'infaq']);
+            $table->enum('type', ['kas', 'bank_zakat', 'bank_infaq'])->default('bank_zakat');
+            $table->decimal('balance', 15, 2)->default(0);
+            $table->boolean('is_deletable')->default(true);
             $table->boolean('is_active')->default(true);
+            $table->softDeletes();
         });
     }
 
