@@ -48,12 +48,6 @@ class User extends Authenticatable implements MustVerifyEmail
             return false;
         }
 
-        // Admin role usually has all permissions, but let's stick to explicit permissions for now
-        // unless we want to hardcode 'Admin' bypass.
-        // The spec says "Hanya Admin yang dapat membuat role...".
-        // If we want to allow Admin everything, we can do it here or in Gate.
-        // Let's rely on the role's permissions.
-
         return $this->role->permissions()->where('name', $permission)->exists();
     }
 
@@ -62,7 +56,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function hasRole($roleName): bool
     {
-        return $this->role && $this->role->name == $roleName;
+        return $this->role && strtolower($this->role->name) == strtolower($roleName);
     }
 
     /**

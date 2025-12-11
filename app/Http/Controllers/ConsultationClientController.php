@@ -34,7 +34,6 @@ class ConsultationClientController extends Controller
             return response()->json(['error' => 'Email belum diverifikasi'], 403);
         }
 
-        // Check if user has pending consultation
         $hasPending = Consultation::where('user_id', Auth::id())
             ->whereIn('status', ['pending', 'active'])
             ->exists();
@@ -62,7 +61,6 @@ class ConsultationClientController extends Controller
 
             DB::commit();
 
-            // Notify Ustadz
             $ustadzUsers = User::where('role', 'ustadz')->get();
             foreach ($ustadzUsers as $ustadz) {
                 Notification::createNotification(
@@ -122,14 +120,10 @@ class ConsultationClientController extends Controller
         }
 
         $messages = $consultation->messages()->with('user')->orderBy('created_at', 'asc')->get();
-
-        // Mark messages as read
         $consultation->messages()
             ->where('user_id', '!=', Auth::id())
             ->whereNull('read_at')
             ->update(['read_at' => now()]);
-
-        // Get history for sidebar
         if (request()->ajax()) {
             return view('components.chat-area', compact('consultation', 'messages'));
         }
@@ -178,11 +172,16 @@ class ConsultationClientController extends Controller
             ]);
 
             // Broadcast event (Reverb)
-            event(new \App\Events\ConsultationMessageSent($message, Auth::user(), $id));
 
             DB::commit();
 
-            return response()->json(['success' => true, 'message' => $message->message,]);
+            event(new \App\Events\ConsultationMessageSent($message, Auth::user(), $id));
+
+            $message->load('user');
+            return response()->json([
+                'success' => true,
+                'message' => $message->load('user')
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);

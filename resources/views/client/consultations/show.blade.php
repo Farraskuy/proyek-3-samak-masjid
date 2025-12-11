@@ -18,21 +18,22 @@
     }
 
     .chat-container {
-        height: calc(100vh - 70px);
+        height: calc(100vh - 140px);
         display: flex;
         background-color: #fff;
         border: 1px solid var(--chat-border);
-        font-family: 'Poppins', sans-serif;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-top: 20px;
+        margin-bottom: 20px;
     }
 
-    /* Sidebar Sederhana */
     .chat-sidebar {
         width: 300px;
         background-color: var(--chat-sidebar-bg);
         border-right: 1px solid var(--chat-border);
         display: flex;
         flex-direction: column;
-        z-index: 10;
     }
 
     .sidebar-header {
@@ -45,7 +46,7 @@
         padding: 1rem 1.25rem;
         cursor: pointer;
         background-color: var(--chat-active);
-        border-left: 3px solid var(--chat-primary);
+        border-left: 4px solid var(--chat-primary);
     }
 
     .conversation-name {
@@ -62,7 +63,6 @@
         text-overflow: ellipsis;
     }
 
-    /* Chat Area */
     .chat-main {
         flex: 1;
         display: flex;
@@ -73,9 +73,9 @@
     .chat-header {
         padding: 1rem 1.5rem;
         border-bottom: 1px solid var(--chat-border);
+        height: 70px;
         display: flex;
         align-items: center;
-        height: 75px;
     }
 
     .chat-messages {
@@ -85,20 +85,14 @@
         background-color: var(--chat-bg);
         display: flex;
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 1rem;
     }
 
     .message-wrapper {
         display: flex;
         gap: 1rem;
-        max-width: 75%;
+        max-width: 80%;
         align-items: flex-end;
-    }
-
-    .avatar-circle {
-        font-size: 0.9rem;
-        text-align: center;
-        line-height: 40px;
     }
 
     .message-wrapper.sent {
@@ -107,109 +101,97 @@
     }
 
     .message-bubble {
-        padding: 1rem 1.25rem;
-        border-radius: 18px;
+        padding: 0.8rem 1.2rem;
+        border-radius: 15px;
         position: relative;
         font-size: 0.95rem;
-        line-height: 1.6;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+        line-height: 1.5;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
 
     .message-wrapper.received .message-bubble {
         background-color: var(--chat-bubble-received);
-        border-bottom-left-radius: 4px;
+        border-bottom-left-radius: 2px;
         color: var(--chat-text);
     }
 
     .message-wrapper.sent .message-bubble {
         background-color: var(--chat-bubble-sent);
         color: #fff;
-        border-bottom-right-radius: 4px;
+        border-bottom-right-radius: 2px;
     }
 
     .message-time {
         font-size: 0.7rem;
-        margin-top: 0.4rem;
-        opacity: 0.8;
+        margin-top: 5px;
+        opacity: 0.7;
         text-align: right;
-        font-weight: 500;
     }
 
     .chat-input-area {
-        padding: 1.25rem 1.5rem;
+        padding: 1rem;
         background-color: #fff;
         border-top: 1px solid var(--chat-border);
     }
 
     .chat-input-wrapper {
         display: flex;
-        align-items: flex-end;
-        gap: 0.75rem;
+        align-items: center;
+        gap: 10px;
         background-color: #f8f9fa;
-        border: 1px solid #e9ecef;
-        border-radius: 12px;
-        padding: 0.75rem;
+        border: 1px solid #dee2e6;
+        border-radius: 25px;
+        padding: 5px 15px;
     }
 
     .chat-input {
         flex: 1;
         border: none;
         background: transparent;
-        resize: none;
-        max-height: 120px;
-        padding: 0;
+        padding: 10px;
         outline: none;
-        font-size: 0.95rem;
-        line-height: 1.5;
-        color: var(--chat-text);
+        resize: none;
+        max-height: 100px;
     }
 
     .btn-send {
         background-color: var(--chat-primary);
-        color: #fff;
+        color: white;
         border: none;
-        border-radius: 8px;
-        padding: 0.5rem 1rem;
-        font-weight: 600;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         cursor: pointer;
+        transition: 0.2s;
     }
 
     .btn-send:hover {
-        background-color: #0b5ed7;
+        transform: scale(1.05);
     }
 </style>
 @endpush
 
 @section('content')
-<div class="container-fluid p-0">
+<div class="container">
     <div class="chat-container">
-        <!-- Sidebar Konsultasi (Hanya Satu Item) -->
-        <div class="chat-sidebar">
+        <div class="chat-sidebar d-none d-md-flex">
             <div class="sidebar-header">
-                <h5 class="mb-0">Konsultasi</h5>
+                <h6 class="mb-0 fw-bold">Detail Konsultasi</h6>
             </div>
             <div class="conversation-list">
-                <div class="conversation-item active">
-                    <div class="conversation-info">
-                        <div class="conversation-header">
-                            <span class="conversation-name">
-                                {{ $consultation->question_subject }}
-                            </span>
-                        </div>
-                        <span class="conversation-preview">
-                            {{ Str::limit($consultation->question_text, 50) }}
-                        </span>
-                    </div>
+                <div class="conversation-item">
+                    <div class="fw-bold text-primary text-truncate">{{ $consultation->question_subject }}</div>
+                    <small class="text-muted">{{ Str::limit($consultation->question_text, 40) }}</small>
                 </div>
             </div>
         </div>
 
-        <!-- Chat Area -->
         <div class="chat-main">
             <div class="chat-header">
-                <h5 class="mb-0">
-                    {{ $consultation->question_subject }}
-                </h5>
+                <h6 class="mb-0 fw-bold">{{ $consultation->question_subject }}</h6>
             </div>
 
             <div class="chat-messages" id="chatMessages">
@@ -220,21 +202,16 @@
                 @endphp
                 <div class="message-wrapper {{ $isSelf ? 'sent' : 'received' }}">
                     @if(!$isSelf)
-                    <div class="avatar-circle d-flex align-items-center justify-content-center"
-                        style="width: 40px; height: 40px; border-radius: 50%; background-color: #e2e8f0; font-weight: bold; color: #1e293b;">
-                        {{ strtoupper(substr($user->name ?? $user->email, 0, 1)) }}
-                    </div>
-                    @else
-                    <div class="avatar-circle d-flex align-items-center justify-content-center"
-                        style="width: 40px; height: 40px; border-radius: 50%; background-color: #3b82f6; font-weight: bold; color: white;">
-                        U
+                    <div class="avatar-circle d-flex align-items-center justify-content-center fw-bold text-white rounded-circle"
+                        style="width: 35px; height: 35px; background-color: #6c757d; font-size: 0.8rem;">
+                        {{ strtoupper(substr($user->name ?? $user->email ?? 'U', 0, 1)) }}
                     </div>
                     @endif
 
                     <div class="message-bubble">
                         @if($message->message_type === 'file')
-                        <a href="{{ $message->attachment_url }}" target="_blank" class="{{ $isSelf ? 'text-white' : 'text-primary' }}">
-                            <i class="fas fa-paperclip me-1"></i>Lampiran
+                        <a href="{{ asset($message->attachment_url) }}" target="_blank" class="{{ $isSelf ? 'text-white' : 'text-primary' }} text-decoration-none">
+                            <i class="fas fa-paperclip me-1"></i> Lampiran
                         </a><br>
                         @endif
                         {{ $message->message }}
@@ -244,83 +221,123 @@
                 @endforeach
             </div>
 
-            <!-- Input Form -->
             <form id="chatForm" action="{{ route('client.consultations.send-message', $consultation->id) }}" method="POST" class="chat-input-area">
                 @csrf
                 <div class="chat-input-wrapper">
-                    <textarea id="messageInput" name="message" class="chat-input" rows="1" placeholder="Ketik pesan..." required></textarea>
-                    <button type="submit" class="btn-send">Kirim</button>
+                    <textarea id="messageInput" name="message" class="chat-input" rows="1" placeholder="Tulis pesan..." required></textarea>
+                    <button type="submit" class="btn-send"><i class="fas fa-paper-plane"></i></button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+@endsection
 
 @push('scripts')
+<script src="https://js.pusher.com/8.3.0/pusher.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/laravel-echo/1.17.0/echo.iife.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const chatMessages = document.getElementById('chatMessages');
         const chatForm = document.getElementById('chatForm');
         const messageInput = document.getElementById('messageInput');
 
-        // Scroll ke bawah saat halaman dimuat
+        const consultationId = {{ $consultation->id }};
+        const currentUserId = {{ Auth::id() }};
+
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
-        // Handle submit form
-        chatForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const message = messageInput.value.trim();
-            if (!message) return;
-
-            const formData = new FormData(this);
-            const url = this.getAttribute('action');
-            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': token,
-                        'Accept': 'application/json'
-                    },
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const newMessage = document.createElement('div');
-                        newMessage.className = 'message-wrapper sent';
-
-                        newMessage.innerHTML = `
-            <div class="avatar-circle">
-                U <!-- atau huruf awal nama user -->
-            </div>
-            <div class="message-bubble">
-                ${data.message}
-                <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-            </div>`;
-                        chatMessages.appendChild(newMessage);
-                        messageInput.value = '';
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
-                    } else {
-                        alert('Gagal mengirim pesan: ' + (data.error || 'Unknown error'));
-                    }
-                })
-                .catch(err => {
-                    console.error('Error:', err);
-                    alert('Terjadi kesalahan saat mengirim pesan.');
-                });
-        });
-
-        // Enter untuk kirim (tanpa Shift)
-        messageInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                chatForm.dispatchEvent(new Event('submit'));
+        window.Echo = new Echo({
+            broadcaster: 'reverb',
+            key: "{{ env('REVERB_APP_KEY') }}",
+            wsHost: "{{ env('REVERB_HOST', '127.0.0.1') }}",
+            wsPort: {{ env('REVERB_PORT', 8080) }},
+            wssPort: {{ env('REVERB_PORT', 443) }},
+            forceTLS: {{ env('REVERB_SCHEME', 'http') === 'https' ? 'true' : 'false' }},
+            enabledTransports: ['ws', 'wss'],
+            auth: {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
             }
         });
+
+        window.Echo.private(`consultation.${consultationId}`)
+            .listen('.message.sent', (e) => {
+                if (e.user.id !== currentUserId) {
+                    appendMessage(e.message, e.user, 'received');
+                }
+            });
+
+        if (chatForm) {
+            chatForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const message = messageInput.value.trim();
+                if (!message) return;
+
+                const formData = new FormData(this);
+
+                axios.post(this.action, formData)
+                    .then(response => {
+                        if (response.data.success) {
+                            appendMessage(response.data.message, {{ Js::from(Auth::user()) }}, 'sent');
+                            messageInput.value = '';
+                        } else {
+                            alert('Gagal: ' + response.data.error);
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('Gagal mengirim pesan.');
+                    });
+            });
+
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    chatForm.dispatchEvent(new Event('submit'));
+                }
+            });
+        }
+
+        function appendMessage(msgData, userData, type) {
+            const time = new Date(msgData.created_at || new Date()).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            let attachmentHtml = '';
+
+            if (msgData.message_type === 'file' && msgData.attachment_url) {
+                const color = type === 'sent' ? 'text-white' : 'text-primary';
+                attachmentHtml = `<a href="/${msgData.attachment_url}" target="_blank" class="${color} text-decoration-none"><i class="fas fa-paperclip"></i> Lampiran</a><br>`;
+            }
+
+            let avatarHtml = '';
+            if (type === 'received') {
+                const initial = (userData.name || userData.full_name || 'U').charAt(0).toUpperCase();
+                avatarHtml = `
+                <div class="avatar-circle d-flex align-items-center justify-content-center fw-bold text-white rounded-circle"
+                     style="width: 35px; height: 35px; background-color: #6c757d; font-size: 0.8rem;">
+                    ${initial}
+                </div>`;
+            }
+
+            const html = `
+            <div class="message-wrapper ${type}">
+                ${avatarHtml}
+                <div class="message-bubble">
+                    ${attachmentHtml}
+                    ${msgData.message}
+                    <div class="message-time">${time}</div>
+                </div>
+            </div>`;
+
+            chatMessages.insertAdjacentHTML('beforeend', html);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
     });
 </script>
 @endpush
-
-@endsection
