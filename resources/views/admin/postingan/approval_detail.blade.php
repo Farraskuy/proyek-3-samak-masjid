@@ -29,7 +29,7 @@
                                 style="min-height: 300px; background-color: #f8f9fa; border: 2px dashed #dee2e6;">
                                 <div class="text-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"
-                                        fill="currentColor" class="bi bi-image mb-3 opacity-50" viewBox="0 0 16 16">
+                                        fill="currentColor" class="fas fa-image mb-3 opacity-50" viewBox="0 0 16 16">
                                         <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
                                         <path
                                             d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z" />
@@ -64,7 +64,8 @@
                 <div class="card bg-white border-0 rounded-3 p-4 mb-4">
                     <h5 class="fw-semibold">Publikasi / Keputusan Approval</h5>
 
-                    <form id="approvalForm" action="{{ route('admin.postingan.approval.update', ['id' => $post->id]) }}" method="POST">
+                    <form id="approvalForm" action="{{ route('admin.postingan.approval.update', ['id' => $post->id]) }}"
+                        method="POST">
                         @csrf
 
                         <div class="mb-3">
@@ -81,7 +82,8 @@
                         {{-- Container Note: Default hidden (display: none) --}}
                         <div class="mb-3" id="note_container" style="display:none;">
                             <label for="note_field" class="form-label text-danger">Catatan / Instruksi Revisi *</label>
-                            <textarea id="note_field" name="note" class="form-control" rows="4" placeholder="Tuliskan detail revisi yang diperlukan..."></textarea>
+                            <textarea id="note_field" name="note" class="form-control" rows="4"
+                                placeholder="Tuliskan detail revisi yang diperlukan..."></textarea>
                         </div>
 
                         <div class="d-flex gap-2 mt-4">
@@ -92,7 +94,7 @@
 
                 <div class="card bg-white border-0 rounded-3 p-4">
                     <h6 class="fw-semibold">Informasi</h6>
-                    <p class="mb-1"><strong>Penulis:</strong> {{ optional($post->creator)->full_name ?? 'N/A'}}</p>
+                    <p class="mb-1"><strong>Penulis:</strong> {{ optional($post->creator)->full_name ?? 'N/A' }}</p>
                     <p class="mb-1"><strong>Kategori:</strong> {{ $post->kategori }}</p>
                     <p class="mb-1"><strong>Dibuat:</strong> {{ $post->created_at->format('d M Y, H:i') }}</p>
                 </div>
@@ -101,45 +103,45 @@
     </section>
 
     @push('scripts')
-    <script>
-        (function() {
-            // Ambil elemen
-            const decisionSelect = document.getElementById('decision_select');
-            const noteContainer = document.getElementById('note_container');
-            const noteField = document.getElementById('note_field');
+        <script>
+            (function() {
+                // Ambil elemen
+                const decisionSelect = document.getElementById('decision_select');
+                const noteContainer = document.getElementById('note_container');
+                const noteField = document.getElementById('note_field');
 
-            function updateState() {
-                const val = decisionSelect.value;
+                function updateState() {
+                    const val = decisionSelect.value;
 
-                // Logika: Jika pilih 'revisi', munculkan kotak pesan. Selain itu sembunyikan.
-                if (val === 'revisi') {
-                    noteContainer.style.display = 'block';
-                    // Opsional: Buat textarea wajib diisi jika statusnya revisi
-                    noteField.setAttribute('required', 'required'); 
-                } else {
-                    noteContainer.style.display = 'none';
-                    noteField.removeAttribute('required');
-                    // Opsional: Kosongkan isi note jika user batal pilih revisi
-                    // noteField.value = ''; 
+                    // Logika: Jika pilih 'revisi', munculkan kotak pesan. Selain itu sembunyikan.
+                    if (val === 'revisi') {
+                        noteContainer.style.display = 'block';
+                        // Opsional: Buat textarea wajib diisi jika statusnya revisi
+                        noteField.setAttribute('required', 'required');
+                    } else {
+                        noteContainer.style.display = 'none';
+                        noteField.removeAttribute('required');
+                        // Opsional: Kosongkan isi note jika user batal pilih revisi
+                        // noteField.value = ''; 
+                    }
                 }
-            }
 
-            // Event Listener saat dropdown berubah
-            decisionSelect.addEventListener('change', updateState);
+                // Event Listener saat dropdown berubah
+                decisionSelect.addEventListener('change', updateState);
 
-            // Jalankan sekali saat load agar status awal sesuai
-            updateState();
+                // Jalankan sekali saat load agar status awal sesuai
+                updateState();
 
-            // ================== DISABLE SUBMIT BUTTON SAAT KLIK ===================
-            const form = document.getElementById('approvalForm');
-            const submitBtn = form.querySelector("button[type='submit']");
+                // ================== DISABLE SUBMIT BUTTON SAAT KLIK ===================
+                const form = document.getElementById('approvalForm');
+                const submitBtn = form.querySelector("button[type='submit']");
 
-            form.addEventListener('submit', function() {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Menyimpan...';
-            });
-        })();
-    </script>
+                form.addEventListener('submit', function() {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Menyimpan...';
+                });
+            })();
+        </script>
     @endpush
 
 @endsection
