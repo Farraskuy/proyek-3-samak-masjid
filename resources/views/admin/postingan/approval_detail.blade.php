@@ -61,66 +61,73 @@
                 </div>
             </div>
 
-            {{-- Kolom Kanan: Form Approval (DIUBAH LOGIKANYA) --}}
+            {{-- Kolom Kanan: Form Approval --}}
             <div class="col-md-4">
-                <div class="card bg-white border-0 rounded-3 p-4 mb-4">
-                    <h5 class="fw-semibold">Publikasi / Keputusan Approval</h5>
+                @php 
+                    $currentStatus = strtolower($post->status); 
+                    // Cek apakah form harus di-hide (jika draft atau revisi)
+                    $isLocked = in_array($currentStatus, ['draft', 'revisi']);
+                @endphp
 
-                    <form id="approvalForm" action="{{ route('admin.postingan.approval.update', ['id' => $post->id]) }}"
-                        method="POST">
-                        @csrf
+                @if($isLocked)
+                    {{-- TAMPILAN JIKA STATUS DRAFT / REVISI (Form Hide) --}}
+                    <div class="card bg-warning-subtle border-warning rounded-3 p-4 mb-4">
+                        <h5 class="fw-semibold text-warning-emphasis">
+                            <i class="fas fa-lock me-2"></i>Aksi Terkunci
+                        </h5>
+                        <p class="mb-0 text-muted">
+                            Postingan ini sedang dalam status <strong>{{ ucfirst($currentStatus) }}</strong>. 
+                            Admin tidak dapat melakukan approval atau perubahan status sampai Penulis mengajukan postingan ini kembali.
+                        </p>
+                    </div>
+                @else
+                    {{-- TAMPILAN FORM (Hanya untuk Pending, Published, Arsip) --}}
+                    <div class="card bg-white border-0 rounded-3 p-4 mb-4">
+                        <h5 class="fw-semibold">Publikasi / Keputusan Approval</h5>
 
-                        <div class="mb-3">
-                            <label for="decision_select" class="form-label">Keputusan</label>
-                            
-                            {{-- Normalisasi status saat ini --}}
-                            @php $currentStatus = strtolower($post->status); @endphp
+                        <form id="approvalForm" action="{{ route('admin.postingan.approval.update', ['id' => $post->id]) }}"
+                            method="POST">
+                            @csrf
 
-                            <select name="decision" id="decision_select" class="form-select form-control form-control-lg">
-                                {{-- Opsi default: Status saat ini --}}
-                                <option value="{{ $currentStatus }}" selected hidden>Pilih Aksi (Saat ini: {{ ucfirst($currentStatus) }})</option>
-
-                                {{-- ATURAN BISNIS --}}
+                            <div class="mb-3">
+                                <label for="decision_select" class="form-label">Keputusan</label>
                                 
-                                {{-- 1. Jika status DRAFT: Bisa ke Revisi atau Published --}}
-                                @if($currentStatus === 'draft')
-                                    <option value="published">Setujui (Publish)</option>
-                                    <option value="revisi">Minta Revisi</option>
-                                @endif
+                                <select name="decision" id="decision_select" class="form-select form-control form-control-lg">
+                                    <option value="" selected hidden>Pilih Aksi...</option>
 
-                                {{-- 2. Jika status PUBLISHED: Hanya bisa ke Arsip --}}
-                                @if($currentStatus === 'published')
-                                    <option value="arsip">Arsipkan</option>
-                                @endif
+                                    {{-- ATURAN BISNIS DROP DOWN --}}
+                                    
+                                    {{-- 1. Jika PENDING -> Bisa Publish atau Revisi --}}
+                                    @if($currentStatus === 'pending')
+                                        <option value="published">Setujui & Terbitkan</option>
+                                        <option value="revisi">Kembalikan untuk Revisi</option>
+                                    @endif
 
-                                {{-- 3. Jika status ARSIP: Bisa ke Published atau Revisi --}}
-                                @if($currentStatus === 'arsip')
-                                    <option value="published">Publish Kembali</option>
-                                    <option value="revisi">Kembalikan ke Revisi</option>
-                                @endif
+                                    {{-- 2. Jika PUBLISHED -> Hanya bisa Arsip --}}
+                                    @if($currentStatus === 'published')
+                                        <option value="arsip">Arsipkan Postingan</option>
+                                    @endif
 
-                                {{-- 4. Jika status REVISI: (Biasanya menunggu user edit, tapi jika Admin ingin override) --}}
-                                {{-- Jika user sudah edit, admin bisa Publish atau kembalikan ke Draft --}}
-                                @if($currentStatus === 'revisi')
-                                    <option value="published">Setujui (Publish)</option>
-                                    <option value="draft">Kembalikan ke Draft</option>
-                                @endif
+                                    {{-- 3. Jika ARSIP -> Hanya bisa Draft --}}
+                                    @if($currentStatus === 'arsip')
+                                        <option value="draft">Kembalikan ke Draft</option>
+                                    @endif
+                                </select>
+                            </div>
 
-                            </select>
-                        </div>
+                            {{-- Container Note: Muncul jika pilih 'Revisi' --}}
+                            <div class="mb-3" id="note_container" style="display:none;">
+                                <label for="note_field" class="form-label text-danger">Catatan / Instruksi Revisi *</label>
+                                <textarea id="note_field" name="note" class="form-control" rows="4"
+                                    placeholder="Tuliskan detail revisi yang diperlukan...">{{ $post->approval_note }}</textarea>
+                            </div>
 
-                        {{-- Container Note: Muncul jika pilih 'Revisi' --}}
-                        <div class="mb-3" id="note_container" style="display:none;">
-                            <label for="note_field" class="form-label text-danger">Catatan / Instruksi Revisi *</label>
-                            <textarea id="note_field" name="note" class="form-control" rows="4"
-                                placeholder="Tuliskan detail revisi yang diperlukan...">{{ $post->approval_note }}</textarea>
-                        </div>
-
-                        <div class="d-flex gap-2 mt-4">
-                            <button type="submit" class="btn btn-success w-100">Simpan Keputusan</button>
-                        </div>
-                    </form>
-                </div>
+                            <div class="d-flex gap-2 mt-4">
+                                <button type="submit" class="btn btn-success w-100">Simpan Keputusan</button>
+                            </div>
+                        </form>
+                    </div>
+                @endif
 
                 <div class="card bg-white border-0 rounded-3 p-4">
                     <h6 class="fw-semibold">Informasi</h6>
@@ -142,28 +149,29 @@
                 const noteContainer = document.getElementById('note_container');
                 const noteField = document.getElementById('note_field');
 
-                function updateState() {
-                    const val = decisionSelect.value;
-                    // Jika user memilih 'revisi', tampilkan kolom catatan
-                    if (val === 'revisi') {
-                        noteContainer.style.display = 'block';
-                        noteField.setAttribute('required', 'required');
-                    } else {
-                        noteContainer.style.display = 'none';
-                        noteField.removeAttribute('required');
+                // Cek null safety (karena elemen ini tidak ada jika status draft/revisi)
+                if(decisionSelect) {
+                    function updateState() {
+                        const val = decisionSelect.value;
+                        if (val === 'revisi') {
+                            noteContainer.style.display = 'block';
+                            noteField.setAttribute('required', 'required');
+                        } else {
+                            noteContainer.style.display = 'none';
+                            noteField.removeAttribute('required');
+                        }
                     }
+
+                    decisionSelect.addEventListener('change', updateState);
+                    updateState(); 
+
+                    const form = document.getElementById('approvalForm');
+                    const submitBtn = form.querySelector("button[type='submit']");
+                    form.addEventListener('submit', function() {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Menyimpan...';
+                    });
                 }
-
-                decisionSelect.addEventListener('change', updateState);
-                updateState(); // Jalankan saat load
-
-                // Disable button on submit
-                const form = document.getElementById('approvalForm');
-                const submitBtn = form.querySelector("button[type='submit']");
-                form.addEventListener('submit', function() {
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Menyimpan...';
-                });
             })();
         </script>
     @endpush

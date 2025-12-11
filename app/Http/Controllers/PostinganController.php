@@ -234,7 +234,7 @@ class PostinganController extends Controller
 
 
         $perPage = $request->query('showing', 50);
-        $status = $request->query('status', 'draft'); // Default to 
+        $status = $request->query('status', 'pending'); // Default to 
 
         $query = Postingan::where('status', $status)->orderBy('created_at', 'desc');
 
@@ -268,8 +268,6 @@ class PostinganController extends Controller
             return view('admin.postingan.approval_detail', compact('post'));
         }
 
-
-
 public function approvalUpdate(Request $request, $id)
     {
         // 1. Cek Permission
@@ -283,23 +281,22 @@ public function approvalUpdate(Request $request, $id)
 
         // 3. Validasi Input Form
         $validated = $request->validate([
-            // Pastikan decision adalah salah satu status yang valid secara umum
             'decision' => 'required|in:published,revisi,arsip,draft',
-            // Note WAJIB diisi jika decision == 'revisi'
             'note'     => 'required_if:decision,revisi|nullable|string', 
         ], [
             'note.required_if' => 'Catatan revisi wajib diisi jika status diubah menjadi Revisi.',
+            'decision.required' => 'Anda harus memilih salah satu keputusan.',
         ]);
 
         $decision = strtolower($validated['decision']);
 
-        // 4. Validasi Business Rule (State Transition Check)
-        // Ini memastikan status hanya bisa berubah sesuai alur yang kamu minta
+        // 4. Validasi Business Rule (STRICT MODE)
+        // Mencegah perubahan status yang tidak sesuai alur
         $isAllowed = false;
 
         switch ($currentStatus) {
-            case 'draft':
-                // Draft -> Revisi atau Published
+            case 'pending':
+                // Pending -> Revisi atau Published
                 if (in_array($decision, ['revisi', 'published'])) {
                     $isAllowed = true;
                 }
@@ -313,64 +310,55 @@ public function approvalUpdate(Request $request, $id)
                 break;
 
             case 'arsip':
-                // Arsip -> Published atau Revisi
-                if (in_array($decision, ['published', 'revisi'])) {
+                // Arsip -> Draft saja
+                if ($decision === 'draft') {
                     $isAllowed = true;
                 }
+                break;
+            
+            // Status Draft dan Revisi TIDAK BOLEH diproses oleh Admin
+            case 'draft':
+            case 'revisi':
+                $isAllowed = false;
                 break;
 
-            case 'revisi':
-                // Revisi -> Published (approve) atau Draft (kembalikan)
-                if (in_array($decision, ['published', 'draft'])) {
-                    $isAllowed = true;
-                }
-                break;
-                
             default:
-                // Jika status lama tidak dikenali, block demi keamanan
                 $isAllowed = false;
                 break;
         }
 
-        // Jika alur tidak valid, lempar error kembali ke form
+        // Jika alur tidak valid atau statusnya terlarang
         if (!$isAllowed) {
             return back()->withErrors([
-                'decision' => "Perubahan status dari '$currentStatus' ke '$decision' tidak diizinkan oleh sistem."
+                'decision' => "Tindakan DITOLAK. Perubahan status dari '$currentStatus' ke '$decision' melanggar aturan sistem."
             ])->withInput();
         }
 
-        // 5. Eksekusi Perubahan Status & Side Effects
+        // 5. Eksekusi Perubahan Status
         $post->status = $decision;
 
         if ($decision === 'published') {
-            // Jika Published
             $post->published_at  = now();
             $post->approved_by   = auth()->id();
             $post->approved_at   = now(); 
-            $post->approval_note = null; // Hapus catatan revisi (bersih)
+            $post->approval_note = null; 
 
         } elseif ($decision === 'revisi') {
-            // Jika Revisi
             $post->approval_note = $validated['note'];
             $post->published_at  = null; 
-            // Reset approval info karena status turun jadi revisi
             $post->approved_by   = null; 
             $post->approved_at   = null;
 
         } else {
-            // Jika Arsip atau Draft
+            // Arsip atau Draft
             $post->published_at = null;
-            // $post->approval_note = null; // Opsional: mau dihapus atau dibiarkan history-nya
         }
 
         $post->save();
 
-        // 6. Redirect ke Index Utama
         return redirect()->route('admin.postingan.index')
             ->with('success', 'Status postingan berhasil diperbarui menjadi ' . ucfirst($decision));
     }
-
-
 
 
     // Delete article and associated images (previously ShowPostingan::deleteArtikel)
@@ -434,8 +422,8 @@ public function edit(Request $request, $id)
 
     // --- ATURAN BARU ---
     // Cegah user masuk ke edit apabila postingan tidak berstatus revisi
-    if (strtolower($post->status) !== 'revisi') {
-        abort(403, 'Postingan hanya dapat diedit jika statusnya "Revisi".');
+    if (strtolower($post->status) !== 'revisi' && strtolower($post->status) !== 'draft') {
+        abort(403, 'Postingan hanya dapat diedit jika statusnya "Revisi" atau "Draft".');
     }
     // -------------------
 
@@ -525,7 +513,7 @@ public function edit(Request $request, $id)
             'featured_image_url' => $featuredImagePath,
             'content' => $content ?? $post->content,
             'kategori' => $request->input('kategori_view') ?? $request->input('kategori') ?? $post->kategori,
-            'status' => 'draft',
+            'status' => $request->status_view,
             'approved_by' => null,
             'approved_at' => null,
             'updated_at' => now()
