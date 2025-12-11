@@ -1,3 +1,7 @@
+@php
+    $footerInfo = \App\Models\WebsiteInformation::first();
+    $socials = $footerInfo ? $footerInfo->footer_social_links : [];
+@endphp
 <footer class="text-white pt-5" style="background-color: #175C9E">
     <div class="container">
         <div class="row">
@@ -35,15 +39,15 @@
                 <ul class="list-unstyled text-white-50">
                     <li class="mb-2 d-flex">
                         <i class="fas fa-map-marker-alt me-2 pt-1"></i>
-                        <span>Jl. Masjid Raya No. 123, Kota</span>
+                        <span>{{ $footerInfo->footer_address ?? 'Jl. Masjid Raya No. 123, Kota' }}</span>
                     </li>
                     <li class="mb-2 d-flex">
                         <i class="fas fa-phone me-2 pt-1"></i>
-                        <span>+62 812-3456-7890</span>
+                        <span>{{ $footerInfo->footer_phone ?? '+62 812-3456-7890' }}</span>
                     </li>
                     <li class="mb-2 d-flex">
                         <i class="fas fa-envelope me-2 pt-1"></i>
-                        <span>info@samak-Masjid.ac.id</span>
+                        <span>{{ $footerInfo->footer_email ?? 'info@samak-Masjid.ac.id' }}</span>
                     </li>
                 </ul>
             </div>
@@ -51,11 +55,44 @@
             <div class="col-lg-3 col-md-6">
                 <h6 class="text-uppercase fw-bold mb-4 text-warning">Ikuti Kami</h6>
                 <p class="text-white-50">Dapatkan update terbaru dari kami.</p>
-                <div class="d-flex">
-                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class_exists="social-icon"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                <div class="d-flex gap-2">
+                    @php
+                        // Normalize socials to array of objects
+                        if (is_array($socials) && !array_is_list($socials) && !empty($socials)) {
+                            $newSocials = [];
+                            foreach ($socials as $key => $val) {
+                                if ($val) {
+                                    $newSocials[] = ['platform' => $key, 'url' => $val];
+                                }
+                            }
+                            $socials = $newSocials;
+                        }
+                    @endphp
+
+                    @if (!empty($socials) && is_array($socials))
+                        @foreach ($socials as $social)
+                            @if (!empty($social['url']))
+                                <a href="{{ $social['url'] }}" class="social-icon" target="_blank"
+                                    title="{{ ucfirst($social['platform'] ?? 'link') }}">
+                                    @if (($social['platform'] ?? '') == 'facebook')
+                                        <i class="fab fa-facebook-f"></i>
+                                    @elseif(($social['platform'] ?? '') == 'instagram')
+                                        <i class="fab fa-instagram"></i>
+                                    @elseif(($social['platform'] ?? '') == 'twitter')
+                                        <i class="fab fa-twitter"></i>
+                                    @elseif(($social['platform'] ?? '') == 'youtube')
+                                        <i class="fab fa-youtube"></i>
+                                    @elseif(($social['platform'] ?? '') == 'tiktok')
+                                        <i class="fab fa-tiktok"></i>
+                                    @elseif(($social['platform'] ?? '') == 'linkedin')
+                                        <i class="fab fa-linkedin-in"></i>
+                                    @else
+                                        <i class="fas fa-link"></i>
+                                    @endif
+                                </a>
+                            @endif
+                        @endforeach
+                    @endif
                 </div>
             </div>
 

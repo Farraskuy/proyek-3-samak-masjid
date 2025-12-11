@@ -1,6 +1,8 @@
 <nav class="navbar sticky-top navbar-expand p-0">
     <div class="container-fluid bg-white d-flex justify-content-between py-2">
-        <button class="btn text-purple" type="button" onclick="toggleSidebar()"><i
+        <button class="btn text-purple d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu"><i
+                class="fa-solid fa-bars fa-lg"></i></button>
+        <button class="btn text-purple d-none d-lg-block" type="button" onclick="toggleSidebar()"><i
                 class="fa-solid fa-bars fa-lg"></i></button>
         <div class="ps-2 border-2 dropdown" style="cursor: pointer">
             <a class="text-decoration-none" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="true">
