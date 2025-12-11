@@ -30,6 +30,7 @@ use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\JadwalKegiatan\AdminKegiatanController;
 use App\Http\Controllers\Donasi\Admin\BankController;
 use App\Http\Controllers\Donasi\Admin\DonationConfirmationController;
+use App\Http\Controllers\Donasi\Admin\InfaqController;
 use App\Http\Controllers\DonasiController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LostItemController;
@@ -60,6 +61,7 @@ Route::post('/auth/send-otp', [AuthController::class, 'sendOtp'])->name('auth.se
 Route::post('/auth/resend-otp', [AuthController::class, 'reSendOtp'])->name('auth.resendOtp');
 Route::get('/auth/verify', [AuthController::class, 'showVerifyForm'])->name('auth.showVerifyForm');
 Route::post('/auth/verify', [AuthController::class, 'verifyOtp'])->name('auth.verifyOtp');
+Route::post('/auth/resend-verification', [AuthController::class, 'resendVerification'])->name('auth.resendVerification');
 
 // Forgot Password
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('password.request');
@@ -80,8 +82,10 @@ Route::prefix('postingan')->name('client.')->group(function () {
 // =============================== Donation (Public) ===============================
 Route::get('/donasi', [ZISController::class, 'index'])->name('donasi.informasi');
 Route::get('/donasi/sekarang', [ZISController::class, 'donasi'])->name('donasi.sekarang');
+Route::post('/donasi/hitung', [ZISController::class, 'submitDonation'])->name('donasi.hitung');
 Route::get('/donasi/konfirmasi', [ZISController::class, 'konfirmasi'])->name('donasi.konfirmasi');
 Route::post('/donasi/store', [ZISController::class, 'storeKonfirmasi'])->name('donasi.store');
+Route::get('/donasi/sukses', [ZISController::class, 'sukses'])->name('donasi.sukses');
 
 
 // =============================== Lost & Found (Public) ===============================
@@ -105,7 +109,7 @@ Route::prefix('galeri')->group(function () {
 
 
 // =============================== Static Pages & Keuangan ===============================
-Route::get('/tentang-kami', [StaticPageController::class, 'showAboutUs'])->name('client.tentang-kami');
+Route::get('/tentang-kami', [App\Http\Controllers\WebsiteInformationController::class, 'showAboutUs'])->name('tentang-kami');
 Route::get('/laporan-keuangan', [KeuanganController::class, 'clientIndex'])->name('client.keuangan');
 
 
@@ -140,7 +144,7 @@ Route::middleware('auth')->prefix('konsultasi-saya')->name('client.consultations
 // Protected by Auth and Permission Middleware
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
 
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware('role');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     // Role Management
     Route::prefix('roles')->name('roles.')->group(function () {
@@ -260,11 +264,25 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::delete('/{bank}', [BankController::class, 'destroy'])->name('destroy')->middleware('permission:delete_banks');
     });
 
+    // Infaq CRUD
+    Route::prefix('infaqs')->name('infaqs.')->middleware('permission:view_banks')->group(function () {
+        Route::get('/', [InfaqController::class, 'index'])->name('index');
+        Route::get('/create', [InfaqController::class, 'create'])->name('create')->middleware('permission:create_banks');
+        Route::post('/', [InfaqController::class, 'store'])->name('store')->middleware('permission:create_banks');
+        Route::get('/{infaq}/edit', [InfaqController::class, 'edit'])->name('edit')->middleware('permission:edit_banks');
+        Route::put('/{infaq}', [InfaqController::class, 'update'])->name('update')->middleware('permission:edit_banks');
+        Route::delete('/{infaq}', [InfaqController::class, 'destroy'])->name('destroy')->middleware('permission:delete_banks');
+    });
+
     // Donasi Confirmation
     Route::middleware('permission:verify_donation')->group(function () {
         Route::get('/donasi/verifikasi', [DonationConfirmationController::class, 'index'])->name('donasi.index');
         Route::post('/donasi/{id}/approve', [DonationConfirmationController::class, 'approve'])->name('donasi.approve');
         Route::post('/donasi/{id}/reject', [DonationConfirmationController::class, 'reject'])->name('donasi.reject');
+
+        // Offline Donation
+        Route::get('/donasi/offline', [App\Http\Controllers\Donasi\Admin\OfflineDonationController::class, 'create'])->name('donasi.offline.create');
+        Route::post('/donasi/offline', [App\Http\Controllers\Donasi\Admin\OfflineDonationController::class, 'store'])->name('donasi.store_offline');
     });
 
     //Keuangan
@@ -272,7 +290,24 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan');
         Route::post('/keuangan', [KeuanganController::class, 'store'])->name('keuangan.store')->middleware('permission:manage_income'); // Or manage_expense
         Route::delete('/keuangan/{id}', [KeuanganController::class, 'destroy'])->name('keuangan.destroy')->middleware('permission:manage_income');
+
+        // Kotak Amal (Pendataan Kotak Amal)
+        Route::resource('kotak-amal', App\Http\Controllers\Admin\KotakAmalController::class);
     });
+
+    // Informasi Website (Ex Halaman Statis)
+    Route::controller(App\Http\Controllers\WebsiteInformationController::class)
+        ->prefix('informasi-website')
+        ->name('website-information.')
+        ->middleware('permission:view_pages') // Added middleware based on original Static Pages block
+        ->group(function () {
+            Route::get('/', 'indexAdmin')->name('index');
+            Route::get('/tambah', 'create')->name('tambah')->middleware('permission:edit_pages'); // Added middleware
+            Route::post('/store', 'store')->name('store')->middleware('permission:edit_pages'); // Added middleware
+            Route::get('/edit/{id}', 'edit')->name('edit')->middleware('permission:edit_pages'); // Added middleware
+            Route::put('/update/{id}', 'update')->name('update')->middleware('permission:edit_pages'); // Added middleware
+            Route::delete('/delete/{id}', 'destroy')->name('delete')->middleware('permission:delete_pages'); // Added middleware
+        });
 
     // Admin Profile (Available to all authorized admins)
     Route::prefix('profile')->name('profile.')->group(function () {
