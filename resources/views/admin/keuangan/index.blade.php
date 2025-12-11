@@ -3,134 +3,91 @@
 @section('title', 'Manajemen Keuangan')
 
 @section('content')
-    <div class="container-fluid p-4">
-
+    <section class="p-3">
         {{-- Header --}}
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h4 class="fw-semibold mb-1">Laporan Keuangan Masjid</h4>
-                <small class="text-muted">Pantau arus kas per akun bank atau secara global.</small>
-            </div>
-
+            <h4 class="fw-semibold mb-0">Manajemen Transaksi Keuangan</h4>
             <div class="d-flex gap-2">
-
-                <form action="{{ route('admin.keuangan') }}" method="GET">
-                    <select name="bank" class="form-select border-primary text-primary fw-bold"
-                        onchange="this.form.submit()" style="width: 180px;">
-
-                        <option value="global" {{ $selectedBank == 'global' ? 'selected' : '' }}>Semua (Global)</option>
-
-                        @foreach ($banks as $bank)
-                            <option value="{{ $bank->bank_name }}"
-                                {{ $selectedBank == $bank->bank_name ? 'selected' : '' }}>
-                                {{ $bank->bank_name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </form>
-
                 @if (auth()->user()->hasPermission('manage_expense'))
                     <button class="btn btn-danger fw-semibold" data-bs-toggle="modal" data-bs-target="#modalTambah"
                         onclick="setJenisTransaksi('pengeluaran')">
-                        <i class="fa-solid fa-minus me-1"></i> Pengeluaran
+                        <i class="fas fa-minus me-1"></i> Pengeluaran
                     </button>
                 @endif
                 @if (auth()->user()->hasPermission('manage_income'))
                     <button class="btn btn-success fw-semibold" data-bs-toggle="modal" data-bs-target="#modalTambah"
                         onclick="setJenisTransaksi('pemasukan')">
-                        <i class="fa-solid fa-plus me-1"></i> Pemasukan
+                        <i class="fas fa-plus me-1"></i> Pemasukan
                     </button>
                 @endif
             </div>
         </div>
 
-        {{-- Ringkasan Saldo Cards --}}
-        <div class="row g-4 mb-4">
-
-            {{-- Card Pemasukan --}}
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm p-3 border-start border-5 border-success">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="text-muted mb-1">Total Pemasukan</p>
-                            {{-- Badge Nama Bank --}}
-                            <span
-                                class="badge {{ $selectedBank == 'global' ? 'bg-light text-secondary border' : 'bg-success-subtle text-success border border-success' }} mb-2">
-                                <i class="fa-solid fa-wallet me-1"></i>
-                                {{ $selectedBank == 'global' ? 'Semua Kas' : $selectedBank }}
-                            </span>
-                        </div>
-                        <div class="bg-success-subtle text-success p-2 rounded">
-                            <i class="fa-solid fa-arrow-trend-up"></i>
-                        </div>
-                    </div>
-                    <h4 class="fw-bold text-success mt-2">Rp {{ number_format($totalPemasukan, 0, ',', '.') }}</h4>
-                </div>
-            </div>
-
-            {{-- Card Pengeluaran --}}
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm p-3 border-start border-5 border-danger">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="text-muted mb-1">Total Pengeluaran</p>
-                            {{-- Badge Nama Bank --}}
-                            <span
-                                class="badge {{ $selectedBank == 'global' ? 'bg-light text-secondary border' : 'bg-danger-subtle text-danger border border-danger' }} mb-2">
-                                <i class="fa-solid fa-wallet me-1"></i>
-                                {{ $selectedBank == 'global' ? 'Semua Kas' : $selectedBank }}
-                            </span>
-                        </div>
-                        <div class="bg-danger-subtle text-danger p-2 rounded">
-                            <i class="fa-solid fa-arrow-trend-down"></i>
-                        </div>
-                    </div>
-                    <h4 class="fw-bold text-danger mt-2">Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</h4>
-                </div>
-            </div>
-
-            {{-- Card Saldo Akhir --}}
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm p-3 border-start border-5 border-primary"
-                    style="background-color: #e3f2fd;">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <p class="text-muted mb-1">Saldo Akhir</p>
-                            {{-- Badge Nama Bank --}}
-                            <span
-                                class="badge {{ $selectedBank == 'global' ? 'bg-light text-secondary border' : 'bg-primary text-white' }} mb-2">
-                                <i class="fa-solid fa-vault me-1"></i>
-                                {{ $selectedBank == 'global' ? 'Semua Kas' : $selectedBank }}
-                            </span>
-                        </div>
-                        <div class="bg-white text-primary p-2 rounded shadow-sm">
-                            <i class="fa-solid fa-coins"></i>
-                        </div>
-                    </div>
-                    <h4 class="fw-bold text-primary mt-2">Rp {{ number_format($saldoAkhir, 0, ',', '.') }}</h4>
-                </div>
-            </div>
+        {{-- Quick Filter (Tipe Transaksi) --}}
+        <div class="d-flex gap-2 mb-4 p-2 rounded-pill" style="background-color: rgba(0,0,0,0.05); width: fit-content;">
+            <a href="{{ route('admin.keuangan', array_merge(request()->query(), ['type' => 'all'])) }}"
+                class="btn btn-sm {{ request('type', 'all') == 'all' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                Semua
+            </a>
+            <a href="{{ route('admin.keuangan', array_merge(request()->query(), ['type' => 'pemasukan'])) }}"
+                class="btn btn-sm {{ request('type') == 'pemasukan' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                Pemasukan
+            </a>
+            <a href="{{ route('admin.keuangan', array_merge(request()->query(), ['type' => 'pengeluaran'])) }}"
+                class="btn btn-sm {{ request('type') == 'pengeluaran' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                Pengeluaran
+            </a>
         </div>
 
-        {{-- Grafik Chart --}}
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header bg-white py-3">
-                <h6 class="mb-0 fw-bold">Grafik Arus Kas (Tahun Ini)</h6>
-            </div>
-            <div class="card-body">
-                <canvas id="financeChart" style="max-height: 350px;"></canvas>
-            </div>
-        </div>
+        <div class="row g-0 gap-3">
+            <form method="get" action="{{ route('admin.keuangan') }}" class="col rounded-3 bg-white p-3 pt-0 form-filter"
+                style="height: fit-content">
+                {{-- Persist other filters --}}
+                @if (request('type'))
+                    <input type="hidden" name="type" value="{{ request('type') }}">
+                @endif
 
-        {{-- Tabel Riwayat --}}
-        <div class="card border-0 shadow-sm">
-            <div class="card-header bg-white py-3">
-                <h6 class="mb-0 fw-bold">Riwayat Transaksi</h6>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive" style="min-height: 200px">
-                    <table class="table table-sm table-hover fs-14px m-0">
-                        <thead class="bg-light">
+                {{-- Toolbar --}}
+                <div class="bg-white position-sticky pt-3 pb-2" style="top: 61px; z-index: 10">
+                    <div class="d-flex gap-2 justify-content-end mb-2 align-items-center">
+                        {{-- Filter Bank (Moved from Header) --}}
+                        <select name="bank" class="form-select fs-14px h-100 w-auto" style="line-height: 1.7"
+                            onchange="this.form.submit()">
+                            <option value="global" {{ $selectedBank == 'global' ? 'selected' : '' }}>Semua Bank (Global)
+                            </option>
+                            @foreach ($banks as $bank)
+                                <option value="{{ $bank->bank_name }}"
+                                    {{ $selectedBank == $bank->bank_name ? 'selected' : '' }}>
+                                    {{ $bank->bank_name }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <input type="text" class="form-control" placeholder="Cari Transaksi..."
+                            value="{{ request('keyword') }}" name="keyword">
+
+                        {{-- Sort Toggle --}}
+                        <div class="sort-toggle">
+                            <input type="radio" name="ordered_by" value="asc" id="ordered_by_asc"
+                                {{ request('ordered_by') == 'asc' ? 'checked' : '' }} onchange="this.form.submit()" hidden>
+                            <label for="ordered_by_asc" class="btn btn-outline-secondary" title="Terlama">
+                                <i class="fas fa-sort-amount-up"></i>
+                            </label>
+
+                            <input type="radio" name="ordered_by" value="desc" id="ordered_by_desc"
+                                {{ request('ordered_by', 'desc') == 'desc' ? 'checked' : '' }}
+                                onchange="this.form.submit()" hidden>
+                            <label for="ordered_by_desc" class="btn btn-outline-secondary" title="Terbaru">
+                                <i class="fas fa-sort-amount-down"></i>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Table --}}
+                <div class="table-responsive position-relative mb-3" style="min-height: 200px">
+                    <table class="table table-sm table-hover fs-14px align-middle">
+                        <thead>
                             <tr>
                                 <th class="p-3">Tanggal</th>
                                 <th class="p-3">Bank / Kas</th>
@@ -171,7 +128,7 @@
                                         @if ($item->proof_image_url)
                                             <button type="button" class="btn btn-sm btn-outline-secondary"
                                                 data-bs-toggle="modal" data-bs-target="#modalBukti{{ $item->id }}">
-                                                <i class="fa-regular fa-eye"></i> Lihat
+                                                <i class="fas fa-eye"></i> Lihat
                                             </button>
 
                                             {{-- Modal Preview --}}
@@ -186,12 +143,12 @@
                                                         </div>
                                                         <div class="modal-body text-center bg-light p-4">
                                                             @if (Str::endsWith(strtolower($item->proof_image_url), '.pdf'))
-                                                                <i class="fa-solid fa-file-pdf text-danger"
+                                                                <i class="fas fa-file-pdf text-danger"
                                                                     style="font-size: 5rem;"></i>
                                                                 <p class="mt-3 fw-bold">File Dokumen PDF</p>
                                                                 <a href="{{ asset('storage/' . $item->proof_image_url) }}"
                                                                     target="_blank" class="btn btn-primary mt-2">
-                                                                    <i class="fa-solid fa-download"></i> Download PDF
+                                                                    <i class="fas fa-download"></i> Download PDF
                                                                 </a>
                                                             @else
                                                                 <img src="{{ asset('storage/' . $item->proof_image_url) }}"
@@ -203,7 +160,7 @@
                                                             <div class="modal-footer p-1">
                                                                 <a href="{{ asset('storage/' . $item->proof_image_url) }}"
                                                                     target="_blank" class="btn btn-sm btn-primary">
-                                                                    <i class="fa-solid fa-expand"></i> Buka Full Size
+                                                                    <i class="fas fa-expand"></i> Buka Full Size
                                                                 </a>
                                                             </div>
                                                         @endif
@@ -217,32 +174,57 @@
 
                                     <td class="p-3 align-middle text-center">
                                         @can('delete_finance')
-                                            <form action="{{ route('admin.keuangan.destroy', $item->id) }}" method="POST"
-                                                onsubmit="return confirm('Hapus data ini?');">
-                                                @csrf @method('DELETE')
-                                                <button class="btn btn-sm btn-light border text-danger" title="Hapus">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </form>
+                                            {{-- Form Delete harus di luar loop jika pakai ID unik, tapi di sini langsung submit --}}
+                                            <button type="submit" form="delete-form-{{ $item->id }}"
+                                                class="btn btn-sm btn-light border text-danger" title="Hapus"
+                                                onclick="return confirm('Hapus data ini?');">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
                                         @endcan
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center text-muted py-4">Belum ada data transaksi.</td>
+                                    <td colspan="8" class="text-center text-muted py-4">Belum ada data transaksi.</td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
-                <div class="p-3">
-                    {{ $transactions->links() }}
-                </div>
-            </div>
-        </div>
-    </div>
 
-    </div>
+                {{-- Pagination --}}
+                <div class="d-flex justify-content-between gap-2 flex-wrap">
+                    <div class="d-flex justify-content-between showing-wrapper-bawah">
+                        <div class="d-flex fs-14px align-items-center gap-1">
+                            Menampilkan
+                            <select class="form-select form-select-sm w-auto" name="showing"
+                                onchange="this.form.submit()">
+                                <option value="10" {{ request('showing') == 10 ? 'selected' : '' }}>10</option>
+                                <option value="20" {{ request('showing') == 20 ? 'selected' : '' }}>20</option>
+                                <option value="50" {{ request('showing') == 50 ? 'selected' : '' }}>50</option>
+                                <option value="all" {{ request('showing') == 'all' ? 'selected' : '' }}>Semua</option>
+                            </select>
+                            Data
+                        </div>
+                    </div>
+                    <div class="paginate">
+                        {{ $transactions->links() }}
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        {{-- Hidden Delete Forms --}}
+        @foreach ($transactions as $item)
+            @can('delete_finance')
+                <form id="delete-form-{{ $item->id }}" action="{{ route('admin.keuangan.destroy', $item->id) }}"
+                    method="POST" class="d-none">
+                    @csrf @method('DELETE')
+                </form>
+            @endcan
+        @endforeach
+
+    </section>
 
     {{-- Modal Tambah Transaksi --}}
     <div class="modal fade" id="modalTambah" tabindex="-1">
@@ -304,7 +286,7 @@
                                 <input type="file" name="proof_file" accept="image/png, image/jpeg, application/pdf"
                                     required onchange="previewFile(this)">
                                 <div class="upload-content">
-                                    <i class="bi bi-upload upload-icon"></i>
+                                    <i class="fas fa-upload upload-icon"></i>
                                     <p class="mb-0 text-muted small" id="upload-text">Klik untuk upload JPG, PNG, atau PDF
                                     </p>
                                 </div>
@@ -323,43 +305,10 @@
 
 @endsection
 
-@push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-        const ctx = document.getElementById('financeChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: @json($chartLabels),
-                datasets: [{
-                        label: 'Pemasukan',
-                        data: @json($chartIncome),
-                        backgroundColor: '#198754',
-                        borderRadius: 5
-                    },
-                    {
-                        label: 'Pengeluaran',
-                        data: @json($chartExpense),
-                        backgroundColor: '#dc3545',
-                        borderRadius: 5
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    </script>
+@push('styles')
+    <style>
+        .sort-toggle input[type="radio"]:not(:checked)+label {
+            display: none;
+        }
+    </style>
 @endpush
