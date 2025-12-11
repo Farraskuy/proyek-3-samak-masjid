@@ -88,8 +88,10 @@ class AuthController extends Controller
             'email' => $data['email'],
             'phone_number' => $data['phone_number'],
             'password' => Hash::make($data['password']),
-            'role' => Role::where('name', 'jamaah')->first()->id,
+            'role_id' => Role::where('name', 'jamaah')->first()->id,
         ]);
+
+        event(new \Illuminate\Auth\Events\Registered($user));
 
         Session::put('otp_return_url', route('home'));
 
