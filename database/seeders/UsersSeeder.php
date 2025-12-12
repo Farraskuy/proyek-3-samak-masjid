@@ -10,6 +10,21 @@ class UsersSeeder extends Seeder
 {
     public function run(): void
     {
+        // 0. Super Admin (Development - Full Access)
+        $superAdminRole = \App\Models\Role::where('name', 'Super Admin')->first();
+        if ($superAdminRole) {
+            User::updateOrCreate(
+                ['username' => 'superadmin'],
+                [
+                    'role_id' => $superAdminRole->id,
+                    'full_name' => 'Super Administrator',
+                    'email' => 'superadmin@samak.com',
+                    'password' => Hash::make('password123'),
+                    'phone_number' => '081234567890'
+                ]
+            );
+        }
+
         // 1. Admin (Super Admin & Admin merged)
         $adminRole = \App\Models\Role::where('name', 'Admin')->first();
         if ($adminRole) {

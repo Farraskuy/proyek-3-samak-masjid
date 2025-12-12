@@ -83,6 +83,17 @@ class RoleSeeder extends Seeder
         }
 
         // 2. Define Roles and Assign Permissions
+
+        // --- Role: Super Admin (Development) ---
+        $superAdminRole = Role::firstOrCreate(
+            ['name' => 'Super Admin'], 
+            ['alias' => 'Super Admin', 'description' => 'Super Administrator untuk Development - Akses ke semua fitur']
+        );
+        // Super Admin gets ALL permissions
+        $allPermissions = Permission::all();
+        $superAdminRole->permissions()->sync($allPermissions);
+
+
         // --- Role: Admin ---
         $adminRole = Role::firstOrCreate(
             ['name' => 'Admin'], 
