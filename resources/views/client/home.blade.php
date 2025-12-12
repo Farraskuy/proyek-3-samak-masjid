@@ -1,6 +1,6 @@
 @extends('client.layout')
 
-@section('title', 'Beranda - SAMAK-Kampus')
+@section('title', 'Beranda')
 
 @push('styles')
     <style>
