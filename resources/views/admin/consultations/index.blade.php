@@ -147,6 +147,8 @@
         if (echoInstance) {
             echoInstance.leave(`consultation.${consultationId}`);
         }
+
+        currentConsultationId = consultationId;
         
         // Setup Echo
         echoInstance = new Echo({
@@ -169,6 +171,11 @@
         echoInstance.private(`consultation.${consultationId}`)
             .listen('.message.sent', (e) => {
                 console.log('Event Received:', e);
+
+                if (e.message.consultation_id != currentConsultationId) {
+                    console.log('Message for different consultation, ignoring.');
+                    return;
+                }
                 if (e.user.id != currentAdminId) {
                     appendMessageToChat(e.message, e.user);
                     scrollToBottom();
