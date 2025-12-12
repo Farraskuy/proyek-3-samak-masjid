@@ -88,14 +88,14 @@ class PostinganSeeder extends Seeder
             [
                 'title' => 'Kajian Rutin Kitab Riyadhus Shalihin',
                 'kategori' => 'Berita',
-                'status' => 'published',
+                'status' => 'pending',
                 'keterangan' => 'Undangan menghadiri majelis ilmu setiap Sabtu malam.',
                 'content' => '<p>Mengundang seluruh jamaah bapak-bapak dan ibu-ibu untuk menghadiri kajian rutin pembahasan Kitab Riyadhus Shalihin bersama Ustadz Hanan. Kajian dilaksanakan setiap Sabtu, Ba’da Isya sampai selesai.</p><p>Mari kita luangkan waktu sejenak untuk menuntut ilmu agama agar ibadah kita semakin berkualitas sesuai tuntunan Nabi.</p>',
             ],
             [
                 'title' => 'Tips Mendidik Anak Secara Islami',
                 'kategori' => 'Artikel',
-                'status' => 'published',
+                'status' => 'pending',
                 'keterangan' => 'Panduan parenting bagi orang tua muda.',
                 'content' => '<p>Anak adalah amanah terbesar dari Allah. Mendidik mereka di zaman digital ini memiliki tantangan tersendiri. Salah satu kuncinya adalah keteladanan orang tua dalam beribadah di rumah.</p><p>Jangan hanya menyuruh anak sholat, tapi ajaklah mereka sholat bersama. Batasi penggunaan gadget dan perbanyak interaksi dengan kisah-kisah Nabi.</p>',
             ],

@@ -103,7 +103,7 @@
             {{-- Header --}}
             <div class="d-flex align-items-center gap-2 mb-4">
                 <a href="{{ url('admin/postingan') }}" class="btn btn-light btn-sm rounded-4">
-                    <i class="fas fa-arrow-left"></i> Kembali
+                    <i class="fas fa-arrow-left"></i> 
                 </a>
                 <h4 class="fw-semibold mb-0">Edit Artikel</h4>
             </div>
@@ -153,15 +153,28 @@
 
                 <div class="col-lg-4">
 
-                    {{-- Publikasi --}}
-                    <div class="card-modern rounded-3 p-4 mb-4">
-                        <h5 class="fw-semibold mb-3">Publikasi</h5>
 
-                        {{-- Tombol Submit --}}
-                        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
-                            <i class="fas fa-save me-1"></i> Update Postingan
-                        </button>
-                    </div>
+{{-- Publikasi --}}
+<div class="card-modern rounded-3 p-4 mb-4">
+    <h5 class="fw-semibold mb-3">Publikasi</h5>
+
+    {{-- Status --}}
+    <label class="form-label fw-semibold">Status</label>
+    <select name="status_view" class="form-select input-lg mb-3" required>
+        <option value="draft" {{ old('status_view', $post->status_view) == 'draft' ? 'selected' : '' }}>
+            Draft
+        </option>
+        <option value="pending" {{ old('status_view', $post->status_view) == 'pending' ? 'selected' : '' }}>
+            Mengajukan Publikasi
+        </option>
+    </select>
+
+    {{-- Tombol Submit --}}
+    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-2">
+        <i class="fas fa-save me-1"></i> Update Postingan
+    </button>
+</div>
+
 
                     {{-- Kategori --}}
                     <div class="card-modern rounded-3 p-4 mb-4">

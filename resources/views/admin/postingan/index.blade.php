@@ -20,23 +20,29 @@
                 class="btn btn-sm {{ ($status ?? 'all') == 'all' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
                 Semua
             </a>
+
             <a href="{{ route('admin.postingan.index', ['status' => 'draft']) }}"
                 class="btn btn-sm {{ ($status ?? 'all') == 'draft' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                draft
+                Draft
             </a>
+
+            <a href="{{ route('admin.postingan.index', ['status' => 'pending']) }}"
+                class="btn btn-sm {{ ($status ?? 'all') == 'pending' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                Menunggu Approval
+            </a>
+
             <a href="{{ route('admin.postingan.index', ['status' => 'revisi']) }}"
                 class="btn btn-sm {{ ($status ?? 'all') == 'revisi' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
                 Revisi
             </a>
             <a href="{{ route('admin.postingan.index', ['status' => 'published']) }}"
                 class="btn btn-sm {{ ($status ?? 'all') == 'published' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                published
+                Published
             </a>
             <a href="{{ route('admin.postingan.index', ['status' => 'arsip']) }}"
                 class="btn btn-sm {{ ($status ?? 'all') == 'arsip' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                archieve
+                Arsip
             </a>
-
         </div>
 
 
@@ -106,36 +112,32 @@
                                                 {{ $row->status }}
                                             </span>
 
-
+                                        @elseif($status == 'pending')
+                                            <span class="badge rounded-pill text-bg-warning text-dark">
+                                                {{ $row->status }}
+                                            </span>
 
                                         @elseif($status == 'revisi')
-                                            {{-- Warna Merah (Danger) atau Biru (Info) untuk Revisi. 
-                                                Saya sarankan Merah agar admin/user sadar perlu tindakan --}}
                                             <span class="badge rounded-pill text-bg-danger">
                                                 {{ $row->status }}
                                             </span>
 
                                         @elseif($status == 'draft')
-                                            {{-- Warna Abu-abu (Secondary) untuk Draft --}}
                                             <span class="badge rounded-pill text-bg-secondary">
                                                 {{ $row->status }}
                                             </span>
 
                                         @elseif($status == 'arsip')
-                                            {{-- Warna Hitam/Gelap (Dark) untuk Arsip --}}
                                             <span class="badge rounded-pill text-bg-dark">
                                                 {{ $row->status }}
                                             </span>
 
                                         @else
-                                            {{-- Fallback jika status tidak dikenali --}}
                                             <span class="badge rounded-pill text-bg-light text-dark border">
                                                 {{ $row->status }}
                                             </span>
                                         @endif
                                     </td>
-
-                                  
 
                                     <td>{{ $row->created_at ?? '-' }}</td>
                                     <td>{{ $row->updated_at ?? '-' }}</td>
@@ -143,16 +145,16 @@
                                     {{-- Aksi --}}
                                     <td class="text-nowrap text-end">
 
-                                        {{-- Revisi Msg (Kolom Baru) --}}
+                                        {{-- Revisi Msg --}}
                                         @can('create_posts')
-                                            @if (strtolower($row->status ?? '') === 'revisi')
+                                            @if ($status === 'revisi')
                                                 <button type="button" class="btn btn-info btn-sm text-white border"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#modalRevision{{ $row->id }}">
                                                     <i class="fas fa-info-circle"></i> Detail Revisi
                                                 </button>
 
-                                                {{-- MODAL REVISI (Tetap sama seperti kodemu) --}}
+                                                {{-- MODAL REVISI --}}
                                                 <div class="modal fade text-dark" id="modalRevision{{ $row->id }}"
                                                     tabindex="-1" aria-labelledby="modalRevisionLabel{{ $row->id }}"
                                                     aria-hidden="true">
@@ -178,18 +180,20 @@
                                             @endif
                                         @endcan
 
-                                        {{-- 1. Approval (TAMPIL DI SEMUA STATUS untuk user yang punya izin approve) --}}
-                                        {{-- Syarat: pending sudah dihapus, jadi tombol ini muncul terus agar admin bisa ubah status kapanpun --}}
+                                        {{-- Approval --}}
+                                        {{-- PERUBAHAN DISINI: Approval HILANG jika status DRAFT atau REVISI --}}
                                         @can('approve_posts')
-                                            <a href="{{ route('admin.postingan.approval.show', $row->id) }}"
-                                                class="btn btn-primary btn-sm border" aria-label="Approval">
-                                                <i class="fas fa-check-to-slot"></i> Approval
-                                            </a>
+                                            @if (!in_array($status, ['draft', 'revisi']))
+                                                <a href="{{ route('admin.postingan.approval.show', $row->id) }}"
+                                                    class="btn btn-primary btn-sm border" aria-label="Approval">
+                                                    <i class="fas fa-check-to-slot"></i> Approval
+                                                </a>
+                                            @endif
                                         @endcan
 
-                                        {{-- 2. Edit (HANYA JIKA STATUS REVISI) --}}
+                                        {{-- Edit --}}
                                         @can('edit_posts')
-                                            @if(strtolower($row->status ?? '') === 'revisi')
+                                            @if(in_array($status, ['revisi', 'draft']))
                                                 <a href="/admin/postingan/edit/{{ $row->id }}"
                                                     class="btn btn-light btn-sm border" aria-label="Edit">
                                                     <i class="fas fa-pen text-muted"></i>
@@ -197,7 +201,7 @@
                                             @endif
                                         @endcan
 
-                                        {{-- 3. Delete --}}
+                                        {{-- Delete --}}
                                         @can('delete_posts')
                                             <button type="button" class="btn btn-danger btn-sm btn-delete-article"
                                                 data-action="{{ url('/admin/postingan/delete/' . $row->id) }}"
