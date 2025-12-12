@@ -2,22 +2,67 @@
 
 @section('title', 'Edit Kegiatan')
 
-@section('content')
-    <section class="p-3">
-        <h4 class="fw-bold mb-1" style="color: #175C9E;">Edit Kegiatan</h4>
-        <p class="text-muted mb-4">Formulir perubahan data kegiatan masjid kampus</p>
+@push('styles') <style> .file-uploader { padding: 2rem; border-radius: 1rem; border: 2px dashed #dee2e6; background: #fafafa; text-align: center; cursor: pointer; color: #666; transition: .2s ease-in-out; display: block !important; }
 
-        <form action="{{ route('admin.kegiatan.update', $event->event_id) }}" method="POST" enctype="multipart/form-data"
-            id="formKegiatan">
-            @csrf
-            @method('PUT')
-            <div class="card shadow-sm rounded-3 border-0">
-                <div class="card-body p-4">
+    .file-uploader.on-drag {
+        background: #f3f3f3;
+        border-color: #CE9138 !important;
+    }
+
+    #image-preview-container {
+        display: none;
+        position: relative;
+    }
+
+    #image-preview {
+        width: 100%;
+        border-radius: 1rem;
+        border: 1px solid #ddd;
+        object-fit: contain;
+        height: 200px;
+        background: #eee;
+    }
+
+    #remove-image-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: none;
+        background: rgba(0, 0, 0, .55);
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+    }
+</style>
+
+@endpush
+
+@section('content') <section class="p-3 container">
+
+    <form action="{{ route('admin.kegiatan.update', $event->event_id) }}" method="POST" enctype="multipart/form-data"
+        id="formKegiatan">
+        @csrf
+        @method('PUT')
+
+        <div class="d-flex align-items-center gap-2 mb-4">
+            <a href="{{ route('admin.kegiatan.index') }}" class="btn btn-light btn-sm rounded-4">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h4 class="fw-semibold mb-0">Edit Kegiatan</h4>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card bg-white border-0 rounded-3 p-4 mb-4">
+                    <h5 class="fw-semibold mb-3">Detail Kegiatan</h5>
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Nama Kegiatan <span class="text-danger">*</span></label>
                         <input type="text" name="event_name"
-                            class="form-control @error('event_name') is-invalid @enderror"
+                            class="form-control input-lg @error('event_name') is-invalid @enderror"
                             value="{{ old('event_name', $event->event_name) }}" required>
                         @error('event_name')
                             <small class="text-danger">{{ $message }}</small>
@@ -26,12 +71,13 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Tema / Deskripsi</label>
-                        <textarea name="theme" class="form-control" rows="2">{{ old('theme', $event->theme) }}</textarea>
+                        <textarea name="theme" class="form-control" rows="3">{{ old('theme', $event->theme) }}</textarea>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Lokasi <span class="text-danger">*</span></label>
-                        <input type="text" name="location" class="form-control @error('location') is-invalid @enderror"
+                        <input type="text" name="location"
+                            class="form-control input-lg @error('location') is-invalid @enderror"
                             value="{{ old('location', $event->location) }}" required>
                         @error('location')
                             <small class="text-danger">{{ $message }}</small>
@@ -40,7 +86,8 @@
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold">Waktu Mulai <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold">Waktu Mulai <span
+                                    class="text-danger">*</span></label>
                             <input type="datetime-local" name="start_time"
                                 class="form-control @error('start_time') is-invalid @enderror"
                                 value="{{ old('start_time', \Carbon\Carbon::parse($event->start_time)->format('Y-m-d\TH:i')) }}"
@@ -50,7 +97,8 @@
                             @enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold">Waktu Selesai <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold">Waktu Selesai <span
+                                    class="text-danger">*</span></label>
                             <input type="datetime-local" name="end_time"
                                 class="form-control @error('end_time') is-invalid @enderror"
                                 value="{{ old('end_time', \Carbon\Carbon::parse($event->end_time)->format('Y-m-d\TH:i')) }}"
@@ -61,38 +109,13 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Poster Kegiatan</label>
+                    <hr class="my-4">
 
-                        @if ($event->poster)
-                            <div class="mb-2" id="posterLamaContainer">
-                                <img src="{{ asset('storage/' . $event->poster) }}" class="img-thumbnail"
-                                    style="max-height: 150px;">
-                                <p class="text-muted mt-1 mb-0"><small>Poster saat ini (kosongkan jika tidak ingin
-                                        mengganti)</small></p>
-
-                                <!-- Checkbox hapus poster lama -->
-                                <div class="mt-2">
-                                    <input type="checkbox" name="hapus_poster" id="hapusPoster">
-                                    <label for="hapusPoster" class="text-danger fw-semibold">Hapus poster saat ini</label>
-                                </div>
-                            </div>
-                        @endif
-
-                        <input type="file" name="poster" class="form-control" accept="image/*" id="posterInput">
-
-                        <div id="imagePreview" class="mt-2" style="display:none;">
-                            <img id="previewImg" src="" class="img-thumbnail" style="max-height: 150px;">
-                            <button type="button" class="btn btn-sm btn-outline-danger ms-2"
-                                id="removeImage">Hapus</button>
-                        </div>
-                    </div>
-
-
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="checkTamu" name="is_have_tamu_undangan"
-                            {{ $event->tamuUndangan->count() > 0 ? 'checked' : '' }}>
-                        <label class="form-check-label fw-semibold" for="checkTamu">Ada pembicara / tamu undangan</label>
+                    <h5 class="fw-semibold mb-3">Tamu Undangan</h5>
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" role="switch" id="checkTamu"
+                            name="is_have_tamu_undangan" {{ $event->tamuUndangan->count() > 0 ? 'checked' : '' }}>
+                        <label class="form-check-label" for="checkTamu">Ada pembicara / tamu undangan</label>
                     </div>
 
                     <div id="daftarTamuContainer"
@@ -107,7 +130,7 @@
                                         <input type="text" name="daftar_tamu[]" class="form-control"
                                             placeholder="Nama pembicara {{ $loop->iteration }}"
                                             value="{{ $tamu->nama_tamu }}">
-                                        <button type="button" class="btn btn-outline-danger"
+                                        <button type="button" class="btn btn-light border text-danger"
                                             onclick="this.parentElement.remove()">×</button>
                                     </div>
                                 @endif
@@ -116,184 +139,206 @@
                                     placeholder="Nama pembicara">
                             @endforelse
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-primary mb-3" id="btnTambahTamu">+
-                            Tambah</button>
+                        <button type="button" class="btn btn-sm btn-light border mt-2" id="btnTambahTamu">
+                            <i class="fas fa-plus me-1"></i> Tambah Tamu
+                        </button>
                     </div>
-
-                    <hr>
-
-                    <!-- Form Integration -->
-                    <h5 class="fw-bold mb-3 text-secondary">Integrasi Formulir</h5>
-
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" id="checkRegForm"
-                                    name="has_registration_form" value="1"
-                                    {{ $event->has_registration_form ? 'checked' : '' }}>
-                                <label class="form-check-label fw-semibold" for="checkRegForm">Butuh Formulir
-                                    Pendaftaran</label>
-                            </div>
-                            <div id="regFormContainer"
-                                style="display:{{ $event->has_registration_form ? 'block' : 'none' }};">
-                                <select name="registration_form_id" class="form-select select2-form">
-                                    <option value="">-- Pilih Formulir --</option>
-                                    @foreach ($forms as $form)
-                                        <option value="{{ $form->id }}"
-                                            {{ $event->registration_form_id == $form->id ? 'selected' : '' }}>
-                                            {{ $form->title }} ({{ $form->fields_count }} Pertanyaan)
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="checkbox" id="checkCloseForm"
-                                    name="has_closing_form" value="1"
-                                    {{ $event->has_closing_form ? 'checked' : '' }}>
-                                <label class="form-check-label fw-semibold" for="checkCloseForm">Butuh Formulir Penutupan
-                                    (Kuisioner)</label>
-                            </div>
-                            <div id="closeFormContainer"
-                                style="display:{{ $event->has_closing_form ? 'block' : 'none' }};">
-                                <select name="closing_form_id" class="form-select select2-form">
-                                    <option value="">-- Pilih Formulir --</option>
-                                    @foreach ($forms as $form)
-                                        <option value="{{ $form->id }}"
-                                            {{ $event->closing_form_id == $form->id ? 'selected' : '' }}>
-                                            {{ $form->title }} ({{ $form->fields_count }} Pertanyaan)
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr>
-
-                    <!-- PJ Feature -->
-                    <h5 class="fw-bold mb-3 text-secondary">Penanggung Jawab (PJ)</h5>
-
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="checkPJ" name="has_pj" value="1"
-                            {{ $event->has_pj ? 'checked' : '' }}>
-                        <label class="form-check-label fw-semibold" for="checkPJ">Aktifkan Penanggung Jawab Acara</label>
-                    </div>
-
-                    <div id="pjInfoContainer" class="alert alert-info"
-                        style="display:{{ $event->has_pj ? 'block' : 'none' }};">
-                        @if ($event->has_pj && $event->pjUser)
-                            <i class="fas fa-user-check me-2"></i> <strong>Penanggung Jawab Aktif:</strong>
-                            {{ $event->pjUser->name }} ({{ $event->pjUser->email }})
-                        @else
-                            <i class="fas fa-info-circle me-2"></i> Akun Penanggung Jawab akan dibuat secara otomatis.
-                            Kredensial (Email & Password) akan ditampilkan setelah kegiatan berhasil disimpan.
-                        @endif
-                    </div>
-
-                    <hr>
-
-                    <div class="d-flex gap-2 justify-content-end">
-                        <a href="{{ route('admin.kegiatan.index') }}" class="btn btn-secondary">Kembali</a>
-                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-                    </div>
-
                 </div>
             </div>
-        </form>
-    </section>
 
-    <style>
-        .form-control:focus {
-            border-color: #175C9E;
-            box-shadow: 0 0 0 0.2rem rgba(23, 92, 158, 0.1);
-        }
+            <div class="col-lg-4">
+                <div class="card bg-white border-0 rounded-3 p-4 mb-4">
+                    <h5 class="fw-semibold mb-3">Poster & Pengaturan</h5>
 
-        .btn-primary {
-            background-color: #175C9E;
-            border-color: #175C9E;
-        }
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Poster Kegiatan</label>
 
-        .btn-primary:hover {
-            background-color: #144a7a;
-            border-color: #144a7a;
-        }
-    </style>
+                        @if ($event->poster)
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="hapus_poster" id="hapusPoster">
+                                <label class="form-check-label text-danger" for="hapusPoster">
+                                    Hapus poster saat ini
+                                </label>
+                            </div>
+                        @endif
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let counter = {{ $event->tamuUndangan->count() > 0 ? $event->tamuUndangan->count() : 1 }};
+                        <label for="file-input" id="file-uploader" class="file-uploader"
+                            style="{{ $event->poster ? 'display:none !important' : '' }}">
+                            <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
+                            <div class="fw-semibold">Upload Poster</div>
+                            <div class="small text-muted">Drag & drop atau klik</div>
+                        </label>
 
-            document.getElementById('checkTamu').addEventListener('change', function() {
-                document.getElementById('daftarTamuContainer').style.display = this.checked ? 'block' :
-                    'none';
-            });
+                        <input type="file" name="poster" id="file-input" accept="image/*" class="d-none">
 
-            // Form Toggles
-            document.getElementById('checkRegForm').addEventListener('change', function() {
-                document.getElementById('regFormContainer').style.display = this.checked ? 'block' : 'none';
-            });
+                        <div id="image-preview-container" class="mt-3"
+                            style="{{ $event->poster ? 'display:block' : '' }}">
+                            <img id="image-preview"
+                                src="{{ $event->poster ? asset('storage/' . $event->poster) : '#' }}" alt="Preview">
+                            <button type="button" id="remove-image-btn" title="Ganti Gambar">&times;</button>
+                        </div>
+                    </div>
 
-            document.getElementById('checkCloseForm').addEventListener('change', function() {
-                document.getElementById('closeFormContainer').style.display = this.checked ? 'block' :
-                    'none';
-            });
+                    <hr>
 
-            // PJ Toggle
-            document.getElementById('checkPJ').addEventListener('change', function() {
-                document.getElementById('pjInfoContainer').style.display = this.checked ? 'block' : 'none';
-            });
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold mb-2">Integrasi Formulir</label>
 
-            document.getElementById('btnTambahTamu').addEventListener('click', function() {
-                counter++;
-                const div = document.createElement('div');
-                div.className = 'input-group mb-2';
-                div.innerHTML = `<input type="text" name="daftar_tamu[]" class="form-control" placeholder="Nama pembicara ${counter}">
-            <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">×</button>`;
-                document.getElementById('inputTamuWrapper').appendChild(div);
-            });
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="checkRegForm"
+                                name="has_registration_form" value="1"
+                                {{ $event->has_registration_form ? 'checked' : '' }}>
+                            <label class="form-check-label" for="checkRegForm">Formulir Pendaftaran</label>
+                        </div>
+                        <div id="regFormContainer" class="mb-3"
+                            style="display:{{ $event->has_registration_form ? 'block' : 'none' }};">
+                            <select name="registration_form_id" class="form-select form-select-sm">
+                                <option value="">-- Pilih Formulir --</option>
+                                @foreach ($forms as $form)
+                                    <option value="{{ $form->id }}"
+                                        {{ $event->registration_form_id == $form->id ? 'selected' : '' }}>
+                                        {{ $form->title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-            const input = document.getElementById('posterInput');
-            input.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        document.getElementById('previewImg').src = e.target.result;
-                        document.getElementById('imagePreview').style.display = 'block';
-                    }
-                    reader.readAsDataURL(file);
-                }
-            });
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="checkCloseForm"
+                                name="has_closing_form" value="1"
+                                {{ $event->has_closing_form ? 'checked' : '' }}>
+                            <label class="form-check-label" for="checkCloseForm">Formulir Penutupan (Kuisioner)</label>
+                        </div>
+                        <div id="closeFormContainer"
+                            style="display:{{ $event->has_closing_form ? 'block' : 'none' }};">
+                            <select name="closing_form_id" class="form-select form-select-sm">
+                                <option value="">-- Pilih Formulir --</option>
+                                @foreach ($forms as $form)
+                                    <option value="{{ $form->id }}"
+                                        {{ $event->closing_form_id == $form->id ? 'selected' : '' }}>
+                                        {{ $form->title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
 
-            document.getElementById('removeImage').addEventListener('click', function() {
-                input.value = '';
-                document.getElementById('imagePreview').style.display = 'none';
-            });
+                    <hr>
 
-            // Hapus poster lama (UI)
-            const hapusPosterCheckbox = document.getElementById('hapusPoster');
-            if (hapusPosterCheckbox) {
-                hapusPosterCheckbox.addEventListener('change', function() {
-                    const container = document.getElementById('posterLamaContainer');
-                    if (this.checked) {
-                        container.style.opacity = "0.4"; // efek visual
-                    } else {
-                        container.style.opacity = "1";
-                    }
-                });
-            }
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold mb-2">Penanggung Jawab</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="checkPJ" name="has_pj"
+                                value="1" {{ $event->has_pj ? 'checked' : '' }}>
+                            <label class="form-check-label" for="checkPJ">Aktifkan PJ Acara</label>
+                        </div>
 
-            document.getElementById('formKegiatan').addEventListener('submit', function(e) {
-                const start = new Date(document.querySelector('[name="start_time"]').value);
-                const end = new Date(document.querySelector('[name="end_time"]').value);
-                if (start >= end) {
-                    e.preventDefault();
-                    alert('Waktu selesai harus lebih besar dari waktu mulai!');
-                }
-            });
-        });
-    </script>
+                        <div id="pjInfoContainer" class="alert alert-light border small text-muted"
+                            style="display:{{ $event->has_pj ? 'block' : 'none' }};">
+                            @if ($event->has_pj && $event->pjUser)
+                                <strong>PJ Aktif:</strong><br>{{ $event->pjUser->name }}
+                            @else
+                                Akun PJ akan dibuat otomatis. Kredensial muncul setelah disimpan.
+                            @endif
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-save me-1"></i> Simpan Perubahan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
 
 @endsection
+
+@push('scripts') <script> document.addEventListener("DOMContentLoaded", function() { /* ======================== IMAGE UPLOADER =========================*/ const uploader = document.getElementById("file-uploader"); const input = document.getElementById("file-input"); const preview = document.getElementById("image-preview"); const container = document.getElementById("image-preview-container"); const removeBtn = document.getElementById("remove-image-btn"); const hapusPosterCheck = document.getElementById('hapusPoster');
+
+        uploader.addEventListener("dragover", e => {
+            e.preventDefault();
+            uploader.classList.add("on-drag");
+        });
+
+        uploader.addEventListener("dragleave", () => {
+            uploader.classList.remove("on-drag");
+        });
+
+        uploader.addEventListener("drop", e => {
+            e.preventDefault();
+            uploader.classList.remove("on-drag");
+            input.files = e.dataTransfer.files;
+            showPreview(e.dataTransfer.files[0]);
+        });
+
+        input.addEventListener("change", () => {
+            if (input.files[0]) showPreview(input.files[0]);
+        });
+
+        removeBtn.addEventListener("click", () => {
+            input.value = "";
+            container.style.display = "none";
+            uploader.style.display = "block";
+            preview.src = "#";
+            if (hapusPosterCheck) hapusPosterCheck.checked = true;
+        });
+
+        function showPreview(file) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                preview.src = e.target.result;
+                container.style.display = "block";
+                uploader.style.display = "none";
+                if (hapusPosterCheck) hapusPosterCheck.checked = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        /* ========================  LOGIC KEGIATAN =========================*/
+        let counter = {{ $event->tamuUndangan->count() > 0 ? $event->tamuUndangan->count() : 1 }};
+
+        // Tamu Toggle
+        const checkTamu = document.getElementById('checkTamu');
+        const tamuContainer = document.getElementById('daftarTamuContainer');
+        checkTamu.addEventListener('change', function() {
+            tamuContainer.style.display = this.checked ? 'block' : 'none';
+        });
+
+        // Add Tamu
+        document.getElementById('btnTambahTamu').addEventListener('click', function() {
+            counter++;
+            const div = document.createElement('div');
+            div.className = 'input-group mb-2';
+            div.innerHTML = `
+                <input type="text" name="daftar_tamu[]" class="form-control" placeholder="Nama pembicara ${counter}">
+                <button type="button" class="btn btn-light border text-danger" onclick="this.parentElement.remove()">×</button>
+            `;
+            document.getElementById('inputTamuWrapper').appendChild(div);
+        });
+
+        // Form Integrasi Toggles
+        document.getElementById('checkRegForm').addEventListener('change', function() {
+            document.getElementById('regFormContainer').style.display = this.checked ? 'block' : 'none';
+        });
+
+        document.getElementById('checkCloseForm').addEventListener('change', function() {
+            document.getElementById('closeFormContainer').style.display = this.checked ? 'block' : 'none';
+        });
+
+        // PJ Toggle
+        document.getElementById('checkPJ').addEventListener('change', function() {
+            document.getElementById('pjInfoContainer').style.display = this.checked ? 'block' : 'none';
+        });
+
+        // Date Validation
+        document.getElementById('formKegiatan').addEventListener('submit', function(e) {
+            const start = new Date(document.querySelector('[name="start_time"]').value);
+            const end = new Date(document.querySelector('[name="end_time"]').value);
+            if (start >= end) {
+                e.preventDefault();
+                alert('Waktu selesai harus lebih besar dari waktu mulai!');
+            }
+        });
+    });
+</script>

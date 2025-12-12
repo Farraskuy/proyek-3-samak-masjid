@@ -98,8 +98,6 @@
                                     <td class="p-3 align-middle">
                                         <a href="{{ route('admin.banks.edit', $bank->account_id) }}"
                                             class="btn btn-sm btn-light border"><i class="fas fa-pen text-muted"></i></a>
-                                        {{-- Form Delete harus di luar loop jika pakai ID unik, tapi di sini langsung submit --}}
-                                        {{-- Sebaiknya pakai button type submit di dalam form --}}
                                         <button type="button"
                                             class="btn btn-sm btn-light border text-danger btn-delete-article"
                                             data-action="{{ route('admin.banks.destroy', $bank->account_id) }}">

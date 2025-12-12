@@ -89,19 +89,22 @@
                                     <td>{{ $row->location }}</td>
                                     <td>{{ $row->start_time }}</td>
                                     <td>
-                                        @can('edit_events')
-                                            <a href="{{ route('admin.kegiatan.edit', $row->event_id) }}"
-                                                class="btn btn-warning btn-sm me-1">
-                                                <i class="fa-regular fa-pen-to-square"></i>
-                                            </a>
-                                        @endcan
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            @can('edit_events')
+                                                <a href="{{ route('admin.kegiatan.edit', $row->event_id) }}"
+                                                    class="btn btn-sm btn-light border">
+                                                    <i class="fas fa-pen text-muted"></i>
+                                                </a>
+                                            @endcan
 
-                                        @can('delete_events')
-                                            <button type="button" onclick="hapusKegiatan('{{ $row->event_id }}')"
-                                                class="btn btn-danger btn-sm">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </button>
-                                        @endcan
+                                            @can('delete_events')
+                                                <button type="button"
+                                                    class="btn btn-sm btn-light border text-danger btn-delete-article"
+                                                    data-action="{{ route('admin.kegiatan.destroy', $row->event_id) }}">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            @endcan
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -143,40 +146,7 @@
         </div>
     </section>
 
-    <script>
-        function hapusKegiatan(id) {
-            Swal.fire({
-                title: 'Yakin ingin menghapus?',
-                text: "Kegiatan ini akan dihapus permanen!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = `/admin/jadwal-kegiatan/delete/${id}`;
-                    form.style.display = 'none';
-
-                    const methodInput = document.createElement('input');
-                    methodInput.name = '_method';
-                    methodInput.value = 'DELETE';
-                    form.appendChild(methodInput);
-
-                    const tokenInput = document.createElement('input');
-                    tokenInput.name = '_token';
-                    tokenInput.value = '{{ csrf_token() }}';
-                    form.appendChild(tokenInput);
-
-                    document.body.appendChild(form);
-                    form.submit();
-                }
-            });
-        }
-    </script>
+    {{-- Script hapusKegiatan dihapus karena sudah diganti dengan class btn-delete-article --}}
 
     @push('styles')
         <style>

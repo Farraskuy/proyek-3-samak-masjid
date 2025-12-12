@@ -203,7 +203,7 @@
 
                                         {{-- Delete --}}
                                         @can('delete_posts')
-                                            <button type="button" class="btn btn-danger btn-sm btn-delete-article"
+                                            <button type="button" class="btn btn-sm btn-light border text-danger btn-delete-article"
                                                 data-action="{{ url('/admin/postingan/delete/' . $row->id) }}"
                                                 aria-label="Hapus">
                                                 <i class="fas fa-trash"></i>
