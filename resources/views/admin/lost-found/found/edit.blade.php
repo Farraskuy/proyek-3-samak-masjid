@@ -1,116 +1,244 @@
 @extends('admin.layout')
+
 @section('title', 'Edit Barang - Lost & Found')
 
-@section('content')
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="fa-duotone fa-box-open-full me-2"></i> Edit Barang Temuan</h2>
-        <a href="{{ route('admin.barang-hilang') }}" class="btn btn-outline-secondary btn-sm">
-            <i class="fa-regular fa-arrow-left me-1"></i> Kembali
-        </a>
-    </div>
+@push('styles')
+    <style>
+        .file-uploader {
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 2px dashed #dee2e6;
+            background: #fafafa;
+            text-align: center;
+            cursor: pointer;
+            color: #666;
+            transition: .2s ease-in-out;
+            display: block !important;
+        }
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <form action="{{ route('admin.barang-hilang.update', $item->item_id) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
+        .file-uploader.on-drag {
+            background: #f3f3f3;
+            border-color: #CE9138 !important;
+        }
 
-                <div class="mb-3">
-                    <label class="form-label">Nama Barang <span class="text-danger">*</span></label>
-                    <input type="text" name="item_name" class="form-control" value="{{ old('item_name', $item->item_name) }}" required>
-                    @error('item_name')
-                    <div class="text-danger mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
+        .img-preview-box {
+            position: relative;
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
 
-                <div class="mb-3">
-                    <label class="form-label">Deskripsi <span class="text-danger">*</span></label>
-                    <textarea name="description" class="form-control" rows="3" required>{{ old('description', $item->description) }}</textarea>
-                    @error('description')
-                    <div class="text-danger mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
+        .img-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-                <div class="mb-3">
-                    <label class="form-label">Lokasi Ditemukan <span class="text-danger">*</span></label>
-                    <input type="text" name="location_found" class="form-control" value="{{ old('location_found', $item->location_found) }}" required>
-                    @error('location_found')
-                    <div class="text-danger mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
+        .btn-remove-img {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 0;
+        }
+    </style>
+@endpush
 
-                <div class="mb-3">
-                    <label class="form-label">Kategori <span class="text-danger">*</span></label>
-                    <select name="category" class="form-select" required>
-                        <option value="">-- Pilih Kategori --</option>
-                        <option value="kendaraan" {{ (old('category', $item->category) == 'kendaraan') ? 'selected' : '' }}>Kendaraan</option>
-                        <option value="elektronik" {{ (old('category', $item->category) == 'elektronik') ? 'selected' : '' }}>Elektronik</option>
-                        <option value="aksesoris" {{ (old('category', $item->category) == 'aksesoris') ? 'selected' : '' }}>Aksesoris</option>
-                        <option value="dokumen" {{ (old('category', $item->category) == 'dokumen') ? 'selected' : '' }}>Dokumen</option>
-                        <option value="lain-lain" {{ (old('category', $item->category) == 'lain-lain') ? 'selected' : '' }}>Lain-lain</option>
-                    </select>
-                    @error('category')
-                    <div class="text-danger mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
+@section('content') <section class="p-3 container">
 
-                <div class="mb-3">
-                    <label class="form-label">Status <span class="text-danger">*</span></label>
-                    <select name="status" class="form-select" required>
-                        <option value="Tersedia" {{ (old('status', $item->status) == 'Tersedia') ? 'selected' : '' }}>Tersedia</option>
-                        <option value="Diambil" {{ (old('status', $item->status) == 'Diambil') ? 'selected' : '' }}>Diambil</option>
-                    </select>
-                    @error('status')
-                    <div class="text-danger mt-1">{{ $message }}</div>
-                    @enderror
-                </div>
+        <form action="{{ route('admin.barang-hilang.update', $item->item_id) }}" method="POST" enctype="multipart/form-data"
+            id="form-item">
+            @csrf
+            @method('PUT')
 
-                <div class="mb-3">
-                    <label class="form-label">Foto Saat Ini</label>
-                    <div class="d-flex flex-wrap gap-3 mt-2">
-                        @foreach($item->photos as $photo)
-                        <div class="position-relative" style="width: 100px; height: 100px;">
-                            <img src="{{ asset('storage/' . $photo->image_url) }}" class="rounded w-100 h-100" style="object-fit: cover;">
-                            <button type="button" class="btn btn-danger btn-sm position-absolute" style="top: -8px; right: -8px; width: 24px; height: 24px; padding: 0; border-radius: 50%;"
-                                onclick="this.closest('.position-relative').style.display='none'; this.previousElementSibling.value=1;">
-                                <i class="fa-solid fa-xmark" style="font-size: 10px;"></i>
-                            </button>
-                            <input type="hidden" name="remove_photos[{{ $photo->photo_id }}]" value="0">
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <a href="{{ route('admin.barang-hilang') }}" class="btn btn-light btn-sm rounded-4">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h4 class="fw-semibold mb-0">Edit Barang Temuan</h4>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="card bg-white border-0 rounded-3 p-4 mb-4">
+                        <h5 class="fw-semibold mb-3">Informasi Barang</h5>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nama Barang <span class="text-danger">*</span></label>
+                            <input type="text" name="item_name" class="form-control input-lg"
+                                value="{{ old('item_name', $item->item_name) }}" required>
+                            @error('item_name')
+                                <div class="text-danger mt-1 small">{{ $message }}</div>
+                            @enderror
                         </div>
-                        @endforeach
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Deskripsi <span class="text-danger">*</span></label>
+                            <textarea name="description" class="form-control" rows="4" required>{{ old('description', $item->description) }}</textarea>
+                            @error('description')
+                                <div class="text-danger mt-1 small">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Lokasi Ditemukan <span
+                                    class="text-danger">*</span></label>
+                            <input type="text" name="location_found" class="form-control input-lg"
+                                value="{{ old('location_found', $item->location_found) }}" required>
+                            @error('location_found')
+                                <div class="text-danger mt-1 small">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
-                    <small class="text-muted">Klik tanda × untuk menghapus foto tertentu.</small>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Tambah Foto Baru</label>
-                    <input type="file" name="new_featured_images[]" class="form-control" accept="image/*" multiple>
-                    <small class="text-muted">Pilih foto tambahan (opsional).</small>
-                    @error('new_featured_images')
-                    <div class="text-danger mt-1">{{ $message }}</div>
-                    @enderror
-                    @error('new_featured_images.*')
-                    <div class="text-danger mt-1">{{ $message }}</div>
-                    @enderror
+                <div class="col-lg-4">
+                    <div class="card bg-white border-0 rounded-3 p-4 mb-4">
+                        <h5 class="fw-semibold mb-3">Status & Foto</h5>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Kategori <span class="text-danger">*</span></label>
+                            <select name="category" class="form-select form-control form-control-lg" required>
+                                <option value="">-- Pilih Kategori --</option>
+                                <option value="kendaraan"
+                                    {{ old('category', $item->category) == 'kendaraan' ? 'selected' : '' }}>Kendaraan
+                                </option>
+                                <option value="elektronik"
+                                    {{ old('category', $item->category) == 'elektronik' ? 'selected' : '' }}>Elektronik
+                                </option>
+                                <option value="aksesoris"
+                                    {{ old('category', $item->category) == 'aksesoris' ? 'selected' : '' }}>Aksesoris
+                                </option>
+                                <option value="dokumen"
+                                    {{ old('category', $item->category) == 'dokumen' ? 'selected' : '' }}>Dokumen</option>
+                                <option value="lain-lain"
+                                    {{ old('category', $item->category) == 'lain-lain' ? 'selected' : '' }}>Lain-lain
+                                </option>
+                            </select>
+                            @error('category')
+                                <div class="text-danger mt-1 small">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Status <span class="text-danger">*</span></label>
+                            <select name="status" class="form-select form-control form-control-lg" required>
+                                <option value="Tersedia"
+                                    {{ old('status', $item->status) == 'Tersedia' ? 'selected' : '' }}>Tersedia</option>
+                                <option value="Diambil" {{ old('status', $item->status) == 'Diambil' ? 'selected' : '' }}>
+                                    Diambil</option>
+                            </select>
+                            @error('status')
+                                <div class="text-danger mt-1 small">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Foto Saat Ini</label>
+                            <div class="d-flex flex-wrap gap-2 mb-2">
+                                @foreach ($item->photos as $photo)
+                                    <div class="img-preview-box" id="existing-photo-{{ $photo->photo_id }}">
+                                        <img src="{{ asset('storage/' . $photo->image_url) }}">
+                                        <button type="button" class="btn-remove-img"
+                                            onclick="removeExistingPhoto({{ $photo->photo_id }})">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                        <input type="hidden" name="remove_photos[{{ $photo->photo_id }}]"
+                                            id="input-remove-{{ $photo->photo_id }}" value="0">
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Tambah Foto Baru</label>
+
+                            <label for="new_featured_images" id="file-uploader" class="file-uploader">
+                                <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
+                                <div class="fw-semibold">Upload Foto</div>
+                                <div class="small text-muted">Klik atau drag & drop</div>
+                            </label>
+
+                            <input type="file" name="new_featured_images[]" id="new_featured_images" accept="image/*"
+                                multiple class="d-none">
+                            @error('new_featured_images')
+                                <div class="text-danger mt-1 small">{{ $message }}</div>
+                            @enderror
+
+                            <div id="new-images-preview" class="d-flex flex-wrap gap-2 mt-3"></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 mt-3">
+                            <i class="fas fa-save me-1"></i> Simpan Perubahan
+                        </button>
+                    </div>
                 </div>
+            </div>
+        </form>
 
-                <button type="submit" class="btn btn-success">
-                    <i class="fa-regular fa-floppy-disk me-1"></i> Simpan Perubahan
-                </button>
-            </form>
-        </div>
-    </div>
-</div>
-@endsection
-@section('styles')
-<style>
-    .position-relative {
-        display: inline-block;
-    }
+    </section>
 
-    .btn-sm {
-        line-height: 1;
-    }
-</style>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            /* ======================== IMAGE UPLOADER =========================*/
+            const uploader = document.getElementById("file-uploader");
+            const input = document.getElementById("new_featured_images");
+            const previewContainer = document.getElementById("new-images-preview");
+
+            uploader.addEventListener("dragover", e => {
+                e.preventDefault();
+                uploader.classList.add("on-drag");
+            });
+
+            uploader.addEventListener("dragleave", () => {
+                uploader.classList.remove("on-drag");
+            });
+
+            uploader.addEventListener("drop", e => {
+                e.preventDefault();
+                uploader.classList.remove("on-drag");
+                input.files = e.dataTransfer.files;
+                showNewPreviews(input.files);
+            });
+
+            input.addEventListener("change", () => {
+                if (input.files) showNewPreviews(input.files);
+            });
+
+            function showNewPreviews(files) {
+                previewContainer.innerHTML = ""; // Reset preview
+                Array.from(files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        const div = document.createElement("div");
+                        div.className = "img-preview-box";
+                        div.innerHTML = `<img src="${e.target.result}">`;
+                        previewContainer.appendChild(div);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        });
+
+        function removeExistingPhoto(id) {
+            document.getElementById('existing-photo-' + id).style.display = 'none';
+            document.getElementById('input-remove-' + id).value = 1;
+        }
+    </script>
+@endpush
