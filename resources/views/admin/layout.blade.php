@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="{{ asset('assets/fonts/fonts.css') }}">
 
     {{-- icon --}}
-    <link rel="shortcut icon" href="{{ asset('assets/image') }}/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('assets/images/logo.ico') }}" type="image/x-icon">
 
     {{-- style --}}
     <link rel="stylesheet" href="{{ asset('assets/css/admin.css') }}">
@@ -62,7 +62,7 @@
 
     @stack('styles')
 
-    <title>@yield('title')</title>
+    <title>@yield('title', 'Dashboard') - Samak Masjid</title>
 </head>
 
 <body class="bg-light d-flex overflow-hidden"
