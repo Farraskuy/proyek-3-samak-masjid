@@ -137,7 +137,7 @@
                         <div id="image-preview-container" class="mt-3"
                             style="{{ isset($page) && $page->featured_image_url ? 'display:block' : '' }}">
                             <img id="image-preview"
-                                src="{{ isset($page) && $page->featured_image_url ? asset($page->featured_image_url) : '#' }}"
+                                src="{{ isset($page) && $page->featured_image_url ? asset('/storage/'.$page->featured_image_url) : '#' }}"
                                 alt="Preview">
                             <button type="button" id="remove-image-btn">&times;</button>
                         </div>
