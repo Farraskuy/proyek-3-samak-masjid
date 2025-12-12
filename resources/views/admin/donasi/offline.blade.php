@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'Input Donasi Offline - SAMAK Kampus')
+@section('title', 'Input Donasi Offline')
 
 @section('content')
     <div class="container p-3">

@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'Tambah Rekening - SAMAK Kampus')
+@section('title', 'Tambah Rekening Baru')
 
 @push('styles')
     <style>
