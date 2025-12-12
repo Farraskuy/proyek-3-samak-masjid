@@ -61,7 +61,7 @@ Route::post('/auth/send-otp', [AuthController::class, 'sendOtp'])->name('auth.se
 Route::post('/auth/resend-otp', [AuthController::class, 'reSendOtp'])->name('auth.resendOtp');
 Route::get('/auth/verify', [AuthController::class, 'showVerifyForm'])->name('auth.showVerifyForm');
 Route::post('/auth/verify', [AuthController::class, 'verifyOtp'])->name('auth.verifyOtp');
-Route::post('/auth/resend-verification', [AuthController::class, 'resendVerification'])->name('auth.resendVerification');
+Route::post('/auth/resend-verification', [AuthController::class, 'resendOtp'])->name('auth.resendVerification');
 
 // Forgot Password
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('password.request');
@@ -256,13 +256,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     });
 
     // Infaq CRUD
-    Route::prefix('infaqs')->name('infaqs.')->middleware('permission:view_banks')->group(function () {
+    Route::prefix('infaqs')->name('infaqs.')->middleware('permission:view_infaq')->group(function () {
         Route::get('/', [InfaqController::class, 'index'])->name('index');
-        Route::get('/create', [InfaqController::class, 'create'])->name('create')->middleware('permission:create_banks');
-        Route::post('/', [InfaqController::class, 'store'])->name('store')->middleware('permission:create_banks');
-        Route::get('/{infaq}/edit', [InfaqController::class, 'edit'])->name('edit')->middleware('permission:edit_banks');
-        Route::put('/{infaq}', [InfaqController::class, 'update'])->name('update')->middleware('permission:edit_banks');
-        Route::delete('/{infaq}', [InfaqController::class, 'destroy'])->name('destroy')->middleware('permission:delete_banks');
+        Route::get('/create', [InfaqController::class, 'create'])->name('create')->middleware('permission:create_infaq');
+        Route::post('/', [InfaqController::class, 'store'])->name('store')->middleware('permission:create_infaq');
+        Route::get('/{infaq}/edit', [InfaqController::class, 'edit'])->name('edit')->middleware('permission:edit_infaq');
+        Route::put('/{infaq}', [InfaqController::class, 'update'])->name('update')->middleware('permission:edit_infaq');
+        Route::delete('/{infaq}', [InfaqController::class, 'destroy'])->name('destroy')->middleware('permission:delete_infaq');
     });
 
     // Donasi Confirmation

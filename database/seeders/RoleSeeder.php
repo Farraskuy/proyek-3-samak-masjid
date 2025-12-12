@@ -71,6 +71,12 @@ class RoleSeeder extends Seeder
             ['name' => 'edit_banks', 'group' => 'Bank'],
             ['name' => 'delete_banks', 'group' => 'Bank'],
 
+            // Infaq
+            ['name' => 'view_infaq', 'group' => 'Infaq'],
+            ['name' => 'create_infaq', 'group' => 'Infaq'],
+            ['name' => 'edit_infaq', 'group' => 'Infaq'],
+            ['name' => 'delete_infaq', 'group' => 'Infaq'],
+
             // Barang Hilang
             ['name' => 'view_lost_items', 'group' => 'Barang Hilang'],
             ['name' => 'create_lost_items', 'group' => 'Barang Hilang'],
@@ -154,6 +160,19 @@ class RoleSeeder extends Seeder
             ->whereNotIn('name', ['manage_income', 'verify_donation'])
             ->get();
         $bendaharaKRole->permissions()->sync($bendaharaKPermissions);
+
+
+        // --- Role: Koordinator Bendahara ---
+        $koorBendaharaRole = Role::firstOrCreate(
+            ['name' => 'Koordinator Bendahara'], 
+            [
+                'alias' => 'Koor Bendahara', 
+                'description' => 'Koordinator bidang bendahara, mengelola keuangan dan infaq'
+            ]
+        );
+        // Koordinator Bendahara gets Dashboard, Keuangan, Bank, and all Infaq permissions
+        $koorBendaharaPermissions = Permission::whereIn('group', ['Dashboard', 'Keuangan', 'Bank', 'Infaq'])->get();
+        $koorBendaharaRole->permissions()->sync($koorBendaharaPermissions);
 
 
 
