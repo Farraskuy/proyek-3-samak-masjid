@@ -144,7 +144,7 @@ Route::middleware('auth')->prefix('konsultasi-saya')->name('client.consultations
 // Protected by Auth and Permission Middleware
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
 
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware('permission:view_dashboard');
 
     // Role Management
     Route::prefix('roles')->name('roles.')->group(function () {
@@ -218,15 +218,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::delete('/delete/{album_id}', [GaleriController::class, 'delete'])->name('delete')->middleware('permission:delete_gallery');
     });
 
-    // Static Pages
-    Route::middleware('permission:view_pages')->group(function () {
-        Route::get('/halaman-statis', [StaticPageController::class, 'indexAdmin'])->name('static-pages.index');
-        Route::get('/halaman-statis/tambah', [StaticPageController::class, 'create'])->name('static-pages.tambah')->middleware('permission:edit_pages');
-        Route::post('/halaman-statis/store', [StaticPageController::class, 'store'])->name('static-pages.store')->middleware('permission:edit_pages');
-        Route::get('/halaman-statis/{id}/edit', [StaticPageController::class, 'edit'])->name('static-pages.edit')->middleware('permission:edit_pages');
-        Route::put('/halaman-statis/{id}', [StaticPageController::class, 'update'])->name('static-pages.update')->middleware('permission:edit_pages');
-    });
-
     // Konsultasi Admin/Ustadz
     Route::prefix('konsultasi')->name('consultations.')->middleware('permission:view_consultations')->group(function () {
         Route::get('/', [ConsultationUstadzController::class, 'index'])->name('index');
@@ -296,10 +287,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     });
 
     // Informasi Website (Ex Halaman Statis)
-    Route::controller(App\Http\Controllers\WebsiteInformationController::class)
-        ->prefix('informasi-website')
-        ->name('website-information.')
-        ->middleware('permission:view_pages') // Added middleware based on original Static Pages block
+    Route::controller(App\Http\Controllers\WebsiteInformationController::class)->prefix('informasi-website')->name('website-information.')->middleware('permission:view_pages') // Added middleware based on original Static Pages block
         ->group(function () {
             Route::get('/', 'indexAdmin')->name('index');
             Route::get('/tambah', 'create')->name('tambah')->middleware('permission:edit_pages'); // Added middleware
