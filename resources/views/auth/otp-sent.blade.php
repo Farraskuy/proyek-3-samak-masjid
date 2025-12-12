@@ -1,6 +1,6 @@
 @extends('auth.layout')
 
-@section('title', 'Kode Terkirim - Digital Masjid')
+@section('title', 'Kode Terkirim')
 
 @push('styles')
     <style>

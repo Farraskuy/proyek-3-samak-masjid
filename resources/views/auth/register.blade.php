@@ -1,6 +1,6 @@
 @extends('auth.layout')
 
-@section('title', 'Daftar - Digital Masjid')
+@section('title', 'Daftar')
 
 @push('styles')
     <style>
