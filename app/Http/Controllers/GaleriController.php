@@ -81,7 +81,7 @@ class GaleriController extends Controller
             }
         }
 
-        return redirect()->route('galeri.index')
+        return redirect()->route('admin.galeri.index')
                          ->with('success', 'Album berhasil ditambahkan!');
     }
 

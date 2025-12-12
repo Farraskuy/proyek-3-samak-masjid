@@ -12,7 +12,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h4 class="fw-semibold mb-0">Galeri</h4>
             @can('create_gallery')
-                <a href="{{ route('admin.galeri.create') }}" class="btn btn-primary btn-sm">
+                <a href="{{ route('admin.galeri.create') }}" class="btn btn-success fw-bold">
                     <i class="fa-solid fa-plus me-1"></i> Tambah Album
                 </a>
             @endcan
@@ -68,16 +68,17 @@
                                             {{-- Tombol Edit --}}
                                             @can('edit_gallery')
                                                 <a href="{{ route('admin.galeri.edit', $row->album_id) }}"
-                                                    class="btn btn-warning btn-sm text-white">
-                                                    <i class="fa-regular fa-pen-to-square"></i>
+                                                    class="btn btn-sm btn-light border">
+                                                    <i class="fas fa-pen text-muted"></i></a>
                                                 </a>
                                             @endcan
 
-                                            {{-- Tombol Delete --}}
+                                            {{-- Tombol Delete (Diperbarui) --}}
                                             @can('delete_gallery')
-                                                <button type="button" onclick="hapusAlbum('{{ $row->album_id }}')"
-                                                    class="btn btn-danger btn-sm">
-                                                    <i class="fa-solid fa-trash"></i>
+                                                <button type="button"
+                                                    class="btn btn-sm btn-light border text-danger btn-delete-article"
+                                                    data-action="{{ route('admin.galeri.delete', $row->album_id) }}">
+                                                    <i class="fas fa-trash"></i>
                                                 </button>
                                             @endcan
 
@@ -127,45 +128,6 @@
             </form>
         </div>
     </section>
-
-    @push('scripts')
-        <script>
-            function hapusAlbum(id) {
-                Swal.fire({
-                    title: 'Yakin ingin menghapus?',
-                    text: "Album ini akan dihapus permanen BESERTA semua fotonya!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Ya, hapus!',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = `/admin/galeri/delete/${id}`;
-                        form.style.display = 'none';
-
-                        const methodInput = document.createElement('input');
-                        methodInput.name = '_method';
-                        methodInput.value = 'DELETE';
-                        form.appendChild(methodInput);
-
-                        const tokenInput = document.createElement('input');
-                        tokenInput.name = '_token';
-                        tokenInput.value = '{{ csrf_token() }}';
-                        form.appendChild(tokenInput);
-
-                        document.body.appendChild(form);
-                        form.submit();
-                    }
-                });
-            }
-        </script>
-    @endpush
-
 
     @push('styles')
         <style>
