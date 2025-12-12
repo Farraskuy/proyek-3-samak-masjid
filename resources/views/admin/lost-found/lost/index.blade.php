@@ -1,5 +1,5 @@
 @extends('admin.layout')
-@section('title', 'Laporan Barang Hilang | SAMAK-Kampus')
+@section('title', 'Laporan Barang Hilang')
 
 @section('content')
 <div class="container py-4">

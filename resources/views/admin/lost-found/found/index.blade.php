@@ -1,5 +1,5 @@
 @extends('admin.layout')
-@section('title', 'Manajemen Barang Ditemukan | SAMAK-Kampus')
+@section('title', 'Manajemen Barang Ditemukan')
 
 @section('content')
 <section class="p-3">

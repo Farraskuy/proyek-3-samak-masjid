@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'Profil Saya | Admin')
+@section('title', 'Profil Saya')
 
 @push('styles')
     <style>
