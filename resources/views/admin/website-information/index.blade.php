@@ -51,20 +51,6 @@
 
 @section('content')
     <section class="p-3 container">
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
         <form
             action="{{ isset($page) ? route('admin.website-information.update', $page->id) : route('admin.website-information.store') }}"
             method="POST" id="form-website-information" enctype="multipart/form-data">
@@ -137,8 +123,9 @@
                         <div id="image-preview-container" class="mt-3"
                             style="{{ isset($page) && $page->featured_image_url ? 'display:block' : '' }}">
                             <img id="image-preview"
-                                src="{{ isset($page) && $page->featured_image_url ? asset($page->featured_image_url) : '#' }}"
-                                alt="Preview">
+                                src="{{ isset($page) && $page->featured_image_url ? Storage::url($page->featured_image_url) : '' }}"
+                                alt="Preview"
+                                onerror="this.onerror=null; this.src='{{ asset('assets/images/no-data.png') }}'; this.style.objectFit='contain'; this.style.background='#f8f9fa';">
                             <button type="button" id="remove-image-btn">&times;</button>
                         </div>
                         @error('featured_image_url')
@@ -180,6 +167,7 @@
 
                                 // 3. Pastikan outputnya Array, kalau null jadikan array kosong
                                 $socials = is_array($rawSocials) ? $rawSocials : [];
+                                
                             @endphp
 
                             @foreach ($socials as $index => $social)
