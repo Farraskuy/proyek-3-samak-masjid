@@ -77,6 +77,9 @@ class RoleSeeder extends Seeder
             ['name' => 'edit_infaq', 'group' => 'Infaq'],
             ['name' => 'delete_infaq', 'group' => 'Infaq'],
 
+            // Pengaturan Zakat
+            ['name' => 'manage_zakat_settings', 'group' => 'Pengaturan'],
+
             // Barang Hilang
             ['name' => 'view_lost_items', 'group' => 'Barang Hilang'],
             ['name' => 'create_lost_items', 'group' => 'Barang Hilang'],
@@ -142,9 +145,9 @@ class RoleSeeder extends Seeder
         // --- Role: Bendahara Pemasukan ---
         $bendaharaMRole = Role::firstOrCreate(
             ['name' => 'Bendahara Pemasukan'], 
-            ['alias' => 'Bendahara Pemasukan', 'description' => 'Mengelola keuangan yang masuk']
+            ['alias' => 'Bendahara Pemasukan', 'description' => 'Mengelola keuangan yang masuk dan program infaq']
         );
-        $bendaharaMPermissions = Permission::whereIn('group', ['Dashboard', 'Keuangan', 'Bank'])
+        $bendaharaMPermissions = Permission::whereIn('group', ['Dashboard', 'Keuangan', 'Bank', 'Infaq'])
             ->whereNotIn('name', ['delete_finance'])
             ->get();
         $bendaharaMRole->permissions()->sync($bendaharaMPermissions);
@@ -167,11 +170,11 @@ class RoleSeeder extends Seeder
             ['name' => 'Koordinator Bendahara'], 
             [
                 'alias' => 'Koor Bendahara', 
-                'description' => 'Koordinator bidang bendahara, mengelola keuangan dan infaq'
+                'description' => 'Koordinator bidang bendahara, mengelola keuangan, infaq, dan pengaturan zakat'
             ]
         );
-        // Koordinator Bendahara gets Dashboard, Keuangan, Bank, and all Infaq permissions
-        $koorBendaharaPermissions = Permission::whereIn('group', ['Dashboard', 'Keuangan', 'Bank', 'Infaq'])->get();
+        // Koordinator Bendahara gets Dashboard, Keuangan, Bank, Infaq, and Pengaturan permissions
+        $koorBendaharaPermissions = Permission::whereIn('group', ['Dashboard', 'Keuangan', 'Bank', 'Infaq', 'Pengaturan'])->get();
         $koorBendaharaRole->permissions()->sync($koorBendaharaPermissions);
 
 
