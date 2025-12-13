@@ -116,7 +116,7 @@ class LostFoundController extends Controller
             'location_found' => 'required|string|max:100',
             'status' => 'required|in:Tersedia,Diambil',
             'featured_images' => 'required|array|min:1',
-            'featured_images.*' => 'image|mimes:jpeg,png,jpg|max:10240',
+            'featured_images.*' => 'image|mimes:jpeg,png,jpg|max:1240',
             'category' => 'required|in:kendaraan,elektronik,aksesoris,dokumen,lain-lain',
         ]);
 
@@ -156,7 +156,7 @@ class LostFoundController extends Controller
             'location_found' => 'required|string|max:100',
             'status' => 'required|in:Tersedia,Diambil',
             'new_featured_images' => 'nullable|array',
-            'new_featured_images.*' => 'image|mimes:jpeg,png,jpg|max:10240',
+            'new_featured_images.*' => 'image|mimes:jpeg,png,jpg|max:1240',
         ]);
 
         $item = FoundItem::findOrFail($item_id);
