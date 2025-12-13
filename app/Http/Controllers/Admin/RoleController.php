@@ -25,7 +25,13 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $permissions = Permission::where('group', '!=', 'Pengguna')->where('group', '!=', 'Master Data')->where('group', '!=', 'Role')->get()->groupBy('group');
+        // Hide: Pengguna, Master Data, Role, Sistem (backup permission)
+        $permissions = Permission::where('group', '!=', 'Pengguna')
+            ->where('group', '!=', 'Master Data')
+            ->where('group', '!=', 'Role')
+            ->where('group', '!=', 'Sistem')
+            ->get()
+            ->groupBy('group');
         return view('admin.roles.create', compact('permissions'));
     }
 
@@ -73,7 +79,18 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
-        $permissions = Permission::where('group', '!=', 'Pengguna')->where('group', '!=', 'Master Data')->where('group', '!=', 'Role')->get()->groupBy('group');
+        // Protect Penanggung Jawab role from editing
+        if ($role->name === 'Penanggung Jawab') {
+            return back()->with('error', 'Role Penanggung Jawab tidak dapat diedit.');
+        }
+        
+        // Hide: Pengguna, Master Data, Role, Sistem (backup permission)
+        $permissions = Permission::where('group', '!=', 'Pengguna')
+            ->where('group', '!=', 'Master Data')
+            ->where('group', '!=', 'Role')
+            ->where('group', '!=', 'Sistem')
+            ->get()
+            ->groupBy('group');
         $rolePermissions = $role->permissions->pluck('id')->toArray();
         return view('admin.roles.edit', compact('role', 'permissions', 'rolePermissions'));
     }
@@ -117,6 +134,11 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
+        // Protect Penanggung Jawab role from deletion
+        if ($role->name === 'Penanggung Jawab') {
+            return back()->with('error', 'Role Penanggung Jawab tidak dapat dihapus.');
+        }
+        
         if ($role->users()->count() > 0) {
             return back()->with('error', 'Cannot delete role because it is assigned to users.');
         }
