@@ -22,8 +22,20 @@ class AdminKegiatanController extends Controller
         $ustadz = \App\Models\User::whereHas('role', function ($q) {
             $q->where('name', 'ustadz');
         })->get();
-        // Ambil daftar form dengan jumlah pertanyaan
-        $forms = \App\Models\Form::withCount('fields')->get();
+        
+        // Ambil ID form yang sudah digunakan oleh kegiatan lain
+        $usedFormIds = JadwalKegiatan::whereNotNull('registration_form_id')
+            ->pluck('registration_form_id')
+            ->merge(
+                JadwalKegiatan::whereNotNull('closing_form_id')->pluck('closing_form_id')
+            )
+            ->unique()
+            ->toArray();
+        
+        // Ambil daftar form yang belum digunakan
+        $forms = \App\Models\Form::withCount('fields')
+            ->whereNotIn('id', $usedFormIds)
+            ->get();
 
         return view('admin.kegiatan.create', compact('ustadz', 'forms'));
     }
@@ -57,13 +69,21 @@ class AdminKegiatanController extends Controller
 
         if ($request->has('has_pj') && $request->has_pj == '1') {
             $password = \Illuminate\Support\Str::random(8); // Generate random password
-            $email = 'pj.' . \Illuminate\Support\Str::slug($request->event_name) . '.' . rand(100, 999) . '@samak.com';
+            $slug = \Illuminate\Support\Str::slug($request->event_name);
+            $email = 'pj.' . $slug . '.' . rand(100, 999) . '@samak.com';
+            $username = 'pj_' . $slug . '_' . rand(100, 999);
+
+            // Get Penanggung Jawab role ID
+            $pjRole = \App\Models\Role::where('name', 'Penanggung Jawab')->first();
+            $roleId = $pjRole ? $pjRole->id : 6; // Fallback to Jamaah (id=6) if not found
 
             $pjUser = \App\Models\User::create([
-                'name' => 'PJ - ' . $request->event_name,
+                'username' => $username,
+                'full_name' => 'PJ - ' . $request->event_name,
                 'email' => $email,
+                'phone_number' => '000000000000',
                 'password' => \Illuminate\Support\Facades\Hash::make($password),
-                'role' => 'penanggung_jawab',
+                'role_id' => $roleId,
                 'email_verified_at' => now(),
             ]);
 
@@ -123,9 +143,32 @@ class AdminKegiatanController extends Controller
         $ustadz = \App\Models\User::whereHas('role', function ($q) {
             $q->where('name', 'ustadz');
         })->get();
-        $forms = \App\Models\Form::withCount('fields')->get();
+        
+        // Check if event has ended (form cannot be changed)
+        $eventEnded = now()->gt($event->end_time);
+        
+        // Ambil ID form yang sudah digunakan oleh kegiatan LAIN (exclude current event's forms)
+        $usedFormIds = JadwalKegiatan::where('event_id', '!=', $id)
+            ->whereNotNull('registration_form_id')
+            ->pluck('registration_form_id')
+            ->merge(
+                JadwalKegiatan::where('event_id', '!=', $id)
+                    ->whereNotNull('closing_form_id')
+                    ->pluck('closing_form_id')
+            )
+            ->unique()
+            ->toArray();
+        
+        // Ambil daftar form yang belum digunakan (plus forms already used by this event)
+        $forms = \App\Models\Form::withCount('fields')
+            ->where(function ($query) use ($usedFormIds, $event) {
+                $query->whereNotIn('id', $usedFormIds)
+                      ->orWhere('id', $event->registration_form_id)
+                      ->orWhere('id', $event->closing_form_id);
+            })
+            ->get();
 
-        return view('admin.kegiatan.edit', compact('event', 'ustadz', 'forms'));
+        return view('admin.kegiatan.edit', compact('event', 'ustadz', 'forms', 'eventEnded'));
     }
 
     public function update(Request $request, $id)
@@ -164,19 +207,37 @@ class AdminKegiatanController extends Controller
             $event->poster = $posterPath;
         }
 
-        // Handle PJ Creation (Only if not already exists and toggled on)
+        // Handle PJ User
         $pjUserId = $event->pj_user_id;
         $pjCredentials = null;
 
-        if ($request->has('has_pj') && $request->has_pj == '1' && !$event->has_pj) {
+        // Case 1: PJ is being removed (was on, now off)
+        if (!$request->has('has_pj') && $event->has_pj && $event->pj_user_id) {
+            // Delete the PJ user account completely
+            $pjUser = \App\Models\User::find($event->pj_user_id);
+            if ($pjUser) {
+                $pjUser->delete();
+            }
+            $pjUserId = null;
+        }
+        // Case 2: PJ is being added (was off, now on) OR was deleted and re-adding
+        elseif ($request->has('has_pj') && $request->has_pj == '1' && (!$event->has_pj || !$event->pj_user_id)) {
             $password = \Illuminate\Support\Str::random(8);
-            $email = 'pj.' . \Illuminate\Support\Str::slug($request->event_name) . '.' . rand(100, 999) . '@samak.com';
+            $slug = \Illuminate\Support\Str::slug($request->event_name);
+            $email = 'pj.' . $slug . '.' . rand(100, 999) . '@samak.com';
+            $username = 'pj_' . $slug . '_' . rand(100, 999);
+
+            // Get Penanggung Jawab role ID
+            $pjRole = \App\Models\Role::where('name', 'Penanggung Jawab')->first();
+            $roleId = $pjRole ? $pjRole->id : 6; // Fallback to Jamaah (id=6) if not found
 
             $pjUser = \App\Models\User::create([
-                'name' => 'PJ - ' . $request->event_name,
+                'username' => $username,
+                'full_name' => 'PJ - ' . $request->event_name,
                 'email' => $email,
+                'phone_number' => '000000000000',
                 'password' => \Illuminate\Support\Facades\Hash::make($password),
-                'role' => 'penanggung_jawab',
+                'role_id' => $roleId,
                 'email_verified_at' => now(),
             ]);
 
@@ -196,9 +257,9 @@ class AdminKegiatanController extends Controller
             'end_time' => $request->end_time,
             'is_have_tamu_undangan' => !empty(array_filter($request->daftar_tamu ?? [])),
             'has_registration_form' => $request->has('has_registration_form'),
-            'registration_form_id' => $request->registration_form_id,
+            'registration_form_id' => $request->has('has_registration_form') ? $request->registration_form_id : null,
             'has_closing_form' => $request->has('has_closing_form'),
-            'closing_form_id' => $request->closing_form_id,
+            'closing_form_id' => $request->has('has_closing_form') ? $request->closing_form_id : null,
             'has_pj' => $request->has('has_pj'),
             'pj_user_id' => $pjUserId,
         ]);
