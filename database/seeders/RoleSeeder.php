@@ -80,6 +80,9 @@ class RoleSeeder extends Seeder
             // Pengaturan Zakat
             ['name' => 'manage_zakat_settings', 'group' => 'Pengaturan'],
 
+            // Backup Database (Admin Only)
+            ['name' => 'manage_backup', 'group' => 'Sistem'],
+
             // Barang Hilang
             ['name' => 'view_lost_items', 'group' => 'Barang Hilang'],
             ['name' => 'create_lost_items', 'group' => 'Barang Hilang'],
@@ -108,8 +111,8 @@ class RoleSeeder extends Seeder
             ['name' => 'Admin'], 
             ['alias' => 'Admin System', 'description' => 'Administrator Sistem']
         );
-        // Admin gets specialized permissions + generic dashboard access
-        $adminPermissions = Permission::whereIn('group', ['Dashboard', 'Role', 'Pengguna'])->get();
+        // Admin gets specialized permissions + generic dashboard access + backup
+        $adminPermissions = Permission::whereIn('group', ['Dashboard', 'Role', 'Pengguna', 'Sistem'])->get();
         $adminRole->permissions()->sync($adminPermissions);
 
 
