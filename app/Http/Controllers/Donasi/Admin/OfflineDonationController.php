@@ -32,6 +32,11 @@ class OfflineDonationController extends Controller
             ->where('category', 'infaq')
             ->get();
 
+        // Get kas account for infaq transfer option
+        $kasBanks = BankAccount::where('is_active', true)
+            ->where('type', 'kas')
+            ->get();
+
         // Get active infaq programs
         $infaqPrograms = Infaq::with('bankAccount')
             ->where('is_active', true)
@@ -49,6 +54,7 @@ class OfflineDonationController extends Controller
         return view('admin.donasi.offline', [
             'zakatBanks' => $zakatBanks,
             'infaqBanks' => $infaqBanks,
+            'kasBanks' => $kasBanks,
             'infaqPrograms' => $infaqPrograms,
             'zakatTypes' => $zakatTypes,
             'zakatConfig' => $zakatConfig,
