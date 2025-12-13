@@ -1,12 +1,22 @@
 <aside class="sidebar bg-white py-2 offcanvas-lg offcanvas-start" tabindex="-1" id="sidebarMenu"
     aria-labelledby="sidebarMenuLabel" style="line-height: 1.25">
     <div class="offcanvas-header d-lg-none">
-        <h5 class="offcanvas-title" id="sidebarMenuLabel">Menu</h5>
+        <div class="d-flex align-items-center gap-2" id="sidebarMenuLabel">
+            <img src="{{ asset('assets/images/logo.png') }}" alt="Logo Masjid" width="35" height="35">
+            <div class="logo_name">
+                <span class="h6 m-0 fw-semibold">SAMAK-Kampus</span>
+                <div class="marquee-container">
+                    <span class="marquee-text fw-light text-secondary">
+                        Sistem Aplikasi Managemen Aktivitas dan Keuangan Masjid Kampus
+                    </span>
+                </div>
+            </div>
+        </div>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#sidebarMenu"
             aria-label="Close"></button>
     </div>
     <div class="offcanvas-body p-0 d-flex flex-column">
-        <div class="logo">
+        <div class="logo d-none d-lg-flex">
             <a href="{{ url('/admin') }}" class="logo-details">
                 <div class="img">
                     <img src="{{ asset('assets/images/logo.png') }}" alt="Logo Masjid" width="35" height="35"
@@ -14,10 +24,11 @@
                 </div>
                 <div class="logo_name">
                     <span class=" h6 m-0 fw-semibold wrap-text">SAMAK-Kampus</span>
-                    <marquee behavior="scroll" direction="left" scrollamount="3" class="fw-light text-secondary"
-                        style="font-size: 10px; overflow: hidden; white-space: nowrap;">
-                        Sistem Aplikasi Managemen Aktivitas dan Keuangan Masjid Kampus
-                    </marquee>
+                    <div class="marquee-container">
+                        <span class="marquee-text fw-light text-secondary">
+                            Sistem Aplikasi Managemen Aktivitas dan Keuangan Masjid Kampus
+                        </span>
+                    </div>
                 </div>
             </a>
         </div>
@@ -130,10 +141,10 @@
             @endif
 
             {{-- 4. MODUL KEUANGAN (ZIS) --}}
-            {{-- Aktif jika path dimulai dengan admin/keuangan atau admin/donasi --}}
-            @if (auth()->user()->hasPermission('view_finance') || auth()->user()->hasPermission('view_banks'))
-                <li class="{{ request()->is('admin/keuangan*', 'admin/donasi*') ? 'showMenu' : '' }}">
-                    <div class="nav-button {{ request()->is('admin/keuangan*', 'admin/donasi*') ? 'active' : '' }}">
+            {{-- Aktif jika path dimulai dengan admin/keuangan atau admin/donasi atau admin/infaqs atau admin/settings --}}
+            @if (auth()->user()->hasPermission('view_finance') || auth()->user()->hasPermission('view_banks') || auth()->user()->hasPermission('view_infaq') || auth()->user()->hasPermission('manage_zakat_settings'))
+                <li class="{{ request()->is('admin/keuangan*', 'admin/donasi*', 'admin/infaqs*', 'admin/banks*', 'admin/settings/zakat*') ? 'showMenu' : '' }}">
+                    <div class="nav-button {{ request()->is('admin/keuangan*', 'admin/donasi*', 'admin/infaqs*', 'admin/banks*', 'admin/settings/zakat*') ? 'active' : '' }}">
                         <div class="iocn-link" onclick="expandMenu(this)">
                             <a>
                                 <i class="fa-light fa-hand-holding-dollar"></i>
@@ -173,6 +184,20 @@
                             <li class="nav-button {{ request()->is('admin/banks*') ? 'active' : '' }}">
                                 <a class="d-flex gap-2 fw-semibold" href="{{ route('admin.banks.index') }}">
                                     <span class="fa-regular fa-building-columns"></span> Manajemen Rekening
+                                </a>
+                            </li>
+                        @endif
+                        @if (auth()->user()->hasPermission('view_infaq'))
+                            <li class="nav-button {{ request()->is('admin/infaqs*') ? 'active' : '' }}">
+                                <a class="d-flex gap-2 fw-semibold" href="{{ route('admin.infaqs.index') }}">
+                                    <span class="fa-regular fa-hand-holding-seedling"></span> Program Infaq
+                                </a>
+                            </li>
+                        @endif
+                        @if (auth()->user()->hasPermission('manage_zakat_settings'))
+                            <li class="nav-button {{ request()->is('admin/settings/zakat*') ? 'active' : '' }}">
+                                <a class="d-flex gap-2 fw-semibold" href="{{ route('admin.settings.zakat.index') }}">
+                                    <span class="fa-regular fa-sliders"></span> Pengaturan Nisab
                                 </a>
                             </li>
                         @endif

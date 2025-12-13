@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/font-awesome/light.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/font-awesome/duotone.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/font-awesome/fontawesome.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/brands.min.css">
 
 
     <link rel="stylesheet" href="{{ asset('assets/css/navbar.css') }}">

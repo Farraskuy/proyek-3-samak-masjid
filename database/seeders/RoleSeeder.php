@@ -71,6 +71,15 @@ class RoleSeeder extends Seeder
             ['name' => 'edit_banks', 'group' => 'Bank'],
             ['name' => 'delete_banks', 'group' => 'Bank'],
 
+            // Infaq
+            ['name' => 'view_infaq', 'group' => 'Infaq'],
+            ['name' => 'create_infaq', 'group' => 'Infaq'],
+            ['name' => 'edit_infaq', 'group' => 'Infaq'],
+            ['name' => 'delete_infaq', 'group' => 'Infaq'],
+
+            // Pengaturan Zakat
+            ['name' => 'manage_zakat_settings', 'group' => 'Pengaturan'],
+
             // Barang Hilang
             ['name' => 'view_lost_items', 'group' => 'Barang Hilang'],
             ['name' => 'create_lost_items', 'group' => 'Barang Hilang'],
@@ -136,11 +145,19 @@ class RoleSeeder extends Seeder
         // --- Role: Bendahara Pemasukan ---
         $bendaharaMRole = Role::firstOrCreate(
             ['name' => 'Bendahara Pemasukan'], 
-            ['alias' => 'Bendahara Pemasukan', 'description' => 'Mengelola keuangan yang masuk']
+            ['alias' => 'Bendahara Pemasukan', 'description' => 'Mengelola keuangan masuk dan Infaq']
         );
-        $bendaharaMPermissions = Permission::whereIn('group', ['Dashboard', 'Keuangan', 'Bank'])
-            ->whereNotIn('name', ['delete_finance'])
+
+        $bendaharaMPermissions = Permission::whereIn('group', ['Dashboard', 'Keuangan', 'Bank', 'Infaq'])
+            ->whereNotIn('name', [
+                'manage_expense', 
+                'delete_finance', 
+                'create_banks', 
+                'edit_banks', 
+                'delete_banks'
+            ])
             ->get();
+            
         $bendaharaMRole->permissions()->sync($bendaharaMPermissions);
 
 
@@ -148,12 +165,34 @@ class RoleSeeder extends Seeder
         // --- Role: Bendahara Pengeluaran ---
         $bendaharaKRole = Role::firstOrCreate(
             ['name' => 'Bendahara Pengeluaran'], 
-            ['alias' => 'Bendahara Pengeluaran', 'description' => 'Mengelola keuangan yang keluar']
+            ['alias' => 'Bendahara Pengeluaran', 'description' => 'Mengelola keuangan keluar']
         );
+
         $bendaharaKPermissions = Permission::whereIn('group', ['Dashboard', 'Keuangan', 'Bank'])
-            ->whereNotIn('name', ['manage_income', 'verify_donation'])
+            ->whereNotIn('name', [
+                'manage_income', 
+                'verify_donation',
+                'delete_finance', 
+                'create_banks', 
+                'edit_banks', 
+                'delete_banks'
+            ])
             ->get();
+            
         $bendaharaKRole->permissions()->sync($bendaharaKPermissions);
+
+
+        // --- Role: Koordinator Bendahara ---
+        $koorBendaharaRole = Role::firstOrCreate(
+            ['name' => 'Koordinator Bendahara'], 
+            [
+                'alias' => 'Koor Bendahara', 
+                'description' => 'Supervisor keuangan, bank, dan infaq'
+            ]
+        );
+
+        $koorBendaharaPermissions = Permission::whereIn('group', ['Dashboard', 'Keuangan', 'Bank', 'Infaq'])->get();
+        $koorBendaharaRole->permissions()->sync($koorBendaharaPermissions);
 
 
 

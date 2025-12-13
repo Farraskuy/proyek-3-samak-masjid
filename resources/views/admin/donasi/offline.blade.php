@@ -171,6 +171,10 @@
         const ZAKAT_TYPES = @json($zakatTypes);
         const ZAKAT_BANKS = @json($zakatBanks);
         const INFAQ_BANKS = @json($infaqBanks);
+        const KAS_BANKS = @json($kasBanks ?? []);
+
+        // Combine infaq banks with kas for infaq destinations
+        const INFAQ_BANKS_WITH_KAS = [...INFAQ_BANKS, ...KAS_BANKS];
 
         const HARGA_EMAS = ZAKAT_CONFIG.harga_emas;
         const HARGA_BERAS = ZAKAT_CONFIG.harga_beras;
@@ -318,19 +322,24 @@
 
         function renderBanks() {
             const container = document.getElementById('bank-selection-container');
-            const banks = currentCategory === 'zakat' ? ZAKAT_BANKS : INFAQ_BANKS;
+            // Use INFAQ_BANKS_WITH_KAS for infaq to include kas option
+            const banks = currentCategory === 'zakat' ? ZAKAT_BANKS : INFAQ_BANKS_WITH_KAS;
 
             let html = '<div class="row g-3">';
             banks.forEach(bank => {
+                const isKas = bank.type === 'kas';
+                const badgeHtml = isKas ? '<span class="badge bg-success ms-2">Kas</span>' : '';
+                const accountDisplay = bank.account_number || (isKas ? 'Tunai / Kas Masjid' : '-');
+                
                 html += `
                 <div class="col-md-6">
-                    <label class="card h-100 border-0 shadow-sm p-3 cursor-pointer">
+                    <label class="card h-100 border-0 shadow-sm p-3 cursor-pointer ${isKas ? 'border-success border-2' : ''}">
                         <div class="d-flex align-items-center gap-3">
                             <input type="radio" name="bank_selection" value="${bank.account_id}" 
                                    class="form-check-input" onchange="selectBank(${bank.account_id})">
                             <div>
-                                <div class="fw-bold">${bank.bank_name}</div>
-                                <div class="small text-muted">${bank.account_number}</div>
+                                <div class="fw-bold">${bank.bank_name}${badgeHtml}</div>
+                                <div class="small text-muted">${accountDisplay}</div>
                             </div>
                         </div>
                     </label>

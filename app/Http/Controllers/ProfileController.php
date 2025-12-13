@@ -72,8 +72,7 @@ class ProfileController extends Controller
 
             DB::commit();
 
-            return redirect()->route('profile.edit')
-                ->with('success', 'Profil berhasil diperbarui');
+            return redirect()->route('profile.show')->with('success', 'Profil berhasil diperbarui');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());

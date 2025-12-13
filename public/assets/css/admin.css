@@ -51,13 +51,100 @@
     left: 0;
     height: 100%;
     width: 15rem;
-    z-index: 100;
+    z-index: 1045; /* Higher than Bootstrap offcanvas backdrop (1040) */
     transition: all 0.5s ease;
+}
+
+/* Ensure offcanvas-body fills sidebar height for flex scroll */
+.sidebar .offcanvas-body {
+    height: calc(100% - 0.5rem); /* Account for py-2 */
+    max-height: calc(100vh - 0.5rem);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .main.active .sidebar {
     width: 78px;
 }
+
+/* Override offcanvas-body overflow for collapsed mode to allow submenu hover */
+.main.active .sidebar .offcanvas-body {
+    overflow: visible !important;
+}
+
+/* Fix for offcanvas mobile sidebar */
+@media (max-width: 991.98px) {
+    .sidebar {
+        position: fixed !important;
+        z-index: 1055 !important; /* Above backdrop */
+    }
+    
+    .sidebar.offcanvas-lg {
+        width: 280px !important;
+    }
+    
+    .sidebar.offcanvas-lg.show,
+    .sidebar.offcanvas-lg.showing {
+        visibility: visible !important;
+    }
+    
+    /* Override .main.active sidebar width for mobile */
+    .main.active .sidebar {
+        width: 280px !important;
+    }
+    
+    /* Ensure text is visible in mobile sidebar - override .main.active */
+    .sidebar .logo .logo_name,
+    .main.active .sidebar .logo .logo_name,
+    .main.active .logo .logo_name {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        display: block !important;
+    }
+    
+    .sidebar .nav-links li a .link_name,
+    .main.active .sidebar .nav-links li a .link_name {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+    
+    .sidebar .nav-links li .sub-menu .link_name,
+    .main.active .sidebar .nav-links li .sub-menu .link_name {
+        display: block !important;
+        opacity: 1 !important;
+    }
+    
+    /* Fix submenu positioning for mobile - override absolute positioning */
+    .sidebar .nav-links li .sub-menu,
+    .main.active .sidebar .nav-links li .sub-menu {
+        position: relative !important;
+        left: 0 !important;
+        top: 0 !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        background-color: #f8f9fa !important;
+    }
+    
+    /* Arrow visibility - override .main.active hide */
+    .sidebar .nav-links i.arrow,
+    .main.active .sidebar .nav-links i.arrow {
+        display: inline-block !important;
+    }
+    
+    /* iocn-link display - override .main.active block */
+    .sidebar .nav-links li .iocn-link,
+    .main.active .sidebar .nav-links li .iocn-link {
+        display: flex !important;
+    }
+    
+    /* nav-links overflow - override .main.active visible */
+    .sidebar .nav-links,
+    .main.active .sidebar .nav-links {
+        overflow: auto !important;
+    }
+}
+
 
 .sidebar .logo {
     padding: 0 10px;
@@ -87,6 +174,25 @@
     text-decoration: none;
     color: black;
     transition: 0.3s ease;
+}
+
+/* Marquee animation for logo subtitle */
+.marquee-container {
+    width: 100%;
+    max-width: 150px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.marquee-text {
+    display: inline-block;
+    font-size: 10px;
+    animation: marquee 15s linear infinite;
+}
+
+@keyframes marquee {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
 }
 
 .main.active .logo .logo_name {
@@ -120,19 +226,22 @@
     background-color: #d2d9df;
 }
 
-
 .navbar .dropdown .dropdown-menu .dropdown-item:hover {
     background-color: #f5faff;
 }
 
 .sidebar .nav-links {
-    height: 100%;
+    flex: 1;
+    min-height: 0; /* Critical for flex scroll to work */
     padding: 0 0 50px;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .main.active .sidebar .nav-links {
-    overflow: visible;
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
 }
 
 .sidebar .nav-links::-webkit-scrollbar {
@@ -225,7 +334,6 @@
     box-shadow: none !important;
 }
 
-
 .main.active .sidebar .nav-links li .sub-menu {
     max-height: initial;
     padding: 10px 10px;
@@ -261,7 +369,6 @@
     font-size: 13px;
     /* padding: 10px 20px; */
 }
-
 
 .sidebar .nav-links li .sub-menu a {
     font-size: 13px;
@@ -417,7 +524,7 @@ input[type="text"]:read-only {
 
 .floating-label.mustFilled::before {
     position: absolute;
-    content: '*';
+    content: "*";
     top: 0;
     z-index: 1;
     transform: translate(-5px, -10px);
@@ -446,7 +553,7 @@ fieldset:disabled {
 }
 
 .mustFilled::before {
-    content: '* ';
+    content: "* ";
     color: red;
     font-size: 14px;
 }
@@ -610,11 +717,11 @@ fieldset:disabled {
     color: black !important;
 }
 
-.tanggal-wrapper>div {
+.tanggal-wrapper > div {
     display: none;
 }
 
-.tanggal-wrapper>div.show {
+.tanggal-wrapper > div.show {
     display: block;
 }
 
@@ -678,4 +785,321 @@ fieldset:disabled {
     border-top: none;
 }
 
+/* ============================================
+   RESPONSIVE STYLES FOR ADMIN PANEL
+   ============================================ */
 
+/* Large screens (desktops) */
+@media (min-width: 992px) {
+    .main {
+        padding-left: 15rem;
+    }
+
+    .main.active {
+        padding-left: 78px;
+    }
+}
+
+/* Medium screens (tablets) */
+@media (max-width: 991.98px) {
+    .main {
+        padding-left: 0 !important;
+    }
+
+    .main.active {
+        padding-left: 0 !important;
+    }
+
+    .sidebar {
+        width: 280px !important;
+    }
+
+    /* Content padding adjustments */
+    .container-fluid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    /* Table responsive */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table {
+        min-width: 600px;
+    }
+
+    /* Card adjustments */
+    .card {
+        margin-bottom: 1rem;
+    }
+
+    /* Form adjustments */
+    .row > [class*="col-lg"],
+    .row > [class*="col-md"] {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Small screens (phones) */
+@media (max-width: 767.98px) {
+    /* Navbar adjustments */
+    .navbar .container-fluid {
+        padding: 0.5rem;
+    }
+
+    .navbar .dropdown > a > div {
+        width: auto !important;
+    }
+
+    .navbar .dropdown > a > div > .col-9 {
+        display: none !important;
+    }
+
+    .navbar .dropdown > a > div > .col-3 {
+        width: 100% !important;
+    }
+
+    /* Content padding */
+    main .container-fluid,
+    main .container {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    /* Reduce page title size */
+    h1,
+    .h1 {
+        font-size: 1.5rem;
+    }
+
+    h2,
+    .h2 {
+        font-size: 1.25rem;
+    }
+
+    h3,
+    .h3 {
+        font-size: 1.1rem;
+    }
+
+    /* Cards */
+    .card-body {
+        padding: 1rem;
+    }
+
+    /* Tables */
+    .table {
+        font-size: 12px;
+    }
+
+    .table td,
+    .table th {
+        padding: 0.5rem 0.35rem;
+        font-size: 12px;
+    }
+
+    .table td.fit,
+    .table th.fit {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    /* Action buttons in table */
+    .table .btn-sm {
+        padding: 0.2rem 0.4rem;
+        font-size: 11px;
+    }
+
+    .table .btn-group {
+        flex-wrap: wrap;
+        gap: 2px;
+    }
+
+    /* Forms */
+    .form-control,
+    .form-select {
+        font-size: 14px;
+    }
+
+    .btn {
+        font-size: 13px;
+    }
+
+    /* Flex adjustments */
+    .d-flex.gap-2,
+    .d-flex.gap-3 {
+        gap: 0.5rem !important;
+    }
+
+    /* Stats cards on dashboard */
+    .home-item {
+        min-width: 100%;
+        padding: 0.75rem;
+    }
+
+    /* Modal adjustments */
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    .modal-content {
+        border-radius: 0.5rem;
+    }
+
+    /* Badge adjustments */
+    .badge {
+        font-size: 10px;
+        padding: 0.3em 0.5em;
+    }
+
+    /* Pagination */
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .pagination .page-link {
+        padding: 0.35rem 0.6rem;
+        font-size: 12px;
+    }
+
+    /* Filter/Search forms */
+    .row.g-2 > .col-auto,
+    .row.g-3 > .col-auto {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Button groups */
+    .btn-group-vertical {
+        width: 100%;
+    }
+
+    /* Hide less important columns on mobile */
+    .d-none-mobile {
+        display: none !important;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 575.98px) {
+    /* Full width buttons */
+    .btn-toolbar {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .btn-toolbar .btn,
+    .btn-toolbar .btn-group {
+        width: 100%;
+    }
+
+    /* Stack action buttons */
+    .table .d-flex.gap-1 {
+        flex-direction: column;
+        gap: 0.25rem !important;
+    }
+
+    .table .d-flex.gap-1 .btn {
+        width: 100%;
+    }
+
+    /* Smaller font sizes */
+    .fs-13px {
+        font-size: 11px !important;
+    }
+    .fs-14px {
+        font-size: 12px !important;
+    }
+    .fs-15px {
+        font-size: 13px !important;
+    }
+
+    /* Tab navigation */
+    .nav-tabs,
+    .nav-pills {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-tabs .nav-link,
+    .nav-pills .nav-link {
+        white-space: nowrap;
+        font-size: 12px;
+        padding: 0.4rem 0.75rem;
+    }
+
+    /* Date range picker */
+    .daterangepicker {
+        width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+
+    /* Chart container */
+    canvas {
+        max-width: 100%;
+        height: auto !important;
+    }
+}
+
+/* Utility classes for responsive */
+.overflow-x-auto {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.text-truncate-2 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* Touch friendly buttons */
+@media (hover: none) and (pointer: coarse) {
+    .btn {
+        min-height: 44px;
+        padding: 0.5rem 1rem;
+    }
+
+    .btn-sm {
+        min-height: 36px;
+        padding: 0.35rem 0.75rem;
+    }
+
+    .table .btn-sm {
+        min-height: 32px;
+    }
+
+    .dropdown-item {
+        padding: 0.75rem 1rem;
+    }
+
+    .nav-link {
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* Print styles */
+@media print {
+    .sidebar,
+    .navbar,
+    .btn,
+    .pagination,
+    .modal {
+        display: none !important;
+    }
+
+    .main {
+        padding-left: 0 !important;
+    }
+
+    .table {
+        font-size: 10px;
+    }
+}

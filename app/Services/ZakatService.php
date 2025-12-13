@@ -2,15 +2,27 @@
 
 namespace App\Services;
 
+use App\Models\WebsiteInformation;
 use InvalidArgumentException;
 
 class ZakatService
 {
     protected array $config;
+    protected ?array $dbSettings = null;
 
     public function __construct()
     {
         $this->config = config('zakat-config');
+        $this->loadDbSettings();
+    }
+
+    /**
+     * Load settings from database
+     */
+    protected function loadDbSettings(): void
+    {
+        $websiteInfo = WebsiteInformation::first();
+        $this->dbSettings = $websiteInfo?->zakat_settings ?? null;
     }
 
     /**
@@ -30,19 +42,19 @@ class ZakatService
     }
 
     /**
-     * Get current gold price per gram
+     * Get current gold price per gram (from database first, fallback to config)
      */
     public function getHargaEmas(): int
     {
-        return $this->config['harga_emas_per_gram'] ?? 1300000;
+        return (int) ($this->dbSettings['harga_emas_per_gram'] ?? $this->config['harga_emas_per_gram'] ?? 1300000);
     }
 
     /**
-     * Get current rice price per kg
+     * Get current rice price per kg (from database first, fallback to config)
      */
     public function getHargaBeras(): int
     {
-        return $this->config['harga_beras_per_kg'] ?? 13500;
+        return (int) ($this->dbSettings['harga_beras_per_kg'] ?? $this->config['harga_beras_per_kg'] ?? 13500);
     }
 
     /**
