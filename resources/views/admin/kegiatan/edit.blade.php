@@ -233,12 +233,47 @@
                             <label class="form-check-label" for="checkPJ">Aktifkan PJ Acara</label>
                         </div>
 
-                        <div id="pjInfoContainer" class="alert alert-light border small text-muted"
+                        <div id="pjInfoContainer" class="mt-3"
                             style="display:{{ $event->has_pj ? 'block' : 'none' }};">
                             @if ($event->has_pj && $event->pjUser)
-                                <strong>PJ Aktif:</strong><br>{{ $event->pjUser->name }}
+                                <div class="alert alert-info small mb-0">
+                                    <p class="fw-semibold mb-2"><i class="fas fa-user-shield me-1"></i>Kredensial PJ</p>
+                                    
+                                    <div class="mb-2">
+                                        <small class="text-muted">Email:</small>
+                                        <div class="input-group input-group-sm">
+                                            <input type="text" class="form-control" value="{{ $event->pjUser->email }}" readonly id="pjEmail">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="copyToClipboard('pjEmail')" title="Copy">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-2">
+                                        <small class="text-muted">Password:</small>
+                                        <div class="input-group input-group-sm">
+                                            <input type="text" class="form-control" value="{{ $event->pjUser->pj_password ?? 'Hubungi Admin' }}" readonly id="pjPassword">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="copyToClipboard('pjPassword')" title="Copy">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <small class="text-muted">Nama:</small>
+                                        <div class="input-group input-group-sm">
+                                            <input type="text" class="form-control" value="{{ $event->pjUser->name }}" readonly id="pjName">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="copyToClipboard('pjName')" title="Copy">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             @else
-                                Akun PJ akan dibuat otomatis. Kredensial muncul setelah disimpan.
+                                <div class="alert alert-light border small text-muted mb-0">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Akun PJ akan dibuat otomatis. Kredensial muncul setelah disimpan.
+                                </div>
                             @endif
                         </div>
                     </div>
@@ -341,4 +376,25 @@
             }
         });
     });
+    
+    // Copy to clipboard function
+    function copyToClipboard(elementId) {
+        const input = document.getElementById(elementId);
+        input.select();
+        input.setSelectionRange(0, 99999);
+        document.execCommand('copy');
+        
+        // Show feedback
+        const btn = input.nextElementSibling;
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i>';
+        btn.classList.add('btn-success');
+        btn.classList.remove('btn-outline-secondary');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalHtml;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-secondary');
+        }, 1500);
+    }
 </script>
