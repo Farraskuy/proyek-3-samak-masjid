@@ -57,34 +57,47 @@
                 <p class="text-white-50">Dapatkan update terbaru dari kami.</p>
                 <div class="d-flex gap-2">
                     @php
-                        // Normalize socials to array of objects
-                        if (is_array($socials) && !array_is_list($socials) && !empty($socials)) {
-                            $newSocials = [];
-                            foreach ($socials as $key => $val) {
-                                if ($val) {
-                                    $newSocials[] = ['platform' => $key, 'url' => $val];
+                        if (is_array($socials) && !empty($socials)) {
+                            $firstItem = reset($socials);
+
+                            if (is_array($firstItem) && isset($firstItem['platform'])) {
+                                $socials = array_values($socials);
+                            } else {
+                                // It is the OLD format (platform => url)
+                                // Convert to new format
+                                $newSocials = [];
+                                foreach ($socials as $key => $val) {
+                                    if ($val) {
+                                        $newSocials[] = ['platform' => $key, 'url' => $val];
+                                    }
                                 }
+                                $socials = $newSocials;
                             }
-                            $socials = $newSocials;
                         }
                     @endphp
 
                     @if (!empty($socials) && is_array($socials))
                         @foreach ($socials as $social)
-                            @if (!empty($social['url']))
-                                <a href="{{ $social['url'] }}" class="social-icon" target="_blank"
-                                    title="{{ ucfirst($social['platform'] ?? 'link') }}">
-                                    @if (($social['platform'] ?? '') == 'facebook')
+                            @php
+                                $rawUrl = $social['url'] ?? '';
+                                $url = is_array($rawUrl) ? $rawUrl[0] ?? '' : $rawUrl;
+                                $platform = $social['platform'] ?? '';
+                            @endphp
+
+                            @if (!empty($url))
+                                <a href="{{ $url }}" class="social-icon" target="_blank"
+                                    title="{{ ucfirst($platform ?: 'link') }}">
+                                    @if ($platform == 'facebook')
                                         <i class="fab fa-facebook-f"></i>
-                                    @elseif(($social['platform'] ?? '') == 'instagram')
+                                    @elseif($platform == 'instagram')
                                         <i class="fab fa-instagram"></i>
-                                    @elseif(($social['platform'] ?? '') == 'twitter')
+                                    @elseif($platform == 'twitter')
                                         <i class="fab fa-twitter"></i>
-                                    @elseif(($social['platform'] ?? '') == 'youtube')
+                                    @elseif($platform == 'youtube')
                                         <i class="fab fa-youtube"></i>
-                                    @elseif(($social['platform'] ?? '') == 'tiktok')
+                                    @elseif($platform == 'tiktok')
                                         <i class="fab fa-tiktok"></i>
-                                    @elseif(($social['platform'] ?? '') == 'linkedin')
+                                    @elseif($platform == 'linkedin')
                                         <i class="fab fa-linkedin-in"></i>
                                     @else
                                         <i class="fas fa-link"></i>

@@ -81,7 +81,13 @@ class WebsiteInformationController extends Controller
             'footer_phone' => 'nullable|string',
             'footer_email' => 'nullable|email',
             'footer_social_links' => 'nullable|array',
+            'footer_social_links' => 'nullable|array',
         ]);
+
+        if (isset($validated['footer_social_links'])) {
+             // Reset array keys to ensure it's saved as a JSON List (not Object)
+             $validated['footer_social_links'] = array_values($validated['footer_social_links']);
+        }
 
         // 2. Proses Featured Image (Gambar Utama)
         if ($request->hasFile('featured_image_url')) {
@@ -184,6 +190,11 @@ class WebsiteInformationController extends Controller
             'footer_email' => 'nullable|email',
             'footer_social_links' => 'nullable|array',
         ]);
+
+        if (isset($validated['footer_social_links'])) {
+             // Reset array keys
+             $validated['footer_social_links'] = array_values($validated['footer_social_links']);
+        }
 
 
         // ==========================================================
