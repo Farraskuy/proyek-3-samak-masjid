@@ -143,8 +143,8 @@
             {{-- 4. MODUL KEUANGAN (ZIS) --}}
             {{-- Aktif jika path dimulai dengan admin/keuangan atau admin/donasi atau admin/infaqs atau admin/settings --}}
             @if (auth()->user()->hasPermission('view_finance') || auth()->user()->hasPermission('view_banks') || auth()->user()->hasPermission('view_infaq') || auth()->user()->hasPermission('manage_zakat_settings'))
-                <li class="{{ request()->is('admin/keuangan*', 'admin/donasi*', 'admin/infaqs*', 'admin/banks*', 'admin/settings/zakat*') ? 'showMenu' : '' }}">
-                    <div class="nav-button {{ request()->is('admin/keuangan*', 'admin/donasi*', 'admin/infaqs*', 'admin/banks*', 'admin/settings/zakat*') ? 'active' : '' }}">
+                <li class="{{ request()->is('admin/keuangan*', 'admin/donasi*', 'admin/infaqs*', 'admin/banks*', 'admin/settings/zakat*', 'admin/dashboard-keuangan*') ? 'showMenu' : '' }}">
+                    <div class="nav-button {{ request()->is('admin/keuangan*', 'admin/donasi*', 'admin/infaqs*', 'admin/banks*', 'admin/settings/zakat*', 'admin/dashboard-keuangan*') ? 'active' : '' }}">
                         <div class="iocn-link" onclick="expandMenu(this)">
                             <a>
                                 <i class="fa-light fa-hand-holding-dollar"></i>
@@ -155,6 +155,13 @@
                     </div>
                     <ul class="sub-menu">
                         <li><span class="link_name fw-semibold">Keuangan (ZIS)</span></li>
+                        @if (auth()->user()->hasPermission('view_finance'))
+                            <li class="nav-button {{ request()->is('admin/dashboard-keuangan*') ? 'active' : '' }}">
+                                <a class="d-flex gap-2 fw-semibold" href="{{ route('admin.finance.dashboard') }}">
+                                    <span class="fa-regular fa-chart-pie"></span> Dashboard Keuangan
+                                </a>
+                            </li>
+                        @endif
                         @if (auth()->user()->hasPermission('verify_donation'))
                             <li class="nav-button {{ request()->is('admin/donasi/verifikasi*') ? 'active' : '' }}">
                                 <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/donasi/verifikasi') }}">
@@ -265,6 +272,21 @@
                     </div>
                     <ul class="sub-menu blank">
                         <li class="fw-semibold link_name">Manajemen Role</li>
+                    </ul>
+                </li>
+            @endif
+
+            {{-- 8. BACKUP DATABASE (Admin Only) --}}
+            @if (auth()->user()->hasPermission('manage_backup'))
+                <li>
+                    <div class="nav-button {{ request()->is('admin/backup*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.backup.index') }}">
+                            <i class="fa-regular fa-database"></i>
+                            <span class="link_name">Backup Database</span>
+                        </a>
+                    </div>
+                    <ul class="sub-menu blank">
+                        <li class="fw-semibold link_name">Backup Database</li>
                     </ul>
                 </li>
             @endif

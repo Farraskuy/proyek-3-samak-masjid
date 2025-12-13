@@ -60,7 +60,7 @@
                                 <div>
                                     <p class="fw-semibold m-0">Manajemen Postingan <i class="fa-regular fa-arrow-right"></i>
                                     </p>
-                                    <p class="m-0 text-secondary">CRUD Berita/Artikel/Tausiyah </p>
+                                    <p class="m-0 text-secondary">CRUD Berita/Artikel/Tausiyah</p>
                                 </div>
                             </a>
                         @endcan
@@ -95,6 +95,30 @@
                                     <p class="fw-semibold m-0">Manajemen Kegiatan <i class="fa-regular fa-arrow-right"></i>
                                     </p>
                                     <p class="m-0 text-secondary">Jadwal Kajian/Seminar </p>
+                                </div>
+                            </a>
+                        @endcan
+
+                        {{-- 5. Form Builder (Formulir Pendaftaran) --}}
+                        @can('view_events')
+                            <a href="{{ route('admin.forms.index') }}" class="btn text-start home-item">
+                                <i class="fa-duotone icon fa-clipboard-list" style="color: #17a2b8"></i>
+                                <div>
+                                    <p class="fw-semibold m-0">Form Builder <i class="fa-regular fa-arrow-right"></i>
+                                    </p>
+                                    <p class="m-0 text-secondary">Buat Formulir Pendaftaran</p>
+                                </div>
+                            </a>
+                        @endcan
+
+                        {{-- 6. Manajemen Peserta (Responses) --}}
+                        @can('view_events')
+                            <a href="{{ route('admin.forms.index') }}" class="btn text-start home-item">
+                                <i class="fa-duotone icon fa-users-line" style="color: #6610f2"></i>
+                                <div>
+                                    <p class="fw-semibold m-0">Manajemen Peserta <i class="fa-regular fa-arrow-right"></i>
+                                    </p>
+                                    <p class="m-0 text-secondary">Lihat Pendaftaran Kegiatan</p>
                                 </div>
                             </a>
                         @endcan
@@ -155,6 +179,30 @@
                                     <p class="fw-semibold m-0">Manajemen Rekening <i class="fa-regular fa-arrow-right"></i>
                                     </p>
                                     <p class="m-0 text-secondary">Atur Bank Zakat & Infak </p>
+                                </div>
+                            </a>
+                        @endcan
+
+                        {{-- 9. Pengaturan Nisab Zakat --}}
+                        @can('manage_zakat_settings')
+                            <a href="{{ route('admin.settings.zakat.index') }}" class="btn text-start home-item">
+                                <i class="fa-duotone icon fa-gear" style="color: #ffc107"></i>
+                                <div>
+                                    <p class="fw-semibold m-0">Pengaturan Nisab <i class="fa-regular fa-arrow-right"></i>
+                                    </p>
+                                    <p class="m-0 text-secondary">Atur Nisab Zakat Emas & Beras</p>
+                                </div>
+                            </a>
+                        @endcan
+
+                        {{-- 10. Program Infaq --}}
+                        @can('view_infaq')
+                            <a href="{{ route('admin.infaqs.index') }}" class="btn text-start home-item">
+                                <i class="fa-duotone icon fa-hand-holding-heart" style="color: #fd7e14"></i>
+                                <div>
+                                    <p class="fw-semibold m-0">Program Infaq <i class="fa-regular fa-arrow-right"></i>
+                                    </p>
+                                    <p class="m-0 text-secondary">Kelola Program Infaq</p>
                                 </div>
                             </a>
                         @endcan
