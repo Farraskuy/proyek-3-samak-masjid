@@ -149,6 +149,11 @@ Route::middleware('auth')->prefix('konsultasi-saya')->name('client.consultations
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware('permission:view_dashboard');
+    
+    // Finance Dashboard (Koordinator Bendahara)
+    Route::get('/dashboard-keuangan', [App\Http\Controllers\Admin\FinanceDashboardController::class, 'index'])
+        ->name('finance.dashboard')
+        ->middleware('permission:view_finance');
 
     // Role Management
     Route::prefix('roles')->name('roles.')->group(function () {
@@ -314,6 +319,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::get('/password', [AdminProfileController::class, 'password'])->name('password');
         Route::put('/update', [AdminProfileController::class, 'update'])->name('update');
         Route::put('/change-password', [AdminProfileController::class, 'changePassword'])->name('change-password');
+    });
+
+    // Backup Database (Admin Only)
+    Route::prefix('backup')->name('backup.')->middleware('permission:manage_backup')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\BackupController::class, 'index'])->name('index');
+        Route::post('/', [App\Http\Controllers\Admin\BackupController::class, 'store'])->name('store');
+        Route::post('/import', [App\Http\Controllers\Admin\BackupController::class, 'import'])->name('import');
+        Route::post('/schedule', [App\Http\Controllers\Admin\BackupController::class, 'updateSchedule'])->name('schedule.update');
+        Route::get('/download/{filename}', [App\Http\Controllers\Admin\BackupController::class, 'download'])->name('download');
+        Route::post('/restore/{filename}', [App\Http\Controllers\Admin\BackupController::class, 'restore'])->name('restore');
+        Route::delete('/{filename}', [App\Http\Controllers\Admin\BackupController::class, 'destroy'])->name('destroy');
     });
 });
 
