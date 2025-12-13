@@ -192,9 +192,177 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                    </div>
                                     @endforeach
                                 </div>
+                            </div>
+                        @endif
+
+                        {{-- Registration Form Section --}}
+                        @if ($event->has_registration_form && $event->registrationForm)
+                            <div class="mb-5" id="registration-section">
+                                <div class="d-flex align-items-center mb-4">
+                                    <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                        <i class="fas fa-clipboard-list text-success"></i>
+                                    </div>
+                                    <h4 class="fw-bold mb-0" style="color: #175C9E;">
+                                        Formulir Pendaftaran
+                                    </h4>
+                                </div>
+
+                                @if ($eventEnded)
+                                    {{-- Event has ended --}}
+                                    <div class="alert alert-secondary rounded-4">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-lock fa-2x me-3 text-secondary"></i>
+                                            <div>
+                                                <h5 class="mb-1">Pendaftaran Ditutup</h5>
+                                                <p class="mb-0">Kegiatan ini telah selesai dilaksanakan. Formulir pendaftaran sudah tidak tersedia.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @elseif ($hasRegistered)
+                                    {{-- Already registered --}}
+                                    <div class="alert alert-success rounded-4">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-check-circle fa-2x me-3 text-success"></i>
+                                            <div>
+                                                <h5 class="mb-1">Anda Sudah Terdaftar</h5>
+                                                <p class="mb-0">Terima kasih! Anda sudah terdaftar untuk kegiatan ini.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    {{-- Show registration form --}}
+                                    <div class="card border-0 shadow-sm rounded-4">
+                                        <div class="card-body p-4">
+                                            @if (session('success'))
+                                                <div class="alert alert-success alert-dismissible fade show rounded-3" role="alert">
+                                                    <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                                </div>
+                                            @endif
+
+                                            @if (session('error'))
+                                                <div class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
+                                                    <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                                </div>
+                                            @endif
+
+                                            @if ($event->registrationForm->description)
+                                                <p class="text-muted mb-4">{{ $event->registrationForm->description }}</p>
+                                            @endif
+
+                                            <form action="{{ route('kegiatan.register', ['eventId' => $event->event_id]) }}" method="POST" id="registration-form">
+                                                @csrf
+                                                
+                                                @foreach ($event->registrationForm->fields as $field)
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-semibold">
+                                                            {{ $field->label }}
+                                                            @if ($field->is_required)
+                                                                <span class="text-danger">*</span>
+                                                            @endif
+                                                        </label>
+
+                                                        @switch($field->type)
+                                                            @case('text')
+                                                            @case('email')
+                                                            @case('number')
+                                                            @case('tel')
+                                                                <input type="{{ $field->type }}" 
+                                                                    name="{{ $field->name }}" 
+                                                                    class="form-control @error($field->name) is-invalid @enderror"
+                                                                    placeholder="{{ $field->placeholder }}"
+                                                                    value="{{ old($field->name) }}"
+                                                                    {{ $field->is_required ? 'required' : '' }}>
+                                                                @break
+
+                                                            @case('textarea')
+                                                                <textarea name="{{ $field->name }}" 
+                                                                    class="form-control @error($field->name) is-invalid @enderror"
+                                                                    placeholder="{{ $field->placeholder }}"
+                                                                    rows="4"
+                                                                    {{ $field->is_required ? 'required' : '' }}>{{ old($field->name) }}</textarea>
+                                                                @break
+
+                                                            @case('select')
+                                                                <select name="{{ $field->name }}" 
+                                                                    class="form-select @error($field->name) is-invalid @enderror"
+                                                                    {{ $field->is_required ? 'required' : '' }}>
+                                                                    <option value="">-- Pilih --</option>
+                                                                    @if ($field->options)
+                                                                        @foreach (explode(',', $field->options) as $option)
+                                                                            <option value="{{ trim($option) }}" {{ old($field->name) == trim($option) ? 'selected' : '' }}>
+                                                                                {{ trim($option) }}
+                                                                            </option>
+                                                                        @endforeach
+                                                                    @endif
+                                                                </select>
+                                                                @break
+
+                                                            @case('radio')
+                                                                @if ($field->options)
+                                                                    @foreach (explode(',', $field->options) as $option)
+                                                                        <div class="form-check">
+                                                                            <input type="radio" 
+                                                                                name="{{ $field->name }}" 
+                                                                                value="{{ trim($option) }}"
+                                                                                class="form-check-input @error($field->name) is-invalid @enderror"
+                                                                                id="{{ $field->name }}_{{ Str::slug($option) }}"
+                                                                                {{ old($field->name) == trim($option) ? 'checked' : '' }}
+                                                                                {{ $field->is_required ? 'required' : '' }}>
+                                                                            <label class="form-check-label" for="{{ $field->name }}_{{ Str::slug($option) }}">
+                                                                                {{ trim($option) }}
+                                                                            </label>
+                                                                        </div>
+                                                                    @endforeach
+                                                                @endif
+                                                                @break
+
+                                                            @case('checkbox')
+                                                                @if ($field->options)
+                                                                    @foreach (explode(',', $field->options) as $option)
+                                                                        <div class="form-check">
+                                                                            <input type="checkbox" 
+                                                                                name="{{ $field->name }}[]" 
+                                                                                value="{{ trim($option) }}"
+                                                                                class="form-check-input"
+                                                                                id="{{ $field->name }}_{{ Str::slug($option) }}"
+                                                                                {{ is_array(old($field->name)) && in_array(trim($option), old($field->name)) ? 'checked' : '' }}>
+                                                                            <label class="form-check-label" for="{{ $field->name }}_{{ Str::slug($option) }}">
+                                                                                {{ trim($option) }}
+                                                                            </label>
+                                                                        </div>
+                                                                    @endforeach
+                                                                @endif
+                                                                @break
+
+                                                            @default
+                                                                <input type="text" 
+                                                                    name="{{ $field->name }}" 
+                                                                    class="form-control"
+                                                                    placeholder="{{ $field->placeholder }}"
+                                                                    value="{{ old($field->name) }}"
+                                                                    {{ $field->is_required ? 'required' : '' }}>
+                                                        @endswitch
+
+                                                        @error($field->name)
+                                                            <div class="invalid-feedback">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                @endforeach
+
+                                                <div class="d-grid mt-4">
+                                                    <button type="submit" class="btn btn-success btn-lg rounded-pill" id="submit-btn">
+                                                        <i class="fas fa-paper-plane me-2"></i>Daftar Kegiatan
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         @endif
 

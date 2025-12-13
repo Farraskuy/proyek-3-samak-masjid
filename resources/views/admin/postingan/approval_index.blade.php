@@ -82,7 +82,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center">
+                                    <td colspan="7" class="text-center">
                                         <div class="py-4">
                                             <img src="{{ asset('assets/images/no-data.png') }}" alt="No data"
                                                 style="max-width:240px; opacity: 0.5;">

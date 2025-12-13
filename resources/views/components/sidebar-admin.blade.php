@@ -141,10 +141,10 @@
             @endif
 
             {{-- 4. MODUL KEUANGAN (ZIS) --}}
-            {{-- Aktif jika path dimulai dengan admin/keuangan atau admin/donasi atau admin/infaqs --}}
-            @if (auth()->user()->hasPermission('view_finance') || auth()->user()->hasPermission('view_banks') || auth()->user()->hasPermission('view_infaq'))
-                <li class="{{ request()->is('admin/keuangan*', 'admin/donasi*', 'admin/infaqs*') ? 'showMenu' : '' }}">
-                    <div class="nav-button {{ request()->is('admin/keuangan*', 'admin/donasi*', 'admin/infaqs*') ? 'active' : '' }}">
+            {{-- Aktif jika path dimulai dengan admin/keuangan atau admin/donasi atau admin/infaqs atau admin/settings --}}
+            @if (auth()->user()->hasPermission('view_finance') || auth()->user()->hasPermission('view_banks') || auth()->user()->hasPermission('view_infaq') || auth()->user()->hasPermission('manage_zakat_settings'))
+                <li class="{{ request()->is('admin/keuangan*', 'admin/donasi*', 'admin/infaqs*', 'admin/banks*', 'admin/settings/zakat*') ? 'showMenu' : '' }}">
+                    <div class="nav-button {{ request()->is('admin/keuangan*', 'admin/donasi*', 'admin/infaqs*', 'admin/banks*', 'admin/settings/zakat*') ? 'active' : '' }}">
                         <div class="iocn-link" onclick="expandMenu(this)">
                             <a>
                                 <i class="fa-light fa-hand-holding-dollar"></i>
@@ -191,6 +191,13 @@
                             <li class="nav-button {{ request()->is('admin/infaqs*') ? 'active' : '' }}">
                                 <a class="d-flex gap-2 fw-semibold" href="{{ route('admin.infaqs.index') }}">
                                     <span class="fa-regular fa-hand-holding-seedling"></span> Program Infaq
+                                </a>
+                            </li>
+                        @endif
+                        @if (auth()->user()->hasPermission('manage_zakat_settings'))
+                            <li class="nav-button {{ request()->is('admin/settings/zakat*') ? 'active' : '' }}">
+                                <a class="d-flex gap-2 fw-semibold" href="{{ route('admin.settings.zakat.index') }}">
+                                    <span class="fa-regular fa-sliders"></span> Pengaturan Nisab
                                 </a>
                             </li>
                         @endif

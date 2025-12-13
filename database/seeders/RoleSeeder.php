@@ -77,6 +77,9 @@ class RoleSeeder extends Seeder
             ['name' => 'edit_infaq', 'group' => 'Infaq'],
             ['name' => 'delete_infaq', 'group' => 'Infaq'],
 
+            // Pengaturan Zakat
+            ['name' => 'manage_zakat_settings', 'group' => 'Pengaturan'],
+
             // Barang Hilang
             ['name' => 'view_lost_items', 'group' => 'Barang Hilang'],
             ['name' => 'create_lost_items', 'group' => 'Barang Hilang'],

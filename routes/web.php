@@ -100,7 +100,11 @@ Route::prefix('jadwal-kegiatan')->group(function () {
     Route::get('/data', [JadwalKegiatanController::class, 'getData'])->name('jadwal.data');
     Route::get('/by-date', [JadwalKegiatanController::class, 'getEventByDate']);
     Route::get('/{id}', [JadwalKegiatanController::class, 'show'])->name('jadwal.detail');
+    Route::post('/{eventId}/register', [JadwalKegiatanController::class, 'register'])->name('kegiatan.register');
 });
+
+// Registration history (IP-based, no login required)
+Route::get('/histori-pendaftaran', [JadwalKegiatanController::class, 'registrationHistory'])->name('kegiatan.history');
 // Gallery
 Route::prefix('galeri')->group(function () {
     Route::get('/', [GaleriController::class, 'guestIndex'])->name('galeri.index');
@@ -296,6 +300,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
             Route::put('/update/{id}', 'update')->name('update')->middleware('permission:edit_pages'); // Added middleware
             Route::delete('/delete/{id}', 'destroy')->name('delete')->middleware('permission:delete_pages'); // Added middleware
         });
+
+    // Pengaturan Nisab Zakat
+    Route::prefix('settings')->name('settings.')->middleware('permission:manage_zakat_settings')->group(function () {
+        Route::get('/zakat', [App\Http\Controllers\Admin\ZakatSettingController::class, 'index'])->name('zakat.index');
+        Route::put('/zakat', [App\Http\Controllers\Admin\ZakatSettingController::class, 'update'])->name('zakat.update');
+    });
 
     // Admin Profile (Available to all authorized admins)
     Route::prefix('profile')->name('profile.')->group(function () {
