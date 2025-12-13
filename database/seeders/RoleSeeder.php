@@ -142,11 +142,19 @@ class RoleSeeder extends Seeder
         // --- Role: Bendahara Pemasukan ---
         $bendaharaMRole = Role::firstOrCreate(
             ['name' => 'Bendahara Pemasukan'], 
-            ['alias' => 'Bendahara Pemasukan', 'description' => 'Mengelola keuangan yang masuk']
+            ['alias' => 'Bendahara Pemasukan', 'description' => 'Mengelola keuangan masuk dan Infaq']
         );
-        $bendaharaMPermissions = Permission::whereIn('group', ['Dashboard', 'Keuangan', 'Bank'])
-            ->whereNotIn('name', ['delete_finance'])
+
+        $bendaharaMPermissions = Permission::whereIn('group', ['Dashboard', 'Keuangan', 'Bank', 'Infaq'])
+            ->whereNotIn('name', [
+                'manage_expense', 
+                'delete_finance', 
+                'create_banks', 
+                'edit_banks', 
+                'delete_banks'
+            ])
             ->get();
+            
         $bendaharaMRole->permissions()->sync($bendaharaMPermissions);
 
 
@@ -154,11 +162,20 @@ class RoleSeeder extends Seeder
         // --- Role: Bendahara Pengeluaran ---
         $bendaharaKRole = Role::firstOrCreate(
             ['name' => 'Bendahara Pengeluaran'], 
-            ['alias' => 'Bendahara Pengeluaran', 'description' => 'Mengelola keuangan yang keluar']
+            ['alias' => 'Bendahara Pengeluaran', 'description' => 'Mengelola keuangan keluar']
         );
+
         $bendaharaKPermissions = Permission::whereIn('group', ['Dashboard', 'Keuangan', 'Bank'])
-            ->whereNotIn('name', ['manage_income', 'verify_donation'])
+            ->whereNotIn('name', [
+                'manage_income', 
+                'verify_donation',
+                'delete_finance', 
+                'create_banks', 
+                'edit_banks', 
+                'delete_banks'
+            ])
             ->get();
+            
         $bendaharaKRole->permissions()->sync($bendaharaKPermissions);
 
 
@@ -167,10 +184,10 @@ class RoleSeeder extends Seeder
             ['name' => 'Koordinator Bendahara'], 
             [
                 'alias' => 'Koor Bendahara', 
-                'description' => 'Koordinator bidang bendahara, mengelola keuangan dan infaq'
+                'description' => 'Supervisor keuangan, bank, dan infaq'
             ]
         );
-        // Koordinator Bendahara gets Dashboard, Keuangan, Bank, and all Infaq permissions
+
         $koorBendaharaPermissions = Permission::whereIn('group', ['Dashboard', 'Keuangan', 'Bank', 'Infaq'])->get();
         $koorBendaharaRole->permissions()->sync($koorBendaharaPermissions);
 
