@@ -8,46 +8,48 @@
             <h4 class="fw-semibold mb-0">Daftar Postingan ({{ ucfirst($status ?? 'pending') }})</h4>
         </div>
 
-        
+        {{-- Navigasi Tab Status --}}
+        {{-- Kita gunakan request('keyword') di href agar saat ganti tab, kata kunci pencarian tetap terbawa (opsional, tapi bagus untuk UX) --}}
         <div class="d-flex gap-2 mb-4 p-2 rounded-pill" style="background-color: rgba(0,0,0,0.05); width: fit-content;">
-            <a href="{{ route('admin.postingan.approval.index', ['status' => 'draft']) }}"
+            <a href="{{ route('admin.postingan.approval.index', ['status' => 'draft', 'keyword' => request('keyword')]) }}"
                 class="btn btn-sm {{ ($status ?? 'pending') == 'draft' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                draft
+                Draft
             </a>
 
-            <a href="{{ route('admin.postingan.approval.index', ['status' => 'revisi']) }}"
+            <a href="{{ route('admin.postingan.approval.index', ['status' => 'revisi', 'keyword' => request('keyword')]) }}"
                 class="btn btn-sm {{ ($status ?? 'pending') == 'revisi' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
                 Revisi
             </a>
 
-            
-            <a href="{{ route('admin.postingan.approval.index', ['status' => 'pending']) }}"
+            <a href="{{ route('admin.postingan.approval.index', ['status' => 'pending', 'keyword' => request('keyword')]) }}"
                 class="btn btn-sm {{ ($status ?? 'pending') == 'pending' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                pending
+                Menunggu Approval(pending)
             </a>
 
-
-            <a href="{{ route('admin.postingan.approval.index', ['status' => 'published']) }}"
+            <a href="{{ route('admin.postingan.approval.index', ['status' => 'published', 'keyword' => request('keyword')]) }}"
                 class="btn btn-sm {{ ($status ?? 'pending') == 'published' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                published
+                Publish
             </a>
 
-
-
-            <a href="{{ route('admin.postingan.approval.index', ['status' => 'arsip']) }}"
+            <a href="{{ route('admin.postingan.approval.index', ['status' => 'arsip', 'keyword' => request('keyword')]) }}"
                 class="btn btn-sm {{ ($status ?? 'pending') == 'arsip' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                archieve
+                Arsip
             </a>
         </div>
 
         <div class="row g-0 gap-3">
             <form method="get" id="form_filter" class="col rounded-3 bg-white p-3 pt-0 form-filter"
                 style="height: fit-content">
+                
+                {{-- PENTING: Input Hidden Status --}}
+                {{-- Agar saat tombol cari diklik, status yang sedang aktif tetap terbawa --}}
+                <input type="hidden" name="status" value="{{ $status ?? 'pending' }}">
+
                 <div class="alert-container"></div>
 
                 <div class="bg-white position-sticky pt-3 pb-2" style="top: 61px; z-index: 1">
                     <div class="d-flex gap-2 justify-content-end mb-2">
-                        <input type="text" class="form-control" placeholder="Cari"
+                        <input type="text" class="form-control" placeholder="Cari Judul, Slug, dll..."
                             value="{{ request()->query('keyword', '') }}" name="keyword">
                         <button type="submit" class="btn btn-primary">Cari</button>
                     </div>
@@ -73,8 +75,8 @@
                                     <td>{{ $row->title ?? '-' }}</td>
                                     <td>{{ $row->kategori ?? '-' }}</td>
                                     <td>{{ optional($row->creator)->full_name ?? ($row->user_id ?? '-') }}</td>
-                                    <td>{{ $row->created_at ?? '-' }}</td>
-                                    <td>{{ $row->updated_at ?? '-' }}</td>
+                                    <td>{{ $row->created_at->format('d M Y H:i') ?? '-' }}</td>
+                                    <td>{{ $row->updated_at->format('d M Y H:i') ?? '-' }}</td>
                                     <td class="text-nowrap">
                                         <a href="{{ url('/admin/postingan/approval/' . ($row->id ?? $row->id)) }}"
                                             class="btn btn-primary btn-sm">Lihat Postingan</a>
@@ -86,7 +88,7 @@
                                         <div class="py-4">
                                             <img src="{{ asset('assets/images/no-data.png') }}" alt="No data"
                                                 style="max-width:240px; opacity: 0.5;">
-                                            <p>Data Tidak Ada</p>
+                                            <p>Data Tidak Ditemukan</p>
                                         </div>
                                     </td>
                                 </tr>

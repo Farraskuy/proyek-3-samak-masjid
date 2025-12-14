@@ -14,7 +14,7 @@ class JadwalKegiatanController extends Controller
 {
     public function index()
     {
-        $events = JadwalKegiatan::orderBy('start_time', 'desc')->get();
+        $events = JadwalKegiatan::orderBy('start_time', 'desc')->paginate(10);
 
         $today = date('Y-m-d');
 
@@ -41,7 +41,7 @@ class JadwalKegiatanController extends Controller
 
     public function show($id)
     {
-        $event = \App\Models\JadwalKegiatan::with(['creator', 'tamuUndangan', 'registrationForm.fields', 'closingForm.fields'])->findOrFail($id);
+        $event = \App\Models\JadwalKegiatan::with(['creator', 'tamuUndangan', 'registrationForm.fields', 'closingForm.fields', 'registrationForm', 'closingForm'])->findOrFail($id);
         
         // Check if event has ended (form should be closed)
         $eventEnded = now()->gt($event->end_time);

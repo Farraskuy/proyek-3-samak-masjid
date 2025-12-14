@@ -41,14 +41,16 @@
             @foreach ($album->photos as $index => $photo)
                 <div class="col-lg-3 col-md-4 col-6">
 
-                    <div class="gallery-item position-relative rounded-4 overflow-hidden shadow-sm"
-                         style="cursor:pointer"
+                    <div class="gallery-item position-relative rounded-4 overflow-hidden shadow"
+                         style="cursor:pointer; border: 1px solid #e2e8f0;"
                          onclick="openLightbox({{ $index }})"
                          data-aos="zoom-in" data-aos-delay="{{ $index * 80 }}">
 
                         <img src="{{ asset('storage/' . $photo->image_url) }}"
                              class="img-fluid w-100"
-                             style="height: 200px; object-fit: cover;">
+                             style="height: 200px; object-fit: cover;"
+                             loading="lazy"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 300%22%3E%3Crect fill=%22%23f8f9fa%22 width=%22400%22 height=%22300%22/%3E%3Ctext fill=%22%236c757d%22 x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-family=%22Arial%22 font-size=%2220%22%3EImage Error%3C/text%3E%3C/svg%3E'">
 
                     </div>
 
@@ -66,17 +68,24 @@
     <!-- Close Button -->
     <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
 
+    <!-- Photo Counter -->
+    <div class="photo-counter" id="photo-counter">1 / {{ count($album->photos) }}</div>
+
     <!-- Main Image + Navigation -->
     <div class="lightbox-main">
 
-        <span class="nav-arrow left" onclick="prevPhoto(event)">&#10094;</span>
+        <span class="nav-arrow left" onclick="prevPhoto(event)" title="Previous (←)">
+            <i class="fas fa-chevron-left"></i>
+        </span>
 
         <div style="display: flex; flex-direction: column; align-items: center;">
-            <img id="lightbox-image" class="lightbox-content">
+            <img id="lightbox-image" class="lightbox-content" alt="Gallery photo">
             <div id="lightbox-caption" class="lightbox-caption"></div>
         </div>
 
-        <span class="nav-arrow right" onclick="nextPhoto(event)">&#10095;</span>
+        <span class="nav-arrow right" onclick="nextPhoto(event)" title="Next (→)">
+            <i class="fas fa-chevron-right"></i>
+        </span>
 
     </div>
 
@@ -107,15 +116,30 @@
     transform: scale(1.08);
 }
 
-/* Lightboc Overlay */
+/* Lightbox Overlay */
 .lightbox {
     display: none;
     position: fixed;
     z-index: 9999;
     inset: 0;
-    background: rgba(0,0,0,0.9);
+    background: rgba(0,0,0,0.95);
     padding: 40px 0;
     overflow: hidden;
+}
+
+/* Photo Counter */
+.photo-counter {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 8px 20px;
+    border-radius: 20px;
+    z-index: 10000;
 }
 
 /* Frame FIX */
@@ -180,21 +204,48 @@
 
 /* Navigation Arrows */
 .nav-arrow {
-    position: absolute;
+    position: fixed;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 50px;
     color: white;
     cursor: pointer;
-    padding: 10px 18px;
-    transition: 0.2s;
+    padding: 15px;
+    transition: 0.3s;
     user-select: none;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    z-index: 10001;
 }
 .nav-arrow.left { left: 20px; }
 .nav-arrow.right { right: 20px; }
 
 .nav-arrow:hover {
-    color: #F6C948;
+    background: rgba(246, 201, 72, 0.9);
+    color: #175C9E;
+    transform: translateY(-50%) scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .nav-arrow {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+        padding: 12px;
+    }
+    .nav-arrow.left { left: 10px; }
+    .nav-arrow.right { right: 10px; }
+    
+    .photo-counter {
+        font-size: 14px;
+        padding: 6px 16px;
+        top: 20px;
+    }
 }
 
 /* Thumbnails */
@@ -238,7 +289,12 @@ function openLightbox(index) {
     event.stopPropagation();
     currentIndex = index;
     updateLightbox();
-    document.getElementById('lightbox').style.display = 'block';
+    const lightbox = document.getElementById('lightbox');
+    lightbox.style.display = 'block';
+    document.body.style.overflow = 'hidden'; // Prevent body scroll
+    
+    // Add keyboard listener
+    document.addEventListener('keydown', handleKeyboard);
 }
 
 function updateLightbox() {
@@ -249,15 +305,26 @@ function updateLightbox() {
         photos[currentIndex].caption && photos[currentIndex].caption !== "Cover Album"
             ? photos[currentIndex].caption : "";
 
+    // Update photo counter
+    document.getElementById('photo-counter').innerText = 
+        `${currentIndex + 1} / ${photos.length}`;
+
     // Highlight thumbnail aktif
     document.querySelectorAll('.thumb-img').forEach(el => el.classList.remove('active'));
     const activeThumb = document.getElementById('thumb-' + currentIndex);
-    if (activeThumb) activeThumb.classList.add('active');
+    if (activeThumb) {
+        activeThumb.classList.add('active');
+        activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
 }
 
 function closeLightbox(event) {
     event.stopPropagation();
     document.getElementById('lightbox').style.display = 'none';
+    document.body.style.overflow = ''; // Restore body scroll
+    
+    // Remove keyboard listener
+    document.removeEventListener('keydown', handleKeyboard);
 }
 
 function nextPhoto(event) {
@@ -276,6 +343,17 @@ function jumpToPhoto(index) {
     event.stopPropagation();
     currentIndex = index;
     updateLightbox();
+}
+
+// Keyboard navigation
+function handleKeyboard(e) {
+    if (e.key === 'Escape') {
+        closeLightbox(e);
+    } else if (e.key === 'ArrowRight') {
+        nextPhoto(e);
+    } else if (e.key === 'ArrowLeft') {
+        prevPhoto(e);
+    }
 }
 </script>
 @endpush
