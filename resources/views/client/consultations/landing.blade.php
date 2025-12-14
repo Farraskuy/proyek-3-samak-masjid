@@ -226,6 +226,7 @@
 @endsection
 
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const isAuth = {{ Auth::check() ? 'true' : 'false' }};
@@ -267,6 +268,21 @@
                     const form = document.getElementById('consultationForm');
                     const formData = new FormData(form);
 
+                    const questionText = formData.get('question_text');
+                    if (!questionText || questionText.trim().length < 10) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Pertanyaan terlalu pendek',
+                            text: 'Mohon tuliskan pertanyaan minimal 10 karakter.',
+                            confirmButtonColor: '#175C9E'
+                        });
+                        return;
+                    }
+
+                    let originalBtnText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Mengirim...';
+                    submitBtn.disabled = true;
+
                     fetch('{{ route('client.consultations.store') }}', {
                             method: 'POST',
                             headers: {
@@ -277,31 +293,44 @@
                         })
                         .then(response => response.json())
                         .then(data => {
-                            if (data.error) {
+                            if (data.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Konsultasi diterima',
+                                    text: 'Silakan mulai chat.',
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                    timerProgressBar: true
+                                }).then(() => {
+                                    window.location.href = data.redirect;
+                                });
+
+                            } else if (data.error) {
+                                // Handle Error Spesifik
                                 if (data.error === 'Email belum diverifikasi') {
                                     verificationModal.show();
                                 } else {
-                                    Toast.fire({
+                                    Swal.fire({
                                         icon: 'error',
-                                        title: data.error
+                                        title: 'Gagal',
+                                        text: data.error,
+                                        confirmButtonColor: '#175C9E'
                                     });
                                 }
-                            } else if (data.success) {
-                                Toast.fire({
-                                    icon: 'success',
-                                    title: data.success
-                                });
-                                setTimeout(() => {
-                                    window.location.href = data.redirect;
-                                }, 1000);
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            Toast.fire({
+                            Swal.fire({
                                 icon: 'error',
-                                title: 'Terjadi kesalahan saat mengirim pesan'
+                                title: 'Terjadi Kesalahan',
+                                text: 'Gagal mengirim pesan. Silakan coba lagi.',
+                                confirmButtonColor: '#175C9E'
                             });
+                        })
+                        .finally(() => {
+                            submitBtn.innerHTML = originalBtnText;
+                            submitBtn.disabled = false;
                         });
                 });
             }

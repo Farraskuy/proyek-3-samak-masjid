@@ -61,10 +61,12 @@ class ConsultationClientController extends Controller
 
             DB::commit();
 
-            $ustadzUsers = User::where('role', 'ustadz')->get();
-            foreach ($ustadzUsers as $ustadz) {
+            $humasUsers = User::whereHas('role',function($query){
+                $query->where('name','humas');
+            })->get();
+            foreach ($humasUsers as $humas) {
                 Notification::createNotification(
-                    $ustadz->id,
+                    $humas->id,
                     'consultation_new',
                     'Pertanyaan Baru',
                     'Ada pertanyaan baru: ' . $validated['question_subject'],
