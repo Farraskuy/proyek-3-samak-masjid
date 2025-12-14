@@ -110,7 +110,7 @@
 
                                     {{-- 3. Jika ARSIP -> Hanya bisa Draft --}}
                                     @if($currentStatus === 'arsip')
-                                        <option value="draft">Kembalikan ke Draft</option>
+                                        <option value="published">Kembalikan ke Published (Tayang)</option>
                                     @endif
                                 </select>
                             </div>

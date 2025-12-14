@@ -26,22 +26,24 @@
                 Draft
             </a>
 
-            <a href="{{ route('admin.postingan.index', ['status' => 'pending']) }}"
-                class="btn btn-sm {{ ($status ?? 'all') == 'pending' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                Menunggu Approval
-            </a>
-
             <a href="{{ route('admin.postingan.index', ['status' => 'revisi']) }}"
                 class="btn btn-sm {{ ($status ?? 'all') == 'revisi' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
                 Revisi
             </a>
+
+            <a href="{{ route('admin.postingan.index', ['status' => 'pending']) }}"
+                class="btn btn-sm {{ ($status ?? 'all') == 'pending' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                Menunggu Approval(pending)
+            </a>
+
+
             <a href="{{ route('admin.postingan.index', ['status' => 'published']) }}"
                 class="btn btn-sm {{ ($status ?? 'all') == 'published' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                Published
+                Publish
             </a>
             <a href="{{ route('admin.postingan.index', ['status' => 'arsip']) }}"
                 class="btn btn-sm {{ ($status ?? 'all') == 'arsip' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                Arsip
+                Archieve
             </a>
         </div>
 
@@ -52,32 +54,18 @@
                 <div class="alert-container"></div>
 
                 {{-- Toolbar Pencarian & Sorting --}}
-                <div class="bg-white position-sticky pt-3 pb-2" style="top: 61px; z-index: 1">
-                    <div class="d-flex gap-2 justify-content-end mb-2">
-                        <input type="text" class="form-control" placeholder="Cari"
-                            value="{{ request()->query('keyword', '') }}" name="keyword">
-                        <select class="form-select fs-14px h-100 w-auto" style="line-height: 1.7" name="sorted_by">
-                            <option value="">Urutkan berdasarkan</option>
-                        </select>
-
-                        {{-- Sort Toggle --}}
-                        <div class="sort-toggle">
-                            <input type="radio" name="ordered_by" value="asc" id="ordered_by_asc"
-                                {{ request('ordered_by') == 'asc' ? 'checked' : '' }} onchange="this.form.submit()" hidden>
-                            <label for="ordered_by_asc" class="btn btn-outline-secondary" title="Urutkan A-Z">
-                                <i class="fas fa-sort-alpha-down"></i>
-                            </label>
-
-                            <input type="radio" name="ordered_by" value="desc" id="ordered_by_desc"
-                                {{ request('ordered_by', 'desc') == 'desc' ? 'checked' : '' }}
-                                onchange="this.form.submit()" hidden>
-                            <label for="ordered_by_desc" class="btn btn-outline-secondary" title="Urutkan Z-A">
-                                <i class="fas fa-sort-alpha-up"></i>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
+<div class="bg-white position-sticky pt-3 pb-2" style="top: 61px; z-index: 1">
+    <div class="d-flex gap-2 mb-2 w-100">
+        {{-- Input memanjang otomatis (flex-grow-1) --}}
+        <input type="text" class="form-control flex-grow-1" placeholder="Cari..."
+            value="{{ request()->query('keyword', '') }}" name="keyword">
+        
+        {{-- Tombol hanya teks --}}
+        <button type="submit" class="btn btn-primary">
+            Cari
+        </button>
+    </div>
+</div>
 
                 {{-- Tabel Data --}}
                 <div class="table-responsive position-relative mb-3" style="min-height: 200px">
@@ -100,38 +88,32 @@
                                     <td>{{ $row->title ?? '-' }}</td>
                                     <td>{{ $row->kategori ?? '-' }}</td>
 
-                                    {{-- Status Postingan (Draft/Published etc) --}}
+                                    {{-- Status Postingan --}}
                                     <td>
                                         @php
-                                            // Normalisasi status ke huruf kecil agar case-insensitive
-                                            $status = strtolower($row->status ?? ''); 
+                                            $status = strtolower($row->status ?? '');
                                         @endphp
 
                                         @if ($status == 'published')
                                             <span class="badge rounded-pill text-bg-success">
-                                                {{ $row->status }}
+                                                {{ 'publish' }}
                                             </span>
-
                                         @elseif($status == 'pending')
                                             <span class="badge rounded-pill text-bg-warning text-dark">
                                                 {{ $row->status }}
                                             </span>
-
                                         @elseif($status == 'revisi')
                                             <span class="badge rounded-pill text-bg-danger">
                                                 {{ $row->status }}
                                             </span>
-
                                         @elseif($status == 'draft')
                                             <span class="badge rounded-pill text-bg-secondary">
                                                 {{ $row->status }}
                                             </span>
-
                                         @elseif($status == 'arsip')
                                             <span class="badge rounded-pill text-bg-dark">
                                                 {{ $row->status }}
                                             </span>
-
                                         @else
                                             <span class="badge rounded-pill text-bg-light text-dark border">
                                                 {{ $row->status }}
@@ -145,7 +127,7 @@
                                     {{-- Aksi --}}
                                     <td class="text-nowrap text-end">
 
-                                        {{-- Revisi Msg --}}
+                                        {{-- 1. TOMBOL DETAIL REVISI (Jika status revisi) --}}
                                         @can('create_posts')
                                             @if ($status === 'revisi')
                                                 <button type="button" class="btn btn-info btn-sm text-white border"
@@ -154,14 +136,15 @@
                                                     <i class="fas fa-info-circle"></i> Detail Revisi
                                                 </button>
 
-                                                {{-- MODAL REVISI --}}
+                                                {{-- MODAL REVISI (Inline) --}}
                                                 <div class="modal fade text-dark" id="modalRevision{{ $row->id }}"
                                                     tabindex="-1" aria-labelledby="modalRevisionLabel{{ $row->id }}"
                                                     aria-hidden="true">
                                                     <div class="modal-dialog modal-dialog-centered">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
-                                                                <h5 class="modal-title" id="modalRevisionLabel{{ $row->id }}">
+                                                                <h5 class="modal-title"
+                                                                    id="modalRevisionLabel{{ $row->id }}">
                                                                     Detail Revisi
                                                                 </h5>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
@@ -169,31 +152,40 @@
                                                             </div>
                                                             <div class="modal-body">
                                                                 <p class="text-start">Catatan Revisi:</p>
-                                                                <div class="alert alert-warning border text-break text-wrap text-start" role="alert">
-                                                                    <strong style="white-space: pre-wrap;">{{ $row->approval_note ?? 'Tidak ada catatan revisi.' }}</strong>
+                                                                <div class="alert alert-warning border text-break text-wrap text-start"
+                                                                    role="alert">
+                                                                    <strong
+                                                                        style="white-space: pre-wrap;">{{ $row->approval_note ?? 'Tidak ada catatan revisi.' }}</strong>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                {{-- MODAL END --}}
                                             @endif
                                         @endcan
 
-                                        {{-- Approval --}}
-                                        {{-- PERUBAHAN DISINI: Approval HILANG jika status DRAFT atau REVISI --}}
+                                        {{-- 2. TOMBOL APPROVAL / UBAH STATUS --}}
                                         @can('approve_posts')
-                                            @if (!in_array($status, ['draft', 'revisi']))
+                                            @if ($status == 'pending')
+                                                {{-- Jika Pending -> Tampilkan Approval --}}
                                                 <a href="{{ route('admin.postingan.approval.show', $row->id) }}"
                                                     class="btn btn-primary btn-sm border" aria-label="Approval">
                                                     <i class="fas fa-check-to-slot"></i> Approval
                                                 </a>
+
+                                            @elseif (!in_array($status, ['pending', 'draft', 'revisi']))
+                                                {{-- Jika BUKAN Pending/Draft/Revisi (artinya Published/Arsip) -> Ubah Status --}}
+                                                <a href="{{ route('admin.postingan.approval.show', $row->id) }}"
+                                                    class="btn btn-dark btn-sm border" aria-label="Ubah Status">
+                                                    <i class="fas fa-exchange-alt"></i> Ubah Status
+                                                </a>
                                             @endif
                                         @endcan
 
-                                        {{-- Edit --}}
+                                        {{-- 3. TOMBOL EDIT --}}
+                                        {{-- MODIFIKASI: Menambahkan 'arsip' ke array pengecekan --}}
                                         @can('edit_posts')
-                                            @if(in_array($status, ['revisi', 'draft']))
+                                            @if(in_array($status, ['revisi', 'draft', 'arsip']))
                                                 <a href="/admin/postingan/edit/{{ $row->id }}"
                                                     class="btn btn-light btn-sm border" aria-label="Edit">
                                                     <i class="fas fa-pen text-muted"></i>
@@ -201,7 +193,7 @@
                                             @endif
                                         @endcan
 
-                                        {{-- Delete --}}
+                                        {{-- 4. TOMBOL DELETE (Selalu muncul jika punya permission) --}}
                                         @can('delete_posts')
                                             <button type="button" class="btn btn-sm btn-light border text-danger btn-delete-article"
                                                 data-action="{{ url('/admin/postingan/delete/' . $row->id) }}"

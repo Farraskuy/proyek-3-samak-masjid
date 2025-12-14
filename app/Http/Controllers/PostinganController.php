@@ -225,27 +225,53 @@ class PostinganController extends Controller
     }
 
     // Approval index for super-admin: list postingans awaiting approval
-    public function approvalIndex(Request $request)
+public function approvalIndex(Request $request)
     {
-
+        // 1. Cek Permission
         if (!optional($request->user())->hasPermission('approve_posts')) {
             abort(403, 'Unauthorized');
         }
 
-
+        // 2. Ambil Parameter Request
         $perPage = $request->query('showing', 50);
-        $status = $request->query('status', 'pending'); // Default to 
+        $status  = $request->query('status', 'pending'); // Default status 'pending'
+        $keyword = $request->query('keyword', '');       // Ambil keyword pencarian
 
-        $query = Postingan::where('status', $status)->orderBy('created_at', 'desc');
+        // 3. Mulai Query
+        $query = Postingan::query();
 
+        // A. Filter berdasarkan Status (Wajib untuk halaman approval)
+        $query->where('status', $status);
+
+        // B. Filter Pencarian (Keyword)
+        if (!empty($keyword)) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('title', 'like', "%{$keyword}%")
+                  ->orWhere('keterangan', 'like', "%{$keyword}%")
+                  ->orWhere('slug', 'like', "%{$keyword}%")
+                  // Opsional: Cari berdasarkan nama penulis jika relasi ada
+                  ->orWhereHas('creator', function($userQuery) use ($keyword) {
+                      $userQuery->where('full_name', 'like', "%{$keyword}%");
+                  });
+            });
+        }
+
+        // C. Order By
+        $query->orderBy('created_at', 'desc');
+
+        // 4. Eksekusi Data (Pagination / Get All)
         if ($perPage === 'all') {
             $data = $query->get();
         } else {
             $perPage = intval($perPage) > 0 ? intval($perPage) : 50;
-            $data = $query->paginate($perPage)->withQueryString();
+            // withQueryString() penting agar saat pindah halaman (page 2), status & keyword terbawa
+            $data = $query->paginate($perPage)->withQueryString(); 
         }
 
-        return view('admin.postingan.approval_index')->with(['data' => $data, 'status' => $status]);
+        return view('admin.postingan.approval_index')->with([
+            'data'   => $data, 
+            'status' => $status
+        ]);
     }
 
     // Show approval detail + preview
@@ -267,9 +293,8 @@ class PostinganController extends Controller
 
             return view('admin.postingan.approval_detail', compact('post'));
         }
-
 public function approvalUpdate(Request $request, $id)
-    {
+{
         // 1. Cek Permission
         if (!optional($request->user())->hasPermission('approve_posts')) {
             abort(403, 'Unauthorized');
@@ -310,13 +335,14 @@ public function approvalUpdate(Request $request, $id)
                 break;
 
             case 'arsip':
-                // Arsip -> Draft saja
-                if ($decision === 'draft') {
+                // PERUBAHAN DISINI: Arsip -> Published (sebelumnya Draft)
+                // Jika dari arsip ingin ditayangkan kembali
+                if ($decision === 'published') {
                     $isAllowed = true;
                 }
                 break;
             
-            // Status Draft dan Revisi TIDAK BOLEH diproses oleh Admin
+            // Status Draft dan Revisi TIDAK BOLEH diproses oleh Admin (Action terkunci)
             case 'draft':
             case 'revisi':
                 $isAllowed = false;
@@ -338,10 +364,12 @@ public function approvalUpdate(Request $request, $id)
         $post->status = $decision;
 
         if ($decision === 'published') {
+            // Logika jika di-publish (baik dari Pending maupun dari Arsip)
+            // Kita set ulang published_at ke waktu sekarang (re-publish)
             $post->published_at  = now();
             $post->approved_by   = auth()->id();
             $post->approved_at   = now(); 
-            $post->approval_note = null; 
+            $post->approval_note = null; // Hapus catatan revisi jika ada
 
         } elseif ($decision === 'revisi') {
             $post->approval_note = $validated['note'];
@@ -350,7 +378,8 @@ public function approvalUpdate(Request $request, $id)
             $post->approved_at   = null;
 
         } else {
-            // Arsip atau Draft
+            // Logika untuk Arsip (decision == 'arsip')
+            // Tanggal published di-null-kan karena masuk arsip
             $post->published_at = null;
         }
 
@@ -358,8 +387,7 @@ public function approvalUpdate(Request $request, $id)
 
         return redirect()->route('admin.postingan.index')
             ->with('success', 'Status postingan berhasil diperbarui menjadi ' . ucfirst($decision));
-    }
-
+}
 
     // Delete article and associated images (previously ShowPostingan::deleteArtikel)
     public function deleteArtikel(Request $request, $id)
@@ -422,8 +450,8 @@ public function edit(Request $request, $id)
 
     // --- ATURAN BARU ---
     // Cegah user masuk ke edit apabila postingan tidak berstatus revisi
-    if (strtolower($post->status) !== 'revisi' && strtolower($post->status) !== 'draft') {
-        abort(403, 'Postingan hanya dapat diedit jika statusnya "Revisi" atau "Draft".');
+    if (strtolower($post->status) !== 'revisi' && strtolower($post->status) !== 'draft'    &&    strtolower($post->status) !== 'arsip') {
+        abort(403, 'Postingan hanya dapat diedit jika statusnya "Revisi" atau "Draft" atau "Arsip".');
     }
     // -------------------
 

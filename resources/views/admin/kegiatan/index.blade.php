@@ -99,8 +99,8 @@
 
                                             @can('delete_events')
                                                 <button type="button"
-                                                    class="btn btn-sm btn-light border text-danger btn-delete-article"
-                                                    data-action="{{ route('admin.kegiatan.destroy', $row->event_id) }}">
+                                                    class="btn btn-sm btn-light border text-danger"
+                                                    onclick="showDeleteModal('{{ route('admin.kegiatan.destroy', $row->event_id) }}')">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             @endcan
@@ -146,7 +146,24 @@
         </div>
     </section>
 
-    {{-- Script hapusKegiatan dihapus karena sudah diganti dengan class btn-delete-article --}}
+    @push('scripts')
+        <script>
+            function showDeleteModal(actionUrl) {
+                const form = document.getElementById('confirmDeleteForm');
+                const modalEl = document.getElementById('confirmDeleteModal');
+                
+                if (form && modalEl) {
+                    form.action = actionUrl;
+                    const modal = new bootstrap.Modal(modalEl);
+                    modal.show();
+                } else {
+                    console.error('Modal atau form tidak ditemukan!');
+                    if (!form) console.error('confirmDeleteForm tidak ada');
+                    if (!modalEl) console.error('confirmDeleteModal tidak ada');
+                }
+            }
+        </script>
+    @endpush
 
     @push('styles')
         <style>
