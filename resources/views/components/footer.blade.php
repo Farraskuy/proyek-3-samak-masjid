@@ -89,7 +89,6 @@
                 <h6 class="text-uppercase fw-bold mb-4 text-warning">Ikuti Kami</h6>
                 <p class="text-white-50">Dapatkan update terbaru dari kami.</p>
                 <div class="d-flex gap-2">
-<<<<<<< HEAD
                     
                     @foreach ($socials as $social)
                         <a href="{{ $social['url'] }}" class="text-white text-decoration-none me-3" target="_blank"
@@ -137,55 +136,6 @@
                                     <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
                                     <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
                                 </svg>
-=======
-                    @php
-                        if (is_array($socials) && !empty($socials)) {
-                            $firstItem = reset($socials);
-
-                            if (is_array($firstItem) && isset($firstItem['platform'])) {
-                                $socials = array_values($socials);
-                            } else {
-                                // It is the OLD format (platform => url)
-                                // Convert to new format
-                                $newSocials = [];
-                                foreach ($socials as $key => $val) {
-                                    if ($val) {
-                                        $newSocials[] = ['platform' => $key, 'url' => $val];
-                                    }
-                                }
-                                $socials = $newSocials;
-                            }
-                        }
-                    @endphp
-
-                    @if (!empty($socials) && is_array($socials))
-                        @foreach ($socials as $social)
-                            @php
-                                $rawUrl = $social['url'] ?? '';
-                                $url = is_array($rawUrl) ? $rawUrl[0] ?? '' : $rawUrl;
-                                $platform = $social['platform'] ?? '';
-                            @endphp
-
-                            @if (!empty($url))
-                                <a href="{{ $url }}" class="social-icon" target="_blank"
-                                    title="{{ ucfirst($platform ?: 'link') }}">
-                                    @if ($platform == 'facebook')
-                                        <i class="fab fa-facebook-f"></i>
-                                    @elseif($platform == 'instagram')
-                                        <i class="fab fa-instagram"></i>
-                                    @elseif($platform == 'twitter')
-                                        <i class="fab fa-twitter"></i>
-                                    @elseif($platform == 'youtube')
-                                        <i class="fab fa-youtube"></i>
-                                    @elseif($platform == 'tiktok')
-                                        <i class="fab fa-tiktok"></i>
-                                    @elseif($platform == 'linkedin')
-                                        <i class="fab fa-linkedin-in"></i>
-                                    @else
-                                        <i class="fas fa-link"></i>
-                                    @endif
-                                </a>
->>>>>>> 5ddd06db82a1c842cd59fa8c916e7f2c650d2b21
                             @endif
                         </a>
                     @endforeach
