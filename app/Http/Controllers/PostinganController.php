@@ -123,7 +123,7 @@ class PostinganController extends Controller
         if ($request->hasFile('image_view')) {
             $image = $request->file('image_view');
             $newName = uniqid() . '_' . $image->getClientOriginalName();
-            $featuredImagePath = $image->storeAs('news/images', $newName);
+            $featuredImagePath = $image->storeAs('news/images', $newName,'public');
         }
 
         $content = $request->input('content_view');
@@ -503,7 +503,7 @@ public function edit(Request $request, $id)
             // Simpan gambar baru
             $image = $request->file('image_view') ?? $request->file('featured_image_url');
             $newName = uniqid() . '_' . $image->getClientOriginalName();
-            $featuredImagePath = $image->storeAs('news/images', $newName);
+            $featuredImagePath = $image->storeAs('news/images', $newName,'public');
         }
 
         // 4. Handle Konten Quill (termasuk gambar base64 baru)
