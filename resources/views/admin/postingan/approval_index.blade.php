@@ -71,7 +71,9 @@
                         <tbody>
                             @forelse(($data ?? collect()) as $index => $row)
                                 <tr>
-                                    <td>{{ ($data->firstItem() ?? 0) + $index }}</td>
+                                    <td>
+                                        {{ (method_exists($data, 'firstItem') ? $data->firstItem() : 1) + $index }}
+                                    </td>
                                     <td>{{ $row->title ?? '-' }}</td>
                                     <td>{{ $row->kategori ?? '-' }}</td>
                                     <td>{{ optional($row->creator)->full_name ?? ($row->user_id ?? '-') }}</td>
