@@ -254,9 +254,16 @@
                     <ul class="sub-menu">
                         <li><span class="link_name fw-semibold">Layanan Jama'ah</span></li>
                         @if (auth()->user()->hasPermission('view_lost_items'))
+                            <li class="nav-button {{ request()->is('admin/lost-items*') ? 'active' : '' }}">
+                                <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/lost-items') }}">
+                                    <span class="fa-regular fa-box-open-full"></span> Barang Hilang
+                                </a>
+                            </li>
+                        @endif
+                        @if (auth()->user()->hasPermission('view_lost_items'))
                             <li class="nav-button {{ request()->is('admin/barang-hilang*') ? 'active' : '' }}">
                                 <a class="d-flex gap-2 fw-semibold" href="{{ url('/admin/barang-hilang') }}">
-                                    <span class="fa-regular fa-box-open-full"></span> Lost & Found
+                                    <span class="fa-regular fa-box-open-full"></span> Barang Temuan
                                 </a>
                             </li>
                         @endif

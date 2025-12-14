@@ -88,7 +88,7 @@
                                                 default => 'badge-warning',
                                             };
                                         @endphp
-                                        <span class="badge rounded-pill {{ $statusClass }} text-white">
+                                        <span class="badge rounded-pill {{ $statusClass }} text-black">
                                             {{ $item->status ?? 'Unknown' }}
                                         </span>
                                     </td>
