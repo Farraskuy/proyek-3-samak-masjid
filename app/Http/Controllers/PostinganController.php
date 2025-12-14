@@ -551,22 +551,25 @@ public function edit(Request $request, $id)
     }
 
 
-    private function deleteRemovedQuillImages($oldContent, $newContent)
+private function deleteRemovedQuillImages($oldContent, $newContent)
     {
-        // Ambil semua path IMG dari konten lama (tanpa /storage/)
+        // 1. Ambil path dari konten lama
         preg_match_all('/<img[^>]+src="(news\/[^"]+)"/i', $oldContent, $oldMatches);
         $oldImages = $oldMatches[1] ?? [];
 
-        // Ambil semua path IMG dari konten baru
+        // 2. Ambil path dari konten baru
         preg_match_all('/<img[^>]+src="(news\/[^"]+)"/i', $newContent, $newMatches);
         $newImages = $newMatches[1] ?? [];
 
-        // Cari gambar yang DIHAPUS
+        // 3. Cari gambar yang ada di lama TAPI tidak ada di baru (artinya dihapus)
         $deletedImages = array_diff($oldImages, $newImages);
 
-        // Hapus filenya di storage
+        // 4. Hapus file fisik di storage PUBLIC
         foreach ($deletedImages as $img) {
-            Storage::delete($img);
+            // PERBAIKAN: Tambahkan disk('public')
+            if (Storage::disk('public')->exists($img)) {
+                Storage::disk('public')->delete($img);
+            }
         }
     }
 
