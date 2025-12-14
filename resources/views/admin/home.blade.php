@@ -310,8 +310,17 @@
                             <a href="{{ route('admin.lost-items.index') }}" class="btn text-start home-item">
                                 <i class="fa-duotone icon fa-box-open-full" style="color: #fd7e14"></i>
                                 <div>
-                                    <p class="fw-semibold m-0">Lost & Found <i class="fa-regular fa-arrow-right"></i></p>
+                                    <p class="fw-semibold m-0">Barang Hilang <i class="fa-regular fa-arrow-right"></i></p>
                                     <p class="m-0 text-secondary">Kelola Laporan Barang Hilang </p>
+                                </div>
+                            </a>
+                        @endcan
+                         @can('view_lost_items')
+                            <a href="{{ route('admin.barang-hilang') }}" class="btn text-start home-item">
+                                <i class="fa-duotone icon fa-box-open-full" style="color: #fd7e14"></i>
+                                <div>
+                                    <p class="fw-semibold m-0">Barang Temuan<i class="fa-regular fa-arrow-right"></i></p>
+                                    <p class="m-0 text-secondary">Kelola Laporan Barang Temuan </p>
                                 </div>
                             </a>
                         @endcan
