@@ -87,108 +87,109 @@
                 </div>
 
 
-            <div class="table-responsive position-relative mb-3 bg-white p-3" style="min-height: 200px">
-                <table class="table table-sm table-hover fs-14px align-middle">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Donatur</th>
-                            <th>Info Transfer</th>
-                            <th>Tipe</th>
-                            <th>Jumlah</th>
-                            <th>Tanggal</th>
-                            <th>Status</th>
-                            <th class="text-end">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse(($data ?? []) as $index => $row)
+                <div class="table-responsive position-relative mb-3 bg-white p-3" style="min-height: 200px">
+                    <table class="table table-sm table-hover fs-14px align-middle">
+                        <thead>
                             <tr>
-                                <td>{{ $data instanceof \Illuminate\Pagination\LengthAwarePaginator ? $data->firstItem() + $index : $index + 1 }}
-                                </td>
-
-                                <td>
-                                    <div class="fw-bold">{{ $row->user->name ?? $row->guest_name }}</div>
-                                    <small class="text-muted">{{ $row->user->email ?? '-' }}</small>
-                                </td>
-
-                                <td>
-                                    <small class="d-block text-muted">Dari: <span
-                                            class="text-dark fw-bold">{{ $row->source_bank }}</span></small>
-                                    <small class="d-block text-muted">Ke: <span
-                                            class="text-primary fw-bold">{{ $row->destinationAccount->bank_name ?? 'Bank' }}</span></small>
-                                </td>
-
-                                <td>
-                                    @php
-                                        $typeParts = explode('_', $row->donation_type);
-                                        $category = ucfirst($typeParts[0] ?? 'Lainnya');
-                                        $type = ucfirst($typeParts[1] ?? '');
-                                    @endphp
-                                    <span
-                                        class="badge {{ $category === 'Zakat' ? 'bg-success' : 'bg-info' }}">{{ $category }}</span>
-                                    @if ($type)
-                                        <small class="d-block text-muted">{{ $type }}</small>
-                                    @endif
-                                </td>
-
-                                <td class="fw-bold text-success">
-                                    Rp {{ number_format($row->amount, 0, ',', '.') }}
-                                </td>
-
-                                <td>{{ \Carbon\Carbon::parse($row->transfer_date)->format('d M Y') }}</td>
-
-                                <td>
-                                    @if ($row->status == 'Verified')
-                                        <span class="badge bg-success">Diterima</span>
-                                    @elseif($row->status == 'Rejected')
-                                        <span class="badge bg-danger">Ditolak</span>
-                                    @else
-                                        <span class="badge bg-warning text-dark">Pending</span>
-                                    @endif
-                                </td>
-
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal"
-                                        data-bs-target="#modalDetail{{ $row->confirmation_id }}" title="Cek Bukti">
-                                        <i class="fas fa-eye"></i> Cek
-                                    </button>
-                                </td>
+                                <th>#</th>
+                                <th>Donatur</th>
+                                <th>Info Transfer</th>
+                                <th>Tipe</th>
+                                <th>Jumlah</th>
+                                <th>Tanggal</th>
+                                <th>Status</th>
+                                <th class="text-end">Aksi</th>
                             </tr>
+                        </thead>
+                        <tbody>
+                            @forelse(($data ?? []) as $index => $row)
+                                <tr>
+                                    <td>{{ $data instanceof \Illuminate\Pagination\LengthAwarePaginator ? $data->firstItem() + $index : $index + 1 }}
+                                    </td>
+
+                                    <td>
+                                        <div class="fw-bold">{{ $row->user->name ?? $row->guest_name }}</div>
+                                        <small class="text-muted">{{ $row->user->email ?? '-' }}</small>
+                                    </td>
+
+                                    <td>
+                                        <small class="d-block text-muted">Dari: <span
+                                                class="text-dark fw-bold">{{ $row->source_bank }}</span></small>
+                                        <small class="d-block text-muted">Ke: <span
+                                                class="text-primary fw-bold">{{ $row->destinationAccount->bank_name ?? 'Bank' }}</span></small>
+                                    </td>
+
+                                    <td>
+                                        @php
+                                            $typeParts = explode('_', $row->donation_type);
+                                            $category = ucfirst($typeParts[0] ?? 'Lainnya');
+                                            $type = ucfirst($typeParts[1] ?? '');
+                                        @endphp
+                                        <span
+                                            class="badge {{ $category === 'Zakat' ? 'bg-success' : 'bg-info' }}">{{ $category }}</span>
+                                        @if ($type)
+                                            <small class="d-block text-muted">{{ $type }}</small>
+                                        @endif
+                                    </td>
+
+                                    <td class="fw-bold text-success">
+                                        Rp {{ number_format($row->amount, 0, ',', '.') }}
+                                    </td>
+
+                                    <td>{{ \Carbon\Carbon::parse($row->transfer_date)->format('d M Y') }}</td>
+
+                                    <td>
+                                        @if ($row->status == 'Verified')
+                                            <span class="badge bg-success">Diterima</span>
+                                        @elseif($row->status == 'Rejected')
+                                            <span class="badge bg-danger">Ditolak</span>
+                                        @else
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        @endif
+                                    </td>
+
+                                    <td class="text-end">
+                                        <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                                            data-bs-target="#modalDetail{{ $row->confirmation_id }}" title="Cek Bukti">
+                                            <i class="fas fa-eye"></i> Cek
+                                        </button>
+                                    </td>
+                                </tr>
 
 
-                        @empty
-                            <tr>
-                                <td colspan="8" class="text-center py-5">
-                                    <i class="fas fa-inbox fs-1 text-muted d-block mb-2"></i>
-                                    <p class="text-muted mt-2 mb-0">Belum ada data konfirmasi donasi.</p>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="text-center py-5">
+                                        <i class="fas fa-inbox fs-1 text-muted d-block mb-2"></i>
+                                        <p class="text-muted mt-2 mb-0">Belum ada data konfirmasi donasi.</p>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
 
-            {{-- Pagination --}}
-            <div class="d-flex justify-content-between gap-2 flex-wrap">
-                <div class="d-flex justify-content-between showing-wrapper-bawah">
-                    <div class="d-flex fs-14px align-items-center gap-1">
-                        Menampilkan
-                        <select class="form-select form-select-sm w-auto" name="showing" onchange="this.form.submit()">
-                            <option value="10" {{ request('showing') == 10 ? 'selected' : '' }}>10</option>
-                            <option value="20" {{ request('showing') == 20 ? 'selected' : '' }}>20</option>
-                            <option value="50" {{ request('showing') == 50 ? 'selected' : '' }}>50</option>
-                            <option value="all" {{ request('showing') == 'all' ? 'selected' : '' }}>Semua</option>
-                        </select>
-                        Data
+                {{-- Pagination --}}
+                <div class="d-flex justify-content-between gap-2 flex-wrap">
+                    <div class="d-flex justify-content-between showing-wrapper-bawah">
+                        <div class="d-flex fs-14px align-items-center gap-1">
+                            Menampilkan
+                            <select class="form-select form-select-sm w-auto" name="showing"
+                                onchange="this.form.submit()">
+                                <option value="10" {{ request('showing') == 10 ? 'selected' : '' }}>10</option>
+                                <option value="20" {{ request('showing') == 20 ? 'selected' : '' }}>20</option>
+                                <option value="50" {{ request('showing') == 50 ? 'selected' : '' }}>50</option>
+                                <option value="all" {{ request('showing') == 'all' ? 'selected' : '' }}>Semua</option>
+                            </select>
+                            Data
+                        </div>
                     </div>
-                </div>
-                <div class="paginate">
-                    @if ($data instanceof \Illuminate\Pagination\LengthAwarePaginator)
-                        {{ $data->onEachSide(1)->links() }}
-                    @endif
-                </div>
-                </form>
+                    <div class="paginate">
+                        @if ($data instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                            {{ $data->onEachSide(1)->links() }}
+                        @endif
+                    </div>
+            </form>
         </div>
     </section>
 
@@ -276,21 +277,28 @@
                     <div class="modal-footer">
                         @if ($row->status == 'Pending')
                             @can('verify_donation')
-                                <form action="{{ route('admin.donasi.reject', $row->confirmation_id) }}" method="POST"
-                                    class="d-inline" onsubmit="return confirm('Yakin tolak donasi ini?');">
-                                    @csrf
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="fas fa-times me-1"></i> Tolak
-                                    </button>
-                                </form>
-                                <form action="{{ route('admin.donasi.approve', $row->confirmation_id) }}" method="POST"
-                                    class="d-inline"
-                                    onsubmit="return confirm('Yakin terima donasi ini? Saldo akan ditambahkan ke rekening tujuan.');">
-                                    @csrf
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fas fa-check me-1"></i> Terima & Setujui
-                                    </button>
-                                </form>
+                                <button type="button" class="btn btn-danger"
+                                    onclick="showConfirmModal({
+                                        action: '{{ route('admin.donasi.reject', $row->confirmation_id) }}',
+                                        method: 'POST',
+                                        type: 'reject',
+                                        title: 'Tolak Donasi',
+                                        message: 'Apakah Anda yakin ingin menolak donasi ini?',
+                                        buttonText: 'Ya, Tolak'
+                                    })">
+                                    <i class="fas fa-times me-1"></i> Tolak
+                                </button>
+                                <button type="button" class="btn btn-success"
+                                    onclick="showConfirmModal({
+                                        action: '{{ route('admin.donasi.approve', $row->confirmation_id) }}',
+                                        method: 'POST',
+                                        type: 'accept',
+                                        title: 'Terima Donasi',
+                                        message: 'Apakah Anda yakin ingin menerima donasi ini? Saldo akan ditambahkan ke rekening tujuan.',
+                                        buttonText: 'Ya, Terima'
+                                    })">
+                                    <i class="fas fa-check me-1"></i> Terima & Setujui
+                                </button>
                             @endcan
                         @else
                             <span class="text-muted">Donasi sudah diproses</span>

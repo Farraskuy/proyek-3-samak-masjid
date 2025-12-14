@@ -35,19 +35,38 @@
 
         {{-- NAVIGASI UTAMA APLIKASI SAMAK-KAMPUS --}}
         <ul class="nav-links" style="padding-bottom: 115px;">
+            @if (auth()->user()->hasPermission('view_dashboard'))
+                {{-- 1. HOME/DASHBOARD --}}
+                <li>
+                    <div class="nav-button {{ request()->is('admin') ? 'active' : '' }}">
+                        <a href="{{ url('/admin') }}">
+                            <i class="fa-regular fa-house"></i>
+                            <span class="link_name">Home</span>
+                        </a>
+                    </div>
+                    <ul class="sub-menu blank">
+                        <li class="fw-semibold link_name">Home</li>
+                    </ul>
+                </li>
+            @endif
 
-            {{-- 1. HOME/DASHBOARD --}}
-            <li>
-                <div class="nav-button {{ request()->is('admin') ? 'active' : '' }}">
-                    <a href="{{ url('/admin') }}">
-                        <i class="fa-regular fa-house"></i>
-                        <span class="link_name">Home</span>
-                    </a>
-                </div>
-                <ul class="sub-menu blank">
-                    <li class="fw-semibold link_name">Home</li>
-                </ul>
-            </li>
+            {{-- PJ DASHBOARD - Muncul jika user adalah PJ dari minimal satu kegiatan --}}
+            @php
+                $isPjOfEvent = \App\Models\JadwalKegiatan::where('pj_user_id', auth()->id())->exists();
+            @endphp
+            @if ($isPjOfEvent)
+                <li>
+                    <div class="nav-button {{ request()->is('admin/pj-dashboard*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.pj.index') }}">
+                            <i class="fa-regular fa-clipboard-user"></i>
+                            <span class="link_name">Dashboard PJ</span>
+                        </a>
+                    </div>
+                    <ul class="sub-menu blank">
+                        <li class="fw-semibold link_name">Dashboard PJ</li>
+                    </ul>
+                </li>
+            @endif
 
             {{-- 2. MODUL MANAJEMEN KONTEN (CMS) --}}
             {{-- Aktif jika path dimulai dengan admin/konten atau admin/postingan atau admin/galeri --}}
@@ -142,9 +161,14 @@
 
             {{-- 4. MODUL KEUANGAN (ZIS) --}}
             {{-- Aktif jika path dimulai dengan admin/keuangan atau admin/donasi atau admin/infaqs atau admin/settings --}}
-            @if (auth()->user()->hasPermission('view_finance') || auth()->user()->hasPermission('view_banks') || auth()->user()->hasPermission('view_infaq') || auth()->user()->hasPermission('manage_zakat_settings'))
-                <li class="{{ request()->is('admin/keuangan*', 'admin/donasi*', 'admin/infaqs*', 'admin/banks*', 'admin/settings/zakat*', 'admin/dashboard-keuangan*') ? 'showMenu' : '' }}">
-                    <div class="nav-button {{ request()->is('admin/keuangan*', 'admin/donasi*', 'admin/infaqs*', 'admin/banks*', 'admin/settings/zakat*', 'admin/dashboard-keuangan*') ? 'active' : '' }}">
+            @if (auth()->user()->hasPermission('view_finance') ||
+                    auth()->user()->hasPermission('view_banks') ||
+                    auth()->user()->hasPermission('view_infaq') ||
+                    auth()->user()->hasPermission('manage_zakat_settings'))
+                <li
+                    class="{{ request()->is('admin/keuangan*', 'admin/donasi*', 'admin/infaqs*', 'admin/banks*', 'admin/settings/zakat*', 'admin/dashboard-keuangan*') ? 'showMenu' : '' }}">
+                    <div
+                        class="nav-button {{ request()->is('admin/keuangan*', 'admin/donasi*', 'admin/infaqs*', 'admin/banks*', 'admin/settings/zakat*', 'admin/dashboard-keuangan*') ? 'active' : '' }}">
                         <div class="iocn-link" onclick="expandMenu(this)">
                             <a>
                                 <i class="fa-light fa-hand-holding-dollar"></i>
@@ -169,7 +193,8 @@
                                 </a>
                             </li>
                             <li class="nav-button {{ request()->is('admin/donasi/offline*') ? 'active' : '' }}">
-                                <a class="d-flex gap-2 fw-semibold" href="{{ route('admin.donasi.offline.create') }}">
+                                <a class="d-flex gap-2 fw-semibold"
+                                    href="{{ route('admin.donasi.offline.create') }}">
                                     <span class="fa-regular fa-hand-holding-heart"></span> Input Donasi Offline
                                 </a>
                             </li>

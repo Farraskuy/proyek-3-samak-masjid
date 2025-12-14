@@ -33,6 +33,17 @@
 
                 <!-- Menu Items -->
                 <div class="p-2">
+                    @php
+                        $dashboardUrl = Auth::user()?->role->default_redirect_after_login ?? '/';
+                        $dashboardLabel = $dashboardUrl === '/' ? 'Beranda' : 'Dashboard';
+                    @endphp
+                    
+                    <a href="{{ $dashboardUrl }}"
+                        class="dropdown-item d-flex align-items-center gap-3 p-2 rounded-3 mb-1">
+                        <i class="fas fa-home text-secondary" style="width: 20px; text-align: center;"></i>
+                        <span class="fs-14px fw-medium">{{ $dashboardLabel }}</span>
+                    </a>
+                    
                     <a href="{{ route('admin.profile.index') }}"
                         class="dropdown-item d-flex align-items-center gap-3 p-2 rounded-3 mb-1">
                         <i class="fas fa-user text-secondary" style="width: 20px; text-align: center;"></i>

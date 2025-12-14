@@ -59,14 +59,11 @@
                                         class="btn btn-sm btn-outline-info" title="Lihat Laporan">
                                         <i class="fas fa-print"></i>
                                     </a>
-                                    <form action="{{ route('admin.kotak-amal.destroy', $collection->id) }}" method="POST"
-                                        onsubmit="return confirm('Yakin hapus data ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
+                                    <button type="button" class="btn btn-sm btn-outline-danger btn-delete-article"
+                                        title="Hapus"
+                                        data-action="{{ route('admin.kotak-amal.destroy', $collection->id) }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>

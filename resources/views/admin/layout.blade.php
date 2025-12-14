@@ -77,50 +77,57 @@
 
             @include('components.navbar-admin')
 
+            {{-- Logout Modal - New Style --}}
             <div class="modal fade" id="logout" tabindex="-1" aria-hidden="true">
-                <form action="{{ route('logout') }}" method="POST" class="modal-dialog modal-dialog-centered">
-                    @csrf
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <p class="modal-title fw-semibold" id="exampleModalLabel">Konfirmasi Logout</p>
-                        </div>
-                        <div class="modal-body">
-                            <p class="mb-0 fs-15px">Apakah anda yain ingin logout?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <div class="d-flex gap-1 justify-content-end">
-                                <button type="button" class="fw-semibold btn btn-sm btn-secondary"
-                                    data-bs-dismiss="modal">Batal</button>
-                                <button type="submit" class="fw-semibold btn btn-sm btn-danger"><i
-                                        class="fa-regular fa-right-from-bracket"></i> Ya Keluar</button>
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow rounded-4">
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <div class="modal-body p-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-sign-out-alt fa-2x text-warning"></i>
+                                </div>
+                                <h5 class="fw-bold mb-2">Konfirmasi Logout</h5>
+                                <p class="text-muted mb-4">Apakah Anda yakin ingin keluar dari sistem?</p>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-warning rounded-pill px-4 text-white">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Ya, Keluar
+                                    </button>
+                                    <button type="button" class="btn btn-light rounded-pill px-4"
+                                        data-bs-dismiss="modal">Batal</button>
+                                </div>
                             </div>
-                        </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
 
-            <!-- Reusable Delete Confirmation Modal (used by admin index pages) -->
-            <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
-                <form id="confirmDeleteForm" method="POST" class="modal-dialog modal-dialog-centered">
-                    @csrf
-                    @method('DELETE')
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <p class="modal-title fw-semibold">Konfirmasi Hapus</p>
-                        </div>
-                        <div class="modal-body">
-                            <p class="mb-0 fs-15px">Apakah anda yakin ingin menghapus data ini? Tindakan ini tidak dapat
-                                dibatalkan.</p>
-                        </div>
-                        <div class="modal-footer">
-                            <div class="d-flex gap-1 justify-content-end">
-                                <button type="button" class="fw-semibold btn btn-sm btn-secondary"
-                                    data-bs-dismiss="modal">Batal</button>
-                                <button type="submit" class="fw-semibold btn btn-sm btn-danger">Ya, Hapus</button>
+            {{-- Reusable Confirmation Modal - New Style --}}
+            <div class="modal fade" id="confirmActionModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow rounded-4">
+                        <form id="confirmActionForm" method="POST">
+                            @csrf
+                            <input type="hidden" id="confirmActionMethod" name="_method" value="POST">
+                            <div class="modal-body p-4">
+                                <div class="mb-3">
+                                    <i id="confirmModalIcon" class="fas fa-question-circle fa-2x text-primary"></i>
+                                </div>
+                                <h5 class="fw-bold mb-2" id="confirmModalTitle">Konfirmasi</h5>
+                                <p class="text-muted mb-4" id="confirmModalMessage">Apakah Anda yakin?</p>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" id="confirmModalBtn"
+                                        class="btn btn-primary rounded-pill px-4">
+                                        <i id="confirmModalBtnIcon" class="fas fa-check me-2"></i>
+                                        <span id="confirmModalBtnText">Ya</span>
+                                    </button>
+                                    <button type="button" class="btn btn-light rounded-pill px-4"
+                                        data-bs-dismiss="modal">Batal</button>
+                                </div>
                             </div>
-                        </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
 
             @yield('content')
@@ -174,19 +181,129 @@
     <script src="{{ asset('assets/js') }}/admin.js"></script>
 
     <script>
-        // Attach delete modal behaviour: any .btn-delete-article sets form action and shows modal
+        /**
+         * Show confirmation modal with customizable options
+         * @param {Object} options - Modal configuration
+         * @param {string} options.action - Form action URL
+         * @param {string} options.method - HTTP method (POST, DELETE, PUT, etc.)
+         * @param {string} options.type - Modal type: 'delete', 'warning', 'success', 'info', 'start', 'end'
+         * @param {string} options.title - Modal title
+         * @param {string} options.message - Modal message
+         * @param {string} options.buttonText - Confirm button text
+         */
+        function showConfirmModal(options) {
+            const form = document.getElementById('confirmActionForm');
+            const methodInput = document.getElementById('confirmActionMethod');
+            const icon = document.getElementById('confirmModalIcon');
+            const title = document.getElementById('confirmModalTitle');
+            const message = document.getElementById('confirmModalMessage');
+            const btn = document.getElementById('confirmModalBtn');
+            const btnIcon = document.getElementById('confirmModalBtnIcon');
+            const btnText = document.getElementById('confirmModalBtnText');
+
+            // Set form attributes
+            form.action = options.action;
+            methodInput.value = options.method || 'POST';
+
+            // Set content
+            title.textContent = options.title || 'Konfirmasi';
+            message.textContent = options.message || 'Apakah Anda yakin?';
+            btnText.textContent = options.buttonText || 'Ya';
+
+            // Color schemes based on type
+            const schemes = {
+                delete: {
+                    iconClass: 'fas fa-trash-alt',
+                    iconColor: 'text-danger',
+                    btnClass: 'btn-danger',
+                    btnIconClass: 'fas fa-trash-alt'
+                },
+                warning: {
+                    iconClass: 'fas fa-exclamation-triangle',
+                    iconColor: 'text-warning',
+                    btnClass: 'btn-warning text-white',
+                    btnIconClass: 'fas fa-exclamation-triangle'
+                },
+                success: {
+                    iconClass: 'fas fa-check-circle',
+                    iconColor: 'text-success',
+                    btnClass: 'btn-success',
+                    btnIconClass: 'fas fa-check'
+                },
+                info: {
+                    iconClass: 'fas fa-info-circle',
+                    iconColor: 'text-primary',
+                    btnClass: 'btn-primary',
+                    btnIconClass: 'fas fa-check'
+                },
+                start: {
+                    iconClass: 'fas fa-play-circle',
+                    iconColor: 'text-success',
+                    btnClass: 'btn-success',
+                    btnIconClass: 'fas fa-play'
+                },
+                end: {
+                    iconClass: 'fas fa-stop-circle',
+                    iconColor: 'text-warning',
+                    btnClass: 'btn-warning text-white',
+                    btnIconClass: 'fas fa-stop'
+                },
+                verify: {
+                    iconClass: 'fas fa-user-check',
+                    iconColor: 'text-success',
+                    btnClass: 'btn-success',
+                    btnIconClass: 'fas fa-check'
+                },
+                unverify: {
+                    iconClass: 'fas fa-user-times',
+                    iconColor: 'text-warning',
+                    btnClass: 'btn-warning text-white',
+                    btnIconClass: 'fas fa-times'
+                },
+                accept: {
+                    iconClass: 'fas fa-thumbs-up',
+                    iconColor: 'text-success',
+                    btnClass: 'btn-success',
+                    btnIconClass: 'fas fa-check'
+                },
+                reject: {
+                    iconClass: 'fas fa-thumbs-down',
+                    iconColor: 'text-danger',
+                    btnClass: 'btn-danger',
+                    btnIconClass: 'fas fa-times'
+                },
+                restore: {
+                    iconClass: 'fas fa-database',
+                    iconColor: 'text-warning',
+                    btnClass: 'btn-warning text-white',
+                    btnIconClass: 'fas fa-undo'
+                }
+            };
+
+            const scheme = schemes[options.type] || schemes.info;
+
+            icon.className = scheme.iconClass + ' fa-2x ' + scheme.iconColor;
+            btn.className = 'btn ' + scheme.btnClass + ' rounded-pill px-4';
+            btnIcon.className = scheme.btnIconClass + ' me-2';
+
+            // Show modal
+            const modalEl = document.getElementById('confirmActionModal');
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        }
+
+        // Attach delete modal behaviour for .btn-delete-article
         document.addEventListener('DOMContentLoaded', function() {
-            var deleteButtons = document.querySelectorAll('.btn-delete-article');
-            deleteButtons.forEach(function(btn) {
+            document.querySelectorAll('.btn-delete-article').forEach(function(btn) {
                 btn.addEventListener('click', function(e) {
-                    var action = btn.getAttribute('data-action');
-                    var form = document.getElementById('confirmDeleteForm');
-                    if (form) {
-                        form.action = action;
-                        var modalEl = document.getElementById('confirmDeleteModal');
-                        var modal = new bootstrap.Modal(modalEl);
-                        modal.show();
-                    }
+                    showConfirmModal({
+                        action: btn.getAttribute('data-action'),
+                        method: 'DELETE',
+                        type: 'delete',
+                        title: 'Konfirmasi Hapus',
+                        message: 'Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.',
+                        buttonText: 'Ya, Hapus'
+                    });
                 });
             });
         });

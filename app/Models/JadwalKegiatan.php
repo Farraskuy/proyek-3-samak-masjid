@@ -29,6 +29,9 @@ class JadwalKegiatan extends Model
         'registration_form_id',
         'has_closing_form',
         'closing_form_id',
+        'questionnaire_enabled',
+        'registration_enabled',
+        'event_started',
         'has_pj',
         'pj_user_id',
     ];

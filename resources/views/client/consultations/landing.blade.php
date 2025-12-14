@@ -147,6 +147,17 @@
                                 placeholder="Tuliskan pertanyaan atau permasalahan Anda di sini..."></textarea>
                         </div>
 
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="is_anonymous" id="anonymousCheck"
+                                    value="1">
+                                <label class="form-check-label small" for="anonymousCheck">
+                                    <i class="fas fa-user-secret me-1 text-muted"></i>
+                                    Kirim sebagai Anonim (nama tidak ditampilkan)
+                                </label>
+                            </div>
+                        </div>
+
                         <div class="col-12 mt-4">
                             <button type="button" class="btn btn-submit w-100 auth-check-btn">Kirim Pertanyaan</button>
                         </div>
@@ -166,22 +177,24 @@
 
     <!-- Login Modal -->
     <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content border-0 shadow-sm rounded-3">
-                <div class="modal-body p-4 text-center">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-4">
+                <div class="modal-body p-4">
                     <div class="mb-3">
-                        <i class="fas fa-lock fa-2x text-muted opacity-50"></i>
+                        <i class="fas fa-lock fa-2x" style="color: #175C9E;"></i>
                     </div>
                     <h5 class="fw-bold mb-2">Login Diperlukan</h5>
-                    <p class="text-muted mb-4 small">Silakan login untuk melanjutkan konsultasi.</p>
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('login') }}" class="btn btn-primary btn-sm rounded-pill">Login</a>
-                        <button type="button" class="btn btn-light btn-sm rounded-pill text-muted"
+                    <p class="text-muted mb-4">Silakan login untuk melanjutkan konsultasi dengan ustadz kami.</p>
+                    <div class="d-flex gap-2">
+                        <a href="{{ route('login') }}" class="btn btn-primary rounded-pill px-4 w-100">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                        <button type="button" class="btn btn-light rounded-pill px-4"
                             data-bs-dismiss="modal">Batal</button>
                     </div>
                     <div class="mt-3">
-                        <small class="text-muted">Belum punya akun? <a href="{{ route('register') }}"
-                                class="fw-bold text-decoration-none">Daftar</a></small>
+                        <span class="text-muted">Belum punya akun? </span>
+                        <a href="{{ route('register') }}" class="fw-bold text-decoration-none">Daftar Sekarang</a>
                     </div>
                 </div>
             </div>
@@ -190,19 +203,20 @@
 
     <!-- Verification Modal -->
     <div class="modal fade" id="verificationModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content border-0 shadow-sm rounded-3">
-                <div class="modal-body p-4 text-center">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-4">
+                <div class="modal-body p-4">
                     <div class="mb-3">
-                        <i class="fas fa-envelope fa-2x text-warning opacity-75"></i>
+                        <i class="fas fa-envelope fa-2x text-warning"></i>
                     </div>
                     <h5 class="fw-bold mb-2">Verifikasi Email</h5>
-                    <p class="text-muted mb-4 small">Anda harus memverifikasi email terlebih dahulu untuk melakukan
+                    <p class="text-muted mb-4">Anda harus memverifikasi email terlebih dahulu untuk dapat melakukan
                         konsultasi.</p>
-                    <div class="d-grid gap-2">
-                        <a href="{{ route('profile.show') }}" class="btn btn-warning btn-sm rounded-pill text-white">Ke
-                            Profil Saya</a>
-                        <button type="button" class="btn btn-light btn-sm rounded-pill text-muted"
+                    <div class="d-flex gap-2">
+                        <a href="{{ route('profile.show') }}" class="btn btn-warning rounded-pill px-4 text-white">
+                            <i class="fas fa-user me-2"></i>Ke Profil Saya
+                        </a>
+                        <button type="button" class="btn btn-light rounded-pill px-4"
                             data-bs-dismiss="modal">Tutup</button>
                     </div>
                 </div>

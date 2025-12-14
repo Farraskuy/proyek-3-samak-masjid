@@ -154,6 +154,19 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::get('/dashboard-keuangan', [App\Http\Controllers\Admin\FinanceDashboardController::class, 'index'])
         ->name('finance.dashboard')
         ->middleware('permission:view_finance');
+    
+    // PJ Dashboard (Penanggung Jawab)
+    Route::prefix('pj-dashboard')->name('pj.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\PjDashboardController::class, 'index'])->name('index');
+        Route::get('/{eventId}', [App\Http\Controllers\Admin\PjDashboardController::class, 'show'])->name('show');
+        Route::get('/{eventId}/registrants', [App\Http\Controllers\Admin\PjDashboardController::class, 'registrants'])->name('registrants');
+        Route::patch('/{eventId}/registrants/{responseId}/verify', [App\Http\Controllers\Admin\PjDashboardController::class, 'verifyRegistrant'])->name('verify-registrant');
+        Route::patch('/{eventId}/toggle-questionnaire', [App\Http\Controllers\Admin\PjDashboardController::class, 'toggleQuestionnaire'])->name('toggle-questionnaire');
+        Route::patch('/{eventId}/toggle-registration', [App\Http\Controllers\Admin\PjDashboardController::class, 'toggleRegistration'])->name('toggle-registration');
+        Route::patch('/{eventId}/start-event', [App\Http\Controllers\Admin\PjDashboardController::class, 'startEvent'])->name('start-event');
+        Route::patch('/{eventId}/end-event', [App\Http\Controllers\Admin\PjDashboardController::class, 'endEvent'])->name('end-event');
+        Route::get('/{eventId}/closing-responses', [App\Http\Controllers\Admin\PjDashboardController::class, 'closingResponses'])->name('closing-responses');
+    });
 
     // Role Management
     Route::prefix('roles')->name('roles.')->group(function () {

@@ -89,10 +89,27 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                                                <a href="{{ route('jadwal.detail', $registration->event->event_id) }}" 
-                                                    class="btn btn-outline-primary rounded-pill px-4">
-                                                    <i class="fas fa-eye me-2"></i>Lihat Detail
-                                                </a>
+                                                <div class="d-flex flex-column flex-md-row gap-2 justify-content-md-end">
+                                                    {{-- Tombol Lihat Detail --}}
+                                                    <a href="{{ route('jadwal.detail', $registration->event->event_id) }}" 
+                                                        class="btn btn-outline-primary rounded-pill px-3">
+                                                        <i class="fas fa-eye me-1"></i>Detail
+                                                    </a>
+                                                    
+                                                    {{-- Tombol Kuesioner (hanya muncul jika event selesai & ada closing form) --}}
+                                                    @if (now()->gt($registration->event->end_time) && $registration->event->has_closing_form && $registration->event->closingForm)
+                                                        @if ($registration->event->questionnaire_enabled ?? true)
+                                                            <a href="{{ route('form.fill', $registration->event->closingForm->slug) }}" 
+                                                                class="btn btn-success rounded-pill px-3">
+                                                                <i class="fas fa-clipboard-check me-1"></i>Isi Kuesioner
+                                                            </a>
+                                                        @else
+                                                            <button type="button" class="btn btn-secondary rounded-pill px-3" disabled title="Kuesioner belum dibuka">
+                                                                <i class="fas fa-lock me-1"></i>Kuesioner
+                                                            </button>
+                                                        @endif
+                                                    @endif
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

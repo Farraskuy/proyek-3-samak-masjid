@@ -97,16 +97,12 @@
                                                     class="btn btn-sm btn-outline-primary rounded-pill px-3">
                                                     Detail <i class="fas fa-arrow-right ms-1"></i>
                                                 </a>
-                                                <form method="POST"
-                                                    action="{{ route('admin.forms.responses.delete', [$form->id, $r->id]) }}"
-                                                    class="d-inline-block ms-1">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button class="btn btn-sm btn-outline-danger rounded-circle"
-                                                        onclick="return confirm('Hapus respon ini?')" title="Hapus">
-                                                        <i class="fas fa-trash-alt"></i>
-                                                    </button>
-                                                </form>
+                                                <button type="button"
+                                                    class="btn btn-sm btn-outline-danger rounded-circle btn-delete-article ms-1"
+                                                    title="Hapus"
+                                                    data-action="{{ route('admin.forms.responses.delete', [$form->id, $r->id]) }}">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                     @empty

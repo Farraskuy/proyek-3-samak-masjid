@@ -15,6 +15,7 @@ class Role extends Model
         'name',
         'alias',
         'description',
+        'default_redirect_after_login',
     ];
 
     /**

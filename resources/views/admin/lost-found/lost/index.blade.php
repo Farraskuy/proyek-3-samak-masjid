@@ -41,13 +41,10 @@
                                     </a>
                                 @endcan
                                 @can('delete_lost_items')
-                                    <form action="{{ route('admin.lost-items.destroy', $item->id) }}" method="POST"
-                                        class="d-inline">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hapus?')">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
+                                    <button type="button" class="btn btn-sm btn-danger btn-delete-article"
+                                        data-action="{{ route('admin.lost-items.destroy', $item->id) }}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 @endcan
                             </td>
                         </tr>

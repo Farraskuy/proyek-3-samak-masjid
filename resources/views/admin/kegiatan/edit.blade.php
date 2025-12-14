@@ -236,43 +236,79 @@
                         <div id="pjInfoContainer" class="mt-3"
                             style="display:{{ $event->has_pj ? 'block' : 'none' }};">
                             @if ($event->has_pj && $event->pjUser)
-                                <div class="alert alert-info small mb-0">
-                                    <p class="fw-semibold mb-2"><i class="fas fa-user-shield me-1"></i>Kredensial PJ</p>
-                                    
-                                    <div class="mb-2">
-                                        <small class="text-muted">Email:</small>
-                                        <div class="input-group input-group-sm">
-                                            <input type="text" class="form-control" value="{{ $event->pjUser->email }}" readonly id="pjEmail">
-                                            <button type="button" class="btn btn-outline-secondary" onclick="copyToClipboard('pjEmail')" title="Copy">
-                                                <i class="fas fa-copy"></i>
-                                            </button>
+                                <div class="card border-0 shadow-sm rounded-3 bg-gradient" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="rounded-circle bg-primary bg-opacity-20 p-2 me-2">
+                                                <i class="fas fa-user-shield text-primary"></i>
+                                            </div>
+                                            <h6 class="fw-bold mb-0 text-primary">Kredensial Penanggung Jawab</h6>
                                         </div>
-                                    </div>
-                                    
-                                    <div class="mb-2">
-                                        <small class="text-muted">Password:</small>
-                                        <div class="input-group input-group-sm">
-                                            <input type="text" class="form-control" value="{{ $event->pjUser->pj_password ?? 'Hubungi Admin' }}" readonly id="pjPassword">
-                                            <button type="button" class="btn btn-outline-secondary" onclick="copyToClipboard('pjPassword')" title="Copy">
-                                                <i class="fas fa-copy"></i>
-                                            </button>
+                                        
+                                        {{-- Nama PJ --}}
+                                        <div class="mb-3">
+                                            <label class="form-label small text-muted mb-1">
+                                                <i class="fas fa-user me-1"></i>Nama
+                                            </label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control form-control-sm bg-white border-0 shadow-sm" 
+                                                    value="{{ $event->pjUser->full_name ?? $event->pjUser->name ?? '-' }}" readonly id="pjName">
+                                                <button type="button" class="btn btn-primary btn-sm px-3" onclick="copyToClipboard('pjName')" title="Copy Nama">
+                                                    <i class="fas fa-copy" id="pjNameIcon"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                    
-                                    <div>
-                                        <small class="text-muted">Nama:</small>
-                                        <div class="input-group input-group-sm">
-                                            <input type="text" class="form-control" value="{{ $event->pjUser->name }}" readonly id="pjName">
-                                            <button type="button" class="btn btn-outline-secondary" onclick="copyToClipboard('pjName')" title="Copy">
-                                                <i class="fas fa-copy"></i>
+                                        
+                                        {{-- Email PJ --}}
+                                        <div class="mb-3">
+                                            <label class="form-label small text-muted mb-1">
+                                                <i class="fas fa-envelope me-1"></i>Email
+                                            </label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control form-control-sm bg-white border-0 shadow-sm" 
+                                                    value="{{ $event->pjUser->email }}" readonly id="pjEmail">
+                                                <button type="button" class="btn btn-primary btn-sm px-3" onclick="copyToClipboard('pjEmail')" title="Copy Email">
+                                                    <i class="fas fa-copy" id="pjEmailIcon"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        {{-- Password PJ --}}
+                                        <div class="mb-0">
+                                            <label class="form-label small text-muted mb-1">
+                                                <i class="fas fa-key me-1"></i>Password
+                                            </label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control form-control-sm bg-white border-0 shadow-sm font-monospace" 
+                                                    value="{{ $event->pjUser->pj_password ?? 'Hubungi Admin' }}" readonly id="pjPassword">
+                                                <button type="button" class="btn btn-primary btn-sm px-3" onclick="copyToClipboard('pjPassword')" title="Copy Password">
+                                                    <i class="fas fa-copy" id="pjPasswordIcon"></i>
+                                                </button>
+                                            </div>
+                                            @if(!$event->pjUser->pj_password)
+                                                <small class="text-danger mt-1 d-block">
+                                                    <i class="fas fa-exclamation-triangle me-1"></i>Password tidak tersedia
+                                                </small>
+                                            @endif
+                                        </div>
+                                        
+                                        {{-- Copy All Button --}}
+                                        <div class="mt-3 pt-2 border-top">
+                                            <button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="copyAllCredentials()">
+                                                <i class="fas fa-clipboard-list me-1"></i>Salin Semua Kredensial
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                             @else
-                                <div class="alert alert-light border small text-muted mb-0">
-                                    <i class="fas fa-info-circle me-1"></i>
-                                    Akun PJ akan dibuat otomatis. Kredensial muncul setelah disimpan.
+                                <div class="card border-2 border-dashed rounded-3">
+                                    <div class="card-body text-center py-4">
+                                        <i class="fas fa-user-plus fa-2x text-muted mb-2"></i>
+                                        <p class="text-muted small mb-0">
+                                            Akun PJ akan dibuat otomatis.<br>
+                                            Kredensial muncul setelah disimpan.
+                                        </p>
+                                    </div>
                                 </div>
                             @endif
                         </div>
@@ -394,7 +430,30 @@
         setTimeout(() => {
             btn.innerHTML = originalHtml;
             btn.classList.remove('btn-success');
-            btn.classList.add('btn-outline-secondary');
+            btn.classList.add('btn-primary');
         }, 1500);
+    }
+    
+    // Copy all credentials function
+    function copyAllCredentials() {
+        const name = document.getElementById('pjName')?.value || '';
+        const email = document.getElementById('pjEmail')?.value || '';
+        const password = document.getElementById('pjPassword')?.value || '';
+        
+        const credentials = `Kredensial PJ:\nNama: ${name}\nEmail: ${email}\nPassword: ${password}`;
+        
+        navigator.clipboard.writeText(credentials).then(() => {
+            const btn = event.target.closest('button');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check me-1"></i>Tersalin!';
+            btn.classList.remove('btn-outline-primary');
+            btn.classList.add('btn-success');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalHtml;
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-primary');
+            }, 2000);
+        });
     }
 </script>

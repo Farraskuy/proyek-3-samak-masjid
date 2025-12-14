@@ -48,27 +48,34 @@
         /* Hero Section Responsive */
         .hero-section {
             background-color: #175C9E;
-            min-height: 400px;
+            background-image: linear-gradient(90deg, #175C9E 0%, #175C9E 40%, rgba(23, 92, 158, 0.7) 65%, rgba(23, 92, 158, 0.3) 85%, transparent 100%), url('{{ asset('assets/images/lukmanulhakim.png') }}');
+            background-size: cover;
+            background-position: right center;
+            min-height: 420px;
             position: relative;
             overflow: hidden;
         }
 
         .hero-image-col {
-            display: block;
+            display: none;
+        }
+
+        @media (max-width: 991px) {
+            .hero-section {
+                background: linear-gradient(90deg, #175C9E 0%, #175C9E 50%, rgba(23, 92, 158, 0.8) 75%, rgba(23, 92, 158, 0.6) 100%), url('{{ asset('assets/images/lukmanulhakim.png') }}');
+                background-size: cover;
+                background-position: center;
+            }
         }
 
         @media (max-width: 768px) {
             .hero-section {
-                background-image: linear-gradient(rgba(23, 92, 158, 0.85), rgba(23, 92, 158, 0.95)), url('{{ asset('assets/images/lukmanulhakim.png') }}');
+                background: linear-gradient(180deg, rgba(23, 92, 158, 0.85) 0%, rgba(23, 92, 158, 0.95) 100%), url('{{ asset('assets/images/lukmanulhakim.png') }}');
                 background-size: cover;
                 background-position: center;
                 height: auto;
                 padding-top: 4rem;
                 padding-bottom: 4rem;
-            }
-
-            .hero-image-col {
-                display: none;
             }
         }
     </style>
@@ -81,7 +88,7 @@
         <div class="container position-relative">
             <div class="row align-items-center text-start">
 
-                <div class="col-md-7">
+                <div class="col-lg-7 col-md-8">
                     <h1 class="display-4 fw-bold text-white mb-3" data-aos="fade-right" data-aos-duration="900">
                         Selamat Datang di <span class="text-warning">SAMAK Masjid</span>
                     </h1>
@@ -89,12 +96,6 @@
                     <p class="lead text-white-50" data-aos="fade-right" data-aos-duration="1100" data-aos-delay="200">
                         Sistem Aplikasi Manajemen Aktivitas dan Keuangan Masjid (SAMAK Masjid)
                     </p>
-                </div>
-
-                <div class="col-md-5 text-center hero-image-col">
-                    <img src="{{ asset('assets/images/lukmanulhakim.png') }}" alt="Hero"
-                        class="img-fluid rounded shadow fade" data-aos="zoom-in" data-aos-duration="1000"
-                        data-aos-delay="300">
                 </div>
 
             </div>
@@ -214,8 +215,7 @@
                                             <img src="{{ asset('storage/' . $event->poster) }}"
                                                 alt="{{ $event->event_name }}">
                                         @else
-                                            <div
-                                                class="bg-light d-flex align-items-center justify-content-center h-100 rounded">
+                                            <div class="d-flex align-items-center justify-content-center h-100 rounded">
                                                 <i class="fas fa-calendar-alt fa-3x text-muted"></i>
                                             </div>
                                         @endif

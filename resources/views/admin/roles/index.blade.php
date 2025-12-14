@@ -13,7 +13,7 @@
                 </a>
             @endcan
         </div>
-        
+
 
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -82,15 +82,11 @@
 
                                         @can('delete_roles')
                                             @if ($role->users_count == 0)
-                                                <form action="{{ route('admin.roles.destroy', $role->id) }}" method="POST"
-                                                    class="d-inline"
-                                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus role ini?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" aria-label="Hapus">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
+                                                <button type="button" class="btn btn-danger btn-sm btn-delete-article"
+                                                    data-action="{{ route('admin.roles.destroy', $role->id) }}"
+                                                    aria-label="Hapus">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
                                             @else
                                                 <button class="btn btn-secondary btn-sm" disabled title="Role sedang digunakan">
                                                     <i class="fas fa-trash"></i>

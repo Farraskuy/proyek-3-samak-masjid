@@ -174,10 +174,16 @@
 
                                     <td class="p-3 align-middle text-center">
                                         @can('delete_finance')
-                                            {{-- Form Delete harus di luar loop jika pakai ID unik, tapi di sini langsung submit --}}
-                                            <button type="submit" form="delete-form-{{ $item->id }}"
-                                                class="btn btn-sm btn-light border text-danger" title="Hapus"
-                                                onclick="return confirm('Hapus data ini?');">
+                                            <button type="button" class="btn btn-sm btn-light border text-danger"
+                                                title="Hapus"
+                                                onclick="showConfirmModal({
+                                                    action: '{{ route('admin.keuangan.destroy', $item->id) }}',
+                                                    method: 'DELETE',
+                                                    type: 'delete',
+                                                    title: 'Hapus Transaksi',
+                                                    message: 'Apakah Anda yakin ingin menghapus data transaksi ini?',
+                                                    buttonText: 'Ya, Hapus'
+                                                })">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         @endcan

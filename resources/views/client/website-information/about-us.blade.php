@@ -2,47 +2,17 @@
 
 @section('title', $page->title)
 
-@section('content')
-    <div class="min-vh-100 d-flex flex-column">
-        <!-- Hero Section -->
-        <section class="py-5 bg-pattern position-relative"
-            style="background-color: #175C9E; height: 400px; display:flex; align-items:center; overflow: hidden;">
-            @if ($page->featured_image_url)
-                <div class="position-absolute top-0 start-0 w-100 h-100" style="z-index: 0;">
-                    <img src="{{ asset('storage/' . $page->featured_image_url) }}" alt="{{ $page->title }}"
-                        class="w-100 h-100" style="object-fit: cover;">
-                    <div class="position-absolute top-0 start-0 w-100 h-100" style="background: rgba(23, 92, 158, 0.85);">
-                    </div>
-                </div>
-            @endif
-
-            <div class="container text-center position-relative" style="z-index: 1;">
-                <h1 class="display-4 fw-bold text-white mb-3">
-                    {{ $page->title }}
-                </h1>
-                @if ($page->description)
-                    <p class="text-white-50 lead mx-auto" style="max-width: 700px;">
-                        {{ $page->description }}
-                    </p>
-                @endif
-            </div>
-        </section>
-
-        <!-- Content Section -->
-        <section class="py-5 flex-grow-1">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-8 mx-auto">
-                        <div class="prose prose-lg">
-                            {!! $content_html !!}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-
+@push('styles')
     <style>
+        * {
+            font-family: 'Poppins', "Lexend", sans-serif;
+        }
+
+        .bg-pattern {
+            background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+            background-size: 25px 25px;
+        }
+
         .prose {
             font-size: 1.1rem;
             line-height: 1.75;
@@ -99,5 +69,65 @@
             color: #666;
             font-style: italic;
         }
+
+        .featured-image {
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .featured-image img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            max-height: 500px;
+        }
     </style>
+@endpush
+
+@section('content')
+    <div class="min-vh-100 d-flex flex-column">
+        <!-- Hero Section - Same style as other client pages -->
+        <section class="py-5 bg-pattern" style="background-color: #175C9E; height: 320px; display:flex; align-items:center;">
+            <div class="container text-center">
+                <h1 class="display-5 fw-bold text-white mb-3" data-aos="fade-up" data-aos-duration="900">
+                    Tentang <span style="color: #F6C948;">Kami</span>
+                </h1>
+                @if ($page->description)
+                    <p class="text-white-50 lead mb-0 col-lg-8 mx-auto" data-aos="fade-up" data-aos-duration="1100"
+                        data-aos-delay="200">
+                        {{ $page->description }}
+                    </p>
+                @endif
+            </div>
+        </section>
+
+        <!-- Featured Image Section - Below Hero, Rounded, No Shadow -->
+        @if ($page->featured_image_url)
+            <section class="py-4">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10">
+                            <div class="featured-image" data-aos="fade-up" data-aos-duration="800">
+                                <img src="{{ asset('storage/' . $page->featured_image_url) }}" alt="{{ $page->title }}"
+                                    class="w-100">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        @endif
+
+        <!-- Content Section -->
+        <section class="py-5 flex-grow-1">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <div class="prose prose-lg">
+                            {!! $content_html !!}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
 @endsection

@@ -12,7 +12,6 @@
             background: #fafafa;
         }
 
-        /* Tambah padding bawah */
         .page-wrapper {
             padding-bottom: 140px;
         }
@@ -182,8 +181,36 @@
             padding: 30px 0;
             opacity: 0.7;
         }
+
+        /* Desktop: Sidebar di kanan content */
+        @media (min-width: 992px) {
+            .content-column {
+                order: 1;
+            }
+
+            .sidebar-column {
+                order: 2;
+            }
+        }
+
+        /* Mobile: Sidebar di bawah rekomendasi */
+        @media (max-width: 991px) {
+            .content-column {
+                order: 1;
+            }
+
+            .sidebar-column {
+                order: 3;
+                margin-top: 30px;
+            }
+
+            .recommend-section {
+                order: 2;
+            }
+        }
     </style>
 @endpush
+
 @section('content')
     <div class="page-wrapper">
         {{-- HERO --}}
@@ -196,9 +223,13 @@
                 <div class="hero-skeleton"><i class="fas fa-image"></i></div>
             @endif
         </div>
-        <div class="container"><a href="{{ route('client.berita') }}" class="btn-back">← Back</a>
+
+        <div class="container">
+            <a href="{{ route('client.berita') }}" class="btn-back">← Back</a>
+
             {{-- TITLE --}}
             <h1 class="article-title">{{ $post->title }}</h1>
+
             {{-- META --}}
             <div class="article-meta">
                 <span class="dot"></span>
@@ -206,66 +237,71 @@
                 <span class="dot"></span>
                 <span>{{ $post->kategori }}</span>
             </div>
+
             <div class="row">
                 {{-- LEFT CONTENT --}}
-                <div class="col-lg-8">
-                    <div class="article-content">{!! $content_html !!} </div>
-                    {{-- REKOMENDASI --}}
-                    <h3 class="recommend-title">Rekomendasi Lainnya</h3>
-                    <div class="row">
-                        @php
-                            $recommendations = \App\Models\Postingan::where('kategori', $post->kategori)
-                                ->where('id', '!=', $post->id)
-                                ->where('status', '=', 'published')
-                                ->orderBy('created_at', 'desc')
-                                ->limit(3)
-                                ->get();
-                        @endphp
-                        @if ($recommendations->count() == 0)
-                            <div class="no-data-box"><img src="https://www.svgrepo.com/show/448255/empty-box.svg"
-                                    width="120" class="mb-3" alt="No recommendations">
-                                <p>Tidak ada rekomendasi tersedia.</p>
-                            </div>
+                <div class="col-lg-8 content-column">
+                    <div class="article-content">{!! $content_html !!}</div>
+                </div>
+
+                {{-- RIGHT SIDEBAR - Desktop: di kanan, Mobile: di bawah rekomendasi --}}
+                <div class="col-lg-4 sidebar-column">
+                    <div class="sidebar-box">
+                        <h5 class="sidebar-title">Informasi Artikel</h5>
+                        <p><strong>Penulis:</strong> {{ optional($post->creator)->full_name ?? 'N/A' }}</p>
+                        <p><strong>Kategori:</strong> {{ $post->kategori }}</p>
+                        <p><strong>Tanggal Dibuat:</strong> {{ $post->created_at->format('d M Y') }}</p>
+                        @if ($post->published_at)
+                            <p><strong>Tanggal Dipublish:</strong> {{ $post->published_at->format('d M Y') }}</p>
                         @endif
-                        @foreach ($recommendations as $rec)
-                            <div class="col-md-4 mb-3"><a href="{{ route('client.berita.detail', $rec->slug ?? $rec->id) }}"
-                                    class="text-decoration-none text-dark">
-                                    <div class="card recommend-card shadow-sm">
-                                        {{-- Thumbnail --}}
-                                        <div class="card-thumbnail-wrapper">
-                                            <img id="rec-img-{{ $rec->id }}"
-                                                src="{{ asset('storage/' . $rec->featured_image_url) }}"
-                                                alt="{{ $rec->title }}">
-                                            <i class="fas fa-image fallback-icon" id="rec-icon-{{ $rec->id }}"></i>
-                                        </div>
-                                        {{-- Content --}}
-                                        <div class="card-body">
-                                            <span class="badge mb-2"
-                                                style="background-color:#CE9138;">{{ ucfirst($rec->kategori ?? 'Umum') }}
-                                            </span>
-                                            <h6 class="card-title fw-bold">{{ Str::limit($rec->title, 50) }}</h6>
-                                            <p class="card-text text-muted small">
-                                                {{ Str::limit(strip_tags($rec->content), 60) }}</p><small
-                                                class="text-muted mt-auto">{{ $rec->created_at->format('d M Y') }}</small>
-                                        </div>
-                                    </div>
-                                </a></div>
-                        @endforeach
                     </div>
                 </div>
             </div>
-            {{-- SIDEBAR --}}
-            <div class="col-lg-4">
-                <div class="sidebar-box">
-                    <h5 class="sidebar-title">Informasi Artikel</h5>
-                    <p><strong>Penulis:</strong>{{ optional($post->creator)->full_name ?? 'N/A' }}</p>
-                    <p><strong>Kategori:</strong>{{ $post->kategori }}</p>
-                    <p><strong>Tanggal Dibuat:</strong>{{ $post->created_at }}</p>
-                    @if ($post->published_at)
-                        <p><strong>Tanggal Dipublish:</strong>{{ $post->published_at }}</p>
+
+            {{-- REKOMENDASI --}}
+            <div class="recommend-section">
+                <h3 class="recommend-title">Rekomendasi Lainnya</h3>
+                <div class="row">
+                    @php
+                        $recommendations = \App\Models\Postingan::where('kategori', $post->kategori)
+                            ->where('id', '!=', $post->id)
+                            ->where('status', '=', 'published')
+                            ->orderBy('created_at', 'desc')
+                            ->limit(3)
+                            ->get();
+                    @endphp
+                    @if ($recommendations->count() == 0)
+                        <div class="no-data-box">
+                            <img src="https://www.svgrepo.com/show/448255/empty-box.svg" width="120" class="mb-3"
+                                alt="No recommendations">
+                            <p>Tidak ada rekomendasi tersedia.</p>
+                        </div>
                     @endif
+                    @foreach ($recommendations as $rec)
+                        <div class="col-md-4 mb-3">
+                            <a href="{{ route('client.berita.detail', $rec->slug ?? $rec->id) }}"
+                                class="text-decoration-none text-dark">
+                                <div class="card recommend-card shadow-sm">
+                                    <div class="card-thumbnail-wrapper">
+                                        <img id="rec-img-{{ $rec->id }}"
+                                            src="{{ asset('storage/' . $rec->featured_image_url) }}"
+                                            alt="{{ $rec->title }}">
+                                        <i class="fas fa-image fallback-icon" id="rec-icon-{{ $rec->id }}"></i>
+                                    </div>
+                                    <div class="card-body">
+                                        <span class="badge mb-2"
+                                            style="background-color:#CE9138;">{{ ucfirst($rec->kategori ?? 'Umum') }}</span>
+                                        <h6 class="card-title fw-bold">{{ Str::limit($rec->title, 50) }}</h6>
+                                        <p class="card-text text-muted small">
+                                            {{ Str::limit(strip_tags($rec->content), 60) }}</p>
+                                        <small class="text-muted mt-auto">{{ $rec->created_at->format('d M Y') }}</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </div>
     </div>
-</div>@endsection
+@endsection

@@ -111,15 +111,11 @@
                                         @endcan
 
                                         @can('delete_lost_items')
-                                            <form action="{{ route('admin.barang-hilang.destroy', $item->item_id) }}"
-                                                method="POST" class="d-inline"
-                                                onsubmit="return confirm('Yakin ingin menghapus barang ini?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm" aria-label="Hapus">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn btn-danger btn-sm btn-delete-article"
+                                                data-action="{{ route('admin.barang-hilang.destroy', $item->item_id) }}"
+                                                aria-label="Hapus">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
                                         @endcan
                                     </td>
                                 </tr>

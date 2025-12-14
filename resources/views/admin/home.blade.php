@@ -41,6 +41,60 @@
         <h1 class="fw-bold m-0 text-white">Selamat Datang di Halaman Admin,</h1>
         <p class="fw-semibold text-white">SAMAK-Kampus (Sistem Aplikasi Masjid Kampus)</p>
 
+        {{-- PJ Dashboard Quick Access --}}
+        @php
+            $pjEvents = \App\Models\JadwalKegiatan::where('pj_user_id', Auth::id())
+                ->with(['registrationForm.responses'])
+                ->orderBy('start_time', 'desc')
+                ->take(3)
+                ->get();
+        @endphp
+        @if ($pjEvents->isNotEmpty())
+            <div class="rounded-3 bg-gradient p-4 shadow-sm mb-4"
+                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="fw-bold text-white mb-1">
+                            <i class="fa-duotone fa-clipboard-user me-2"></i>Dashboard Penanggung Jawab
+                        </h5>
+                        <p class="text-white opacity-75 mb-0 small">Anda adalah PJ untuk
+                            {{ $pjEvents->count() }} kegiatan</p>
+                    </div>
+                    <a href="{{ route('admin.pj.index') }}" class="btn btn-light fw-semibold">
+                        <i class="fa-solid fa-arrow-right me-1"></i> Lihat Semua
+                    </a>
+                </div>
+                <div class="row g-3">
+                    @foreach ($pjEvents as $pjEvent)
+                        @php
+                            $registrantCount = $pjEvent->registrationForm
+                                ? $pjEvent->registrationForm->responses->count()
+                                : 0;
+                        @endphp
+                        <div class="col-md-4">
+                            <a href="{{ route('admin.pj.show', $pjEvent->event_id) }}"
+                                class="card border-0 text-decoration-none h-100"
+                                style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);">
+                                <div class="card-body text-white">
+                                    <h6 class="fw-semibold mb-2">{{ Str::limit($pjEvent->event_name, 35) }}</h6>
+                                    <div class="d-flex gap-3 small">
+                                        <span>
+                                            <i class="fa-regular fa-calendar me-1"></i>
+                                            {{ \Carbon\Carbon::parse($pjEvent->start_time)->format('d M') }}
+                                        </span>
+                                        <span>
+                                            <i class="fa-regular fa-users me-1"></i>
+                                            {{ $registrantCount }} Pendaftar
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         {{-- Konten Utama Menu Halaman --}}
         <div class="rounded-3 bg-white p-4 border- shadow-sm d-flex flex-wrap" style="gap: 20px;">
 

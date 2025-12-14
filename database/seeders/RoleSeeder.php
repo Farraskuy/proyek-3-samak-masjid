@@ -99,7 +99,7 @@ class RoleSeeder extends Seeder
         // --- Role: Super Admin (Development) ---
         $superAdminRole = Role::firstOrCreate(
             ['name' => 'Super Admin'], 
-            ['alias' => 'Super Admin', 'description' => 'Super Administrator untuk Development - Akses ke semua fitur']
+            ['alias' => 'Super Admin', 'description' => 'Super Administrator untuk Development - Akses ke semua fitur', 'default_redirect_after_login' => '/admin']
         );
         // Super Admin gets ALL permissions
         $allPermissions = Permission::all();
@@ -109,7 +109,7 @@ class RoleSeeder extends Seeder
         // --- Role: Admin ---
         $adminRole = Role::firstOrCreate(
             ['name' => 'Admin'], 
-            ['alias' => 'Admin System', 'description' => 'Administrator Sistem']
+            ['alias' => 'Admin System', 'description' => 'Administrator Sistem', 'default_redirect_after_login' => '/admin']
         );
         // Admin gets specialized permissions + generic dashboard access + backup
         $adminPermissions = Permission::whereIn('group', ['Dashboard', 'Role', 'Pengguna', 'Sistem'])->get();
@@ -121,7 +121,8 @@ class RoleSeeder extends Seeder
             ['name' => 'Koordinator Humas'], 
             [
                 'alias' => 'Koor Humas', 
-                'description' => 'Bertanggung jawab memvalidasi dan menyetujui konten postingan sebelum dipublikasikan'
+                'description' => 'Bertanggung jawab memvalidasi dan menyetujui konten postingan sebelum dipublikasikan',
+                'default_redirect_after_login' => '/admin'
             ]
         );
         $koorPermissions = Permission::whereIn('name', [
@@ -136,7 +137,7 @@ class RoleSeeder extends Seeder
         // --- Role: Humas ---
         $humasRole = Role::firstOrCreate(
             ['name' => 'Humas'], 
-            ['alias' => 'Bidang Humas & Publikasi', 'description' => 'Mengelola konten, publikasi, dan konsultasi']
+            ['alias' => 'Bidang Humas & Publikasi', 'description' => 'Mengelola konten, publikasi, dan konsultasi', 'default_redirect_after_login' => '/admin']
         );
         $humasPermissions = Permission::whereIn('group', ['Dashboard', 'Konsultasi', 'Kegiatan', 'Postingan', 'Galeri', 'Static Page'])
             ->whereNotIn('name', ['approve_posts', 'delete_posts'])
@@ -148,7 +149,7 @@ class RoleSeeder extends Seeder
         // --- Role: Bendahara Pemasukan ---
         $bendaharaMRole = Role::firstOrCreate(
             ['name' => 'Bendahara Pemasukan'], 
-            ['alias' => 'Bendahara Pemasukan', 'description' => 'Mengelola keuangan masuk dan Infaq']
+            ['alias' => 'Bendahara Pemasukan', 'description' => 'Mengelola keuangan masuk dan Infaq', 'default_redirect_after_login' => '/admin']
         );
 
         $bendaharaMPermissions = Permission::whereIn('group', ['Dashboard', 'Keuangan', 'Bank', 'Infaq'])
@@ -168,7 +169,7 @@ class RoleSeeder extends Seeder
         // --- Role: Bendahara Pengeluaran ---
         $bendaharaKRole = Role::firstOrCreate(
             ['name' => 'Bendahara Pengeluaran'], 
-            ['alias' => 'Bendahara Pengeluaran', 'description' => 'Mengelola keuangan keluar']
+            ['alias' => 'Bendahara Pengeluaran', 'description' => 'Mengelola keuangan keluar', 'default_redirect_after_login' => '/admin']
         );
 
         $bendaharaKPermissions = Permission::whereIn('group', ['Dashboard', 'Keuangan', 'Bank'])
@@ -190,7 +191,8 @@ class RoleSeeder extends Seeder
             ['name' => 'Koordinator Bendahara'], 
             [
                 'alias' => 'Koor Bendahara', 
-                'description' => 'Supervisor keuangan, bank, dan infaq'
+                'description' => 'Supervisor keuangan, bank, dan infaq',
+                'default_redirect_after_login' => '/admin'
             ]
         );
 
@@ -202,16 +204,30 @@ class RoleSeeder extends Seeder
         // --- Role: Sarpras ---
         $sarprasRole = Role::firstOrCreate(
             ['name' => 'Sarpras'], 
-            ['alias' => 'Divisi Sarana & Prasarana', 'description' => 'Mengelola aset dan barang hilang']
+            ['alias' => 'Divisi Sarana & Prasarana', 'description' => 'Mengelola aset dan barang hilang', 'default_redirect_after_login' => '/admin']
         );
         $sarprasPermissions = Permission::whereIn('group', ['Dashboard', 'Barang Hilang'])->get();
         $sarprasRole->permissions()->sync($sarprasPermissions);
 
 
+        // --- Role: Penanggung Jawab (PJ) ---
+        Role::firstOrCreate(
+            ['name' => 'Penanggung Jawab'], 
+            ['alias' => 'PJ Kegiatan', 'description' => 'Penanggung Jawab Kegiatan', 'default_redirect_after_login' => '/admin/pj-dashboard']
+        );
+
+
         // --- Role: Jamaah (No Dashboard Access) ---
         Role::firstOrCreate(
             ['name' => 'Jamaah'], 
-            ['alias' => 'Jamaah', 'description' => 'Pengguna Umum']
+            ['alias' => 'Jamaah', 'description' => 'Pengguna Umum', 'default_redirect_after_login' => '/']
+        );
+
+
+        // --- Role: Guest (No Dashboard Access) ---
+        Role::firstOrCreate(
+            ['name' => 'Guest'], 
+            ['alias' => 'Guest', 'description' => 'Tamu', 'default_redirect_after_login' => '/']
         );
     }
 }
