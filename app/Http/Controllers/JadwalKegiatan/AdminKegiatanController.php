@@ -97,7 +97,7 @@ class AdminKegiatanController extends Controller
         // Simpan event
         $event = JadwalKegiatan::create([
             'event_name' => $request->event_name,
-            'theme' => $request->theme,
+            'theme' => $request->theme ?? '',
             'poster' => $posterPath,
             'location' => $request->location,
             'start_time' => $request->start_time,
@@ -251,7 +251,7 @@ class AdminKegiatanController extends Controller
         // Update data utama
         $event->update([
             'event_name' => $request->event_name,
-            'theme' => $request->theme,
+            'theme' => $request->theme ?? '',
             'location' => $request->location,
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,

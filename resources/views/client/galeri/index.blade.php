@@ -23,8 +23,8 @@
             @forelse ($albums as $index => $album)
                 <div class="col-lg-4 col-md-6">
                     <a href="{{ route('galeri.show', $album->album_id) }}" class="text-decoration-none">
-                        <div class="card h-100 border-0 shadow-sm rounded-4 hover-lift" data-aos="fade-up"
-                            data-aos-delay="{{ $index * 80 }}">
+                        <div class="card h-100 shadow rounded-4 hover-lift" data-aos="fade-up"
+                            data-aos-delay="{{ $index * 80 }}" style="border: 1px solid #e2e8f0;">
                             <!-- Album Cover -->
                             <div class="card-thumbnail-wrapper position-relative" style="height: 240px; overflow: hidden;">
                                 @php
@@ -32,12 +32,17 @@
                                 @endphp
 
                                 @if ($cover)
-                                    <img src="{{ asset('storage/' . $cover) }}" class="w-100 h-100 object-fit-cover"
-                                        alt="{{ $album->album_name }}">
-                                    <i class="fas fa-image fallback-icon"></i>
+                                    <img src="{{ asset('storage/' . $cover) }}" class="w-100 h-100 object-fit-cover album-cover-img"
+                                        alt="{{ $album->album_name }}" loading="lazy"
+                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="fallback-cover" style="display: none;">
+                                        <div class="text-center">
+                                            <i class="fas fa-images fa-3x mb-2 opacity-50"></i>
+                                            <p class="small m-0">No Image</p>
+                                        </div>
+                                    </div>
                                 @else
-                                    <div
-                                        class="d-flex align-items-center justify-content-center w-100 h-100 bg-light text-muted">
+                                    <div class="fallback-cover">
                                         <div class="text-center">
                                             <i class="fas fa-images fa-3x mb-2 opacity-50"></i>
                                             <p class="small m-0">No Cover</p>
@@ -80,6 +85,12 @@
 
 @push('styles')
     <style>
+        /* Background Pattern */
+        .bg-pattern {
+            background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+            background-size: 25px 25px;
+        }
+
         /* Card Hover Effect */
         .hover-lift {
             transition: all 0.3s ease;
@@ -92,6 +103,26 @@
 
         .object-fit-cover {
             object-fit: cover;
+        }
+
+        /* Image Hover Effect */
+        .card-thumbnail-wrapper img {
+            transition: transform 0.4s ease;
+        }
+
+        .hover-lift:hover .card-thumbnail-wrapper img {
+            transform: scale(1.08);
+        }
+
+        /* Fallback Cover */
+        .fallback-cover {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #6c757d;
         }
 
         /* Empty State */
