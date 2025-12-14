@@ -19,18 +19,66 @@ class GaleriController extends Controller
         return $n > 0 ? $n : 50;
     }
 
-    public function adminIndex()
+    public function adminIndex(Request $request)
     {
-        $data = GalleryAlbum::orderBy('created_at', 'desc')->paginate(10);
+        $query = GalleryAlbum::query();
+        
+        // Search functionality
+        if ($request->filled('keyword')) {
+            $keyword = '%' . $request->keyword . '%';
+            $query->where(function($q) use ($keyword) {
+                $q->where('album_name', 'ilike', $keyword)
+                  ->orWhere('description', 'ilike', $keyword);
+            });
+        }
+        
+        // Sorting
+        $sortBy = $request->filled('sorted_by') ? $request->sorted_by : 'created_at';
+        $orderBy = $request->get('ordered_by', 'desc');
+        
+        // Validate sort column
+        $allowedColumns = ['album_name', 'created_at'];
+        if (!in_array($sortBy, $allowedColumns)) {
+            $sortBy = 'created_at';
+        }
+        
+        $query->orderBy($sortBy, $orderBy);
+        
+        // Pagination
+        $perPage = $this->perPage($request);
+        $data = $query->paginate($perPage)->appends($request->except('page'));
 
         return view('admin.galeri.index', compact('data'));
     }
 
     public function index(Request $request)
     {
+        $query = GalleryAlbum::query();
+        
+        // Search functionality
+        if ($request->filled('keyword')) {
+            $keyword = '%' . $request->keyword . '%';
+            $query->where(function($q) use ($keyword) {
+                $q->where('album_name', 'ilike', $keyword)
+                  ->orWhere('description', 'ilike', $keyword);
+            });
+        }
+        
+        // Sorting
+        $sortBy = $request->filled('sorted_by') ? $request->sorted_by : 'created_at';
+        $orderBy = $request->get('ordered_by', 'desc');
+        
+        // Validate sort column
+        $allowedColumns = ['album_name', 'created_at'];
+        if (!in_array($sortBy, $allowedColumns)) {
+            $sortBy = 'created_at';
+        }
+        
+        $query->orderBy($sortBy, $orderBy);
+        
+        // Pagination
         $perPage = $this->perPage($request);
-        $data = GalleryAlbum::orderBy('created_at', 'desc')
-                             ->paginate($perPage)->withQueryString();
+        $data = $query->paginate($perPage)->withQueryString();
 
         return view('admin.galeri.index', ['data' => $data]);
     }

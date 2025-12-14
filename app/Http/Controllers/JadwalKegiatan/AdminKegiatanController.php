@@ -9,9 +9,35 @@ use App\Models\JadwalKegiatan;
 class AdminKegiatanController extends Controller
 {
     //Tampilkan daftar kegiatan (khusus admin)
-    public function index()
+    public function index(Request $request)
     {
-        $data = JadwalKegiatan::orderBy('start_time', 'asc')->paginate(50);
+        $query = JadwalKegiatan::query();
+        
+        // Search functionality
+        if ($request->filled('keyword')) {
+            $keyword = '%' . $request->keyword . '%';
+            $query->where(function($q) use ($keyword) {
+                $q->where('event_name', 'ilike', $keyword)
+                  ->orWhere('location', 'ilike', $keyword)
+                  ->orWhere('theme', 'ilike', $keyword);
+            });
+        }
+        
+        // Sorting - ensure valid column
+        $sortBy = $request->filled('sorted_by') ? $request->sorted_by : 'start_time';
+        $orderBy = $request->get('ordered_by', 'asc');
+        
+        // Validate sort column to prevent SQL injection
+        $allowedColumns = ['event_name', 'location', 'start_time', 'end_time'];
+        if (!in_array($sortBy, $allowedColumns)) {
+            $sortBy = 'start_time';
+        }
+        
+        $query->orderBy($sortBy, $orderBy);
+        
+        // Pagination
+        $perPage = $request->get('showing', 50);
+        $data = $perPage === 'all' ? $query->get() : $query->paginate($perPage)->appends($request->except('page'));
 
         return view('admin.kegiatan.index', compact('data'));
     }

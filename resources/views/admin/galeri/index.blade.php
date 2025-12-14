@@ -26,8 +26,13 @@
 
                 <div class="bg-white position-sticky pt-3 pb-2" style="top: 61px; z-index: 1">
                     <div class="d-flex gap-2 justify-content-end mb-2">
-                        <input type="text" class="form-control form-control-sm" placeholder="Cari"
-                            value="{{ request()->query('keyword', '') }}" name="keyword">
+                        <div class="input-group">
+                            <input type="text" class="form-control form-control-sm" placeholder="Cari album..."
+                                value="{{ request()->query('keyword', '') }}" name="keyword">
+                            <button class="btn btn-sm btn-outline-secondary" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
 
                         <select class="form-select fs-14px h-100 w-auto" name="sorted_by">
                             <option value="">Urutkan berdasarkan</option>
