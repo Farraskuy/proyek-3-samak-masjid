@@ -153,28 +153,48 @@
 
                 <div class="col-lg-4">
 
+                    {{-- ========================================================== --}}
+                    {{-- 1. BLOK CATATAN REVISI (Hanya muncul jika status REVISI) --}}
+                    {{-- ========================================================== --}}
+                    @if (strtolower($post->status) === 'revisi')
+                        <div class="alert alert-warning border-warning shadow-sm rounded-3 p-3 mb-4">
+                            <h5 class="alert-heading fw-bold d-flex align-items-center gap-2 mb-2" style="font-size: 1rem;">
+                                <i class="fas fa-exclamation-triangle text-danger"></i> 
+                                pesan revisi
+                            </h5>
+                            <hr class="my-2 border-warning opacity-50">
+                            <div class="small text-dark" style="white-space: pre-line;">
+                                {{ $post->approval_note ?? 'Tidak ada catatan spesifik dari admin.' }}
+                            </div>
+                        </div>
+                    @endif
+                    {{-- ========================================================== --}}
 
-{{-- Publikasi --}}
-<div class="card-modern rounded-3 p-4 mb-4">
-    <h5 class="fw-semibold mb-3">Publikasi</h5>
+                    {{-- Publikasi --}}
+                    <div class="card-modern rounded-3 p-4 mb-4">
+                        <h5 class="fw-semibold mb-3">Publikasi</h5>
 
-    {{-- Status --}}
-    <label class="form-label fw-semibold">Status</label>
-    <select name="status_view" class="form-select input-lg mb-3" required>
-        <option value="draft" {{ old('status_view', $post->status_view) == 'draft' ? 'selected' : '' }}>
-            Draft
-        </option>
-        <option value="pending" {{ old('status_view', $post->status_view) == 'pending' ? 'selected' : '' }}>
-            Mengajukan Publikasi
-        </option>
-    </select>
+                        {{-- Status --}}
+                        <label class="form-label fw-semibold">Status</label>
+                        <select name="status_view" class="form-select input-lg mb-3" required>
+                            
+                            {{-- Opsi Draft --}}
+                            <option value="draft" {{ old('status_view', $post->status_view) == 'draft' ? 'selected' : '' }}>
+                                Draft
+                            </option>
 
-    {{-- Tombol Submit --}}
-    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-2">
-        <i class="fas fa-save me-1"></i> Update Postingan
-    </button>
-</div>
+                            {{-- Opsi Ajukan --}}
+                            {{-- Jika status sekarang Revisi, tombol ini berubah label jadi "Ajukan Perbaikan" --}}
+                            <option value="pending" {{ old('status_view', $post->status_view) == 'pending' ? 'selected' : '' }}>
+                                {{ strtolower($post->status) === 'revisi' ? 'Ajukan Perbaikan' : 'Mengajukan Publikasi' }}
+                            </option>
+                        </select>
 
+                        {{-- Tombol Submit --}}
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-2">
+                            <i class="fas fa-save me-1"></i> Update Postingan
+                        </button>
+                    </div>
 
                     {{-- Kategori --}}
                     <div class="card-modern rounded-3 p-4 mb-4">
