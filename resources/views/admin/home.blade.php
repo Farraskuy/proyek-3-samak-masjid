@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'Dashboard | SAMAK-Kampus')
+@section('title', 'Dashboard')
 
 @push('styles')
     <style>
@@ -65,13 +65,13 @@
                             </a>
                         @endcan
 
-                        {{-- 2. Halaman Statis (Tentang Kami, dll) --}}
+                        {{-- 2. Informasi Website --}}
                         @can('view_pages')
-                            <a href="{{ route('admin.static-pages.index') }}" class="btn text-start home-item">
+                            <a href="{{ route('admin.website-information.index') }}" class="btn text-start home-item">
                                 <i class="fa-duotone icon fa-file-lines" style="color: #6c757d"></i>
                                 <div>
-                                    <p class="fw-semibold m-0">Halaman Statis <i class="fa-regular fa-arrow-right"></i></p>
-                                    <p class="m-0 text-secondary">Visi Misi, Struktur DKM </p>
+                                    <p class="fw-semibold m-0">Informasi Website <i class="fa-regular fa-arrow-right"></i></p>
+                                    <p class="m-0 text-secondary">Pengaturan informasi website</p>
                                 </div>
                             </a>
                         @endcan
@@ -135,15 +135,14 @@
                             </a>
                         @endcan
 
-                        {{-- 7. Pendaftaran Kegiatan (Verifikasi Peserta) --}}
-                        {{-- Note: Using view_events as it links to Kajian, but placed in Finance section per request --}}
-                        @can('view_events')
-                            <a href="{{ route('admin.kajian') }}" class="btn text-start home-item">
-                                <i class="fa-duotone icon fa-user-check" style="color: #dc3545"></i>
+                        {{-- 7. Kotak Amal --}}
+                        @can('manage_income')
+                            <a href="{{ route('admin.kotak-amal.index') }}" class="btn text-start home-item">
+                                <i class="fa-duotone icon fa-box-dollar" style="color: #dc3545"></i>
                                 <div>
-                                    <p class="fw-semibold m-0">Verifikasi Pendaftar <i class="fa-regular fa-arrow-right"></i>
+                                    <p class="fw-semibold m-0">Pendataan Kotak Amal <i class="fa-regular fa-arrow-right"></i>
                                     </p>
-                                    <p class="m-0 text-secondary">Daftar Pendaftaran Kajian </p>
+                                    <p class="m-0 text-secondary">Input Hasil Kotak Amal </p>
                                 </div>
                             </a>
                         @endcan
@@ -206,7 +205,7 @@
 
                         {{-- 9. Lost & Found (Layanan Jamaah) --}}
                         @can('view_lost_items')
-                            <a href="{{ route('admin.barang-hilang') }}" class="btn text-start home-item">
+                            <a href="{{ route('admin.lost-items.index') }}" class="btn text-start home-item">
                                 <i class="fa-duotone icon fa-box-open-full" style="color: #fd7e14"></i>
                                 <div>
                                     <p class="fw-semibold m-0">Lost & Found <i class="fa-regular fa-arrow-right"></i></p>

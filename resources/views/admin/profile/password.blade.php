@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'Change Password | Admin')
+@section('title', 'Change Password')
 
 @push('styles')
     <style>

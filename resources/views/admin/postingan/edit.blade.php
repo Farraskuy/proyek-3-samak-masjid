@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'Edit Postingan - SAMAK Kampus')
+@section('title', 'Edit Postingan')
 
 @push('styles')
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">

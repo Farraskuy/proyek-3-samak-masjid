@@ -1,6 +1,6 @@
 @extends('client.layout')
 
-@section('title', 'Zakat, Infaq, dan Sedekah - SAMAK-Kampus')
+@section('title', 'Zakat, Infaq, dan Sedekah')
 
 @push('styles')
     <style>

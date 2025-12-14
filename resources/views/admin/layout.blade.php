@@ -19,18 +19,19 @@
     <link rel="stylesheet" href="{{ asset('assets/css/font-awesome/light.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/font-awesome/duotone.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/font-awesome/fontawesome.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/brands.min.css">
 
     {{-- Fonts --}}
     <link rel="stylesheet" href="{{ asset('assets/fonts/fonts.css') }}">
 
     {{-- icon --}}
-    <link rel="shortcut icon" href="{{ asset('assets/image') }}/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('assets/images/logo.ico') }}" type="image/x-icon">
 
     {{-- style --}}
     <link rel="stylesheet" href="{{ asset('assets/css/admin.css') }}">
 
     <script src="https://js.pusher.com/8.3.0/pusher.min.js"></script>
-    
+
     <script>
         const baseurl = '{{ url(' / ') }}';
         const csrf = '{{ csrf_token() }}';
@@ -62,7 +63,7 @@
 
     @stack('styles')
 
-    <title>@yield('title')</title>
+    <title>@yield('title', 'Dashboard') - Samak Masjid</title>
 </head>
 
 <body class="bg-light d-flex overflow-hidden"
@@ -108,11 +109,13 @@
                             <p class="modal-title fw-semibold">Konfirmasi Hapus</p>
                         </div>
                         <div class="modal-body">
-                            <p class="mb-0 fs-15px">Apakah anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.</p>
+                            <p class="mb-0 fs-15px">Apakah anda yakin ingin menghapus data ini? Tindakan ini tidak dapat
+                                dibatalkan.</p>
                         </div>
                         <div class="modal-footer">
                             <div class="d-flex gap-1 justify-content-end">
-                                <button type="button" class="fw-semibold btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="button" class="fw-semibold btn btn-sm btn-secondary"
+                                    data-bs-dismiss="modal">Batal</button>
                                 <button type="submit" class="fw-semibold btn btn-sm btn-danger">Ya, Hapus</button>
                             </div>
                         </div>
@@ -130,40 +133,40 @@
 
     {{-- Auto Show Alerts --}}
     <script>
-        @if(session('success'))
-        Toast.fire({
-            icon: 'success',
-            title: @json(session('success'))
-        });
+        @if (session('success'))
+            Toast.fire({
+                icon: 'success',
+                title: @json(session('success'))
+            });
         @endif
 
-        @if(session('error'))
-        Toast.fire({
-            icon: 'error',
-            title: @json(session('error'))
-        });
+        @if (session('error'))
+            Toast.fire({
+                icon: 'error',
+                title: @json(session('error'))
+            });
         @endif
 
-        @if(session('warning'))
-        Toast.fire({
-            icon: 'warning',
-            title: @json(session('warning'))
-        });
+        @if (session('warning'))
+            Toast.fire({
+                icon: 'warning',
+                title: @json(session('warning'))
+            });
         @endif
 
-        @if(session('info'))
-        Toast.fire({
-            icon: 'info',
-            title: @json(session('info'))
-        });
+        @if (session('info'))
+            Toast.fire({
+                icon: 'info',
+                title: @json(session('info'))
+            });
         @endif
 
         // Jika ada error validasi (multiple errors)
-        @if($errors -> any())
-        Toast.fire({
-            icon: 'error',
-            title: @json($errors -> first()) 
-        });
+        @if ($errors->any())
+            Toast.fire({
+                icon: 'error',
+                title: @json($errors->first())
+            });
         @endif
     </script>
 

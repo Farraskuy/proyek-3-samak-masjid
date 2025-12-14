@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'Edit Rekening - SAMAK Kampus')
+@section('title', 'Edit Rekening')
 
 @push('styles')
     <style>
@@ -29,7 +29,7 @@
 
         #image-preview {
             width: 100%;
-            border-radius: 1rem;
+            border-radius: 1rem;/
             border: 1px solid #ddd;
             object-fit: contain;
             height: 200px;

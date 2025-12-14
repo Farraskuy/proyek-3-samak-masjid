@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Atur Ulang Password - {{ config('app.name') }}</title>
+    <title>Atur Ulang Password - Samak Masjid</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* Inline CSS untuk kompatibilitas email client */

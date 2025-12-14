@@ -49,8 +49,19 @@ class RoleController extends Controller
                 'description' => $request->description,
             ]);
 
-            if ($request->has('permissions')) {
-                $role->permissions()->sync($request->permissions);
+            $permissions = $request->permissions ?? [];
+
+            // Automatically add 'view_dashboard' permission
+            $dashboardPermission = Permission::where('name', 'view_dashboard')->first();
+            if ($dashboardPermission) {
+                $permissions[] = $dashboardPermission->id;
+            }
+
+            // Ensure unique values just in case
+            $permissions = array_unique($permissions);
+
+            if (!empty($permissions)) {
+                $role->permissions()->sync($permissions);
             }
         });
 

@@ -61,7 +61,7 @@ Route::post('/auth/send-otp', [AuthController::class, 'sendOtp'])->name('auth.se
 Route::post('/auth/resend-otp', [AuthController::class, 'reSendOtp'])->name('auth.resendOtp');
 Route::get('/auth/verify', [AuthController::class, 'showVerifyForm'])->name('auth.showVerifyForm');
 Route::post('/auth/verify', [AuthController::class, 'verifyOtp'])->name('auth.verifyOtp');
-Route::post('/auth/resend-verification', [AuthController::class, 'resendVerification'])->name('auth.resendVerification');
+Route::post('/auth/resend-verification', [AuthController::class, 'resendOtp'])->name('auth.resendVerification');
 
 // Forgot Password
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('password.request');
@@ -100,7 +100,11 @@ Route::prefix('jadwal-kegiatan')->group(function () {
     Route::get('/data', [JadwalKegiatanController::class, 'getData'])->name('jadwal.data');
     Route::get('/by-date', [JadwalKegiatanController::class, 'getEventByDate']);
     Route::get('/{id}', [JadwalKegiatanController::class, 'show'])->name('jadwal.detail');
+    Route::post('/{eventId}/register', [JadwalKegiatanController::class, 'register'])->name('kegiatan.register');
 });
+
+// Registration history (IP-based, no login required)
+Route::get('/histori-pendaftaran', [JadwalKegiatanController::class, 'registrationHistory'])->name('kegiatan.history');
 // Gallery
 Route::prefix('galeri')->group(function () {
     Route::get('/', [GaleriController::class, 'guestIndex'])->name('galeri.index');
@@ -144,7 +148,7 @@ Route::middleware('auth')->prefix('konsultasi-saya')->name('client.consultations
 // Protected by Auth and Permission Middleware
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
 
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware('permission:view_dashboard');
 
     // Role Management
     Route::prefix('roles')->name('roles.')->group(function () {
@@ -218,15 +222,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::delete('/delete/{album_id}', [GaleriController::class, 'delete'])->name('delete')->middleware('permission:delete_gallery');
     });
 
-    // Static Pages
-    Route::middleware('permission:view_pages')->group(function () {
-        Route::get('/halaman-statis', [StaticPageController::class, 'indexAdmin'])->name('static-pages.index');
-        Route::get('/halaman-statis/tambah', [StaticPageController::class, 'create'])->name('static-pages.tambah')->middleware('permission:edit_pages');
-        Route::post('/halaman-statis/store', [StaticPageController::class, 'store'])->name('static-pages.store')->middleware('permission:edit_pages');
-        Route::get('/halaman-statis/{id}/edit', [StaticPageController::class, 'edit'])->name('static-pages.edit')->middleware('permission:edit_pages');
-        Route::put('/halaman-statis/{id}', [StaticPageController::class, 'update'])->name('static-pages.update')->middleware('permission:edit_pages');
-    });
-
     // Konsultasi Admin/Ustadz
     Route::prefix('konsultasi')->name('consultations.')->middleware('permission:view_consultations')->group(function () {
         Route::get('/', [ConsultationUstadzController::class, 'index'])->name('index');
@@ -265,13 +260,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     });
 
     // Infaq CRUD
-    Route::prefix('infaqs')->name('infaqs.')->middleware('permission:view_banks')->group(function () {
+    Route::prefix('infaqs')->name('infaqs.')->middleware('permission:view_infaq')->group(function () {
         Route::get('/', [InfaqController::class, 'index'])->name('index');
-        Route::get('/create', [InfaqController::class, 'create'])->name('create')->middleware('permission:create_banks');
-        Route::post('/', [InfaqController::class, 'store'])->name('store')->middleware('permission:create_banks');
-        Route::get('/{infaq}/edit', [InfaqController::class, 'edit'])->name('edit')->middleware('permission:edit_banks');
-        Route::put('/{infaq}', [InfaqController::class, 'update'])->name('update')->middleware('permission:edit_banks');
-        Route::delete('/{infaq}', [InfaqController::class, 'destroy'])->name('destroy')->middleware('permission:delete_banks');
+        Route::get('/create', [InfaqController::class, 'create'])->name('create')->middleware('permission:create_infaq');
+        Route::post('/', [InfaqController::class, 'store'])->name('store')->middleware('permission:create_infaq');
+        Route::get('/{infaq}/edit', [InfaqController::class, 'edit'])->name('edit')->middleware('permission:edit_infaq');
+        Route::put('/{infaq}', [InfaqController::class, 'update'])->name('update')->middleware('permission:edit_infaq');
+        Route::delete('/{infaq}', [InfaqController::class, 'destroy'])->name('destroy')->middleware('permission:delete_infaq');
     });
 
     // Donasi Confirmation
@@ -296,10 +291,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     });
 
     // Informasi Website (Ex Halaman Statis)
-    Route::controller(App\Http\Controllers\WebsiteInformationController::class)
-        ->prefix('informasi-website')
-        ->name('website-information.')
-        ->middleware('permission:view_pages') // Added middleware based on original Static Pages block
+    Route::controller(App\Http\Controllers\WebsiteInformationController::class)->prefix('informasi-website')->name('website-information.')->middleware('permission:view_pages') // Added middleware based on original Static Pages block
         ->group(function () {
             Route::get('/', 'indexAdmin')->name('index');
             Route::get('/tambah', 'create')->name('tambah')->middleware('permission:edit_pages'); // Added middleware
@@ -308,6 +300,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
             Route::put('/update/{id}', 'update')->name('update')->middleware('permission:edit_pages'); // Added middleware
             Route::delete('/delete/{id}', 'destroy')->name('delete')->middleware('permission:delete_pages'); // Added middleware
         });
+
+    // Pengaturan Nisab Zakat
+    Route::prefix('settings')->name('settings.')->middleware('permission:manage_zakat_settings')->group(function () {
+        Route::get('/zakat', [App\Http\Controllers\Admin\ZakatSettingController::class, 'index'])->name('zakat.index');
+        Route::put('/zakat', [App\Http\Controllers\Admin\ZakatSettingController::class, 'update'])->name('zakat.update');
+    });
 
     // Admin Profile (Available to all authorized admins)
     Route::prefix('profile')->name('profile.')->group(function () {

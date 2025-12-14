@@ -82,11 +82,26 @@
                                 <div class="d-flex align-items-center">
                                     <div class="bg-light rounded-circle d-flex justify-content-center align-items-center me-3"
                                         style="height: 35px; width: 35px;">
-                                        <i class="fas fa-history text-info"></i>
+                                        <i class="fas fa-comments text-info"></i>
                                     </div>
                                     <div>
                                         <div class="fw-medium">Riwayat Konsultasi</div>
                                         <small class="text-muted">Lihat konsultasi saya</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item py-2" href="{{ route('kegiatan.history') }}">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-light rounded-circle d-flex justify-content-center align-items-center me-3"
+                                        style="height: 35px; width: 35px;">
+                                        <i class="fas fa-calendar-check text-success"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-medium">Histori Pendaftaran</div>
+                                        <small class="text-muted">Kegiatan yang diikuti</small>
                                     </div>
                                 </div>
                             </a>
@@ -211,10 +226,12 @@
                     <a href="{{ route('profile.show') }}" class="btn btn-light text-start"><i
                             class="fas fa-id-card me-2"></i>Profil Saya</a>
                     <a href="{{ route('client.consultations.history') }}" class="btn btn-light text-start"><i
-                            class="fas fa-history me-2"></i>Riwayat Konsultasi</a>
+                            class="fas fa-comments me-2"></i>Riwayat Konsultasi</a>
+                    <a href="{{ route('kegiatan.history') }}" class="btn btn-light text-start"><i
+                            class="fas fa-calendar-check me-2"></i>Histori Pendaftaran</a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button class="btn btn-danger text-start"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
+                        <button class="btn btn-danger text-start w-100"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
                     </form>
                 </div>
             </div>
@@ -231,3 +248,4 @@
 
     </div>
 </div>
+

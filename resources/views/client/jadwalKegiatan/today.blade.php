@@ -1,15 +1,15 @@
 {{-- client/jadwalKegiatan/today.blade.php --}}
 
 @if(!$event)
-    <div class="card border-0 bg-warning bg-opacity-10 rounded-4">
-        <div class="card-body text-center py-5">
+    <div class="card border-0 bg-warning bg-opacity-10 rounded-4 h-100">
+        <div class="card-body text-center py-5 d-flex flex-column justify-content-center h-100">
             <i class="fas fa-calendar-times fa-3x text-warning mb-3"></i>
             <h5 class="fw-semibold text-warning mb-2">Tidak Ada Kegiatan</h5>
             <p class="text-muted mb-0">
                 @if($selectedDate ?? false)
                     Tidak ada kegiatan pada
                     <strong class="fs-7">
-                        {{ \Carbon\Carbon::parse($selectedDate)->translatedFormat('l, j F Y') }}
+                        {{ \Carbon\Carbon::parse($selectedDate)->locale('id')->translatedFormat('l, j F Y') }}
                     </strong>
                 @else
                     Belum ada kegiatan yang dijadwalkan hari ini
@@ -19,7 +19,7 @@
     </div>
 
 @else
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden hover-lift">
+    <div class="card shadow rounded-4 overflow-hidden hover-lift" style="border: 1px solid #e2e8f0;">
         <div class="row g-0">
 
             <!-- Poster -->
@@ -68,7 +68,7 @@
                         <div>
                             <small class="text-muted d-block">Tanggal</small>
                             <span class="fw-semibold">
-                                {{ \Carbon\Carbon::parse($event->start_time)->translatedFormat('l, d F Y') }}
+                                {{ \Carbon\Carbon::parse($event->start_time)->locale('id')->isoFormat('dddd, D MMMM YYYY') }}
                             </span>
                         </div>
                     </div>

@@ -2,67 +2,138 @@
 
 @section('title', 'Edit Album')
 
-@section('content')
-    <div class="container-fluid p-3">
+@push('styles')
+    <style>
+        .file-uploader {
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 2px dashed #dee2e6;
+            background: #fafafa;
+            text-align: center;
+            cursor: pointer;
+            color: #666;
+            transition: .2s ease-in-out;
+            display: block !important;
+        }
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4 class="mb-0">Edit Album</h4>
-            <a href="{{ route('galeri.index') }}" class="btn btn-outline-secondary btn-sm">Kembali ke Daftar Album</a>
-        </div>
+        .file-uploader.on-drag {
+            background: #f3f3f3;
+            border-color: #CE9138 !important;
+        }
 
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
+        #newCoverPreview img,
+        #photosPreview img {
+            border-radius: 0.5rem;
+        }
+    </style>
+@endpush
 
-                {{-- success message --}}
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show">
-                        {{ session('success') }}
-                        <button class="btn-close" data-bs-dismiss="alert"></button>
+@section('content') <section class="p-3 container">
+
+        {{-- success message --}}
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show mb-4">
+                {{ session('success') }}
+                <button class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+        {{-- error message --}}
+        @if ($errors->any())
+            <div class="alert alert-danger mb-4">
+                <strong>Ada kesalahan pada input:</strong>
+                <ul class="mt-2 mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>• {{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form id="updateForm" action="{{ route('admin.galeri.update', $album->album_id) }}" method="POST"
+            enctype="multipart/form-data">
+            @csrf
+
+            {{-- Header --}}
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <a href="{{ route('admin.galeri.index') }}" class="btn btn-light btn-sm rounded-4">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <h4 class="fw-semibold mb-0">Edit Album</h4>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    {{-- Detail Album --}}
+                    <div class="card bg-white border-0 rounded-3 p-4 mb-4">
+                        <h5 class="fw-semibold mb-3">Informasi Album</h5>
+
+                        {{-- Judul Album --}}
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Judul Album <span class="text-danger">*</span></label>
+                            <input type="text" name="album_name" class="form-control input-lg" required maxlength="100"
+                                value="{{ old('album_name', $album->album_name) }}" placeholder="Masukkan judul album">
+                        </div>
+
+                        {{-- ISI ALBUM --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold mb-3">Foto Isi Album</label>
+
+                            <div class="d-flex flex-wrap gap-3 mb-4">
+                                @foreach ($album->photos->where('caption', '!=', 'Cover Album') as $photo)
+                                    <div class="position-relative d-inline-block" id="photoBox{{ $photo->photo_id }}"
+                                        style="width: 140px;">
+                                        <img src="{{ asset('storage/' . $photo->image_url) }}"
+                                            class="img-thumbnail rounded-3 w-100" style="height: 140px; object-fit: cover;">
+
+                                        <input type="text" name="old_captions[{{ $photo->photo_id }}]"
+                                            value="{{ old('old_captions.' . $photo->photo_id, $photo->caption ?? '') }}"
+                                            class="form-control form-control-sm mt-2" placeholder="Caption">
+
+                                        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0"
+                                            onclick="deletePhoto({{ $photo->photo_id }})"
+                                            style="border-radius: 50%; width: 24px; height: 24px; padding: 0; line-height: 24px; margin: 5px;">
+                                            &times;
+                                        </button>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <input type="hidden" name="delete_photos" id="delete_photos">
+
+                            <label for="photos" class="file-uploader" id="photos-uploader">
+                                <i class="fas fa-images fa-2x mb-2"></i>
+                                <div class="fw-semibold">Tambah Foto Baru</div>
+                                <div class="small text-muted">Klik atau drag & drop banyak foto</div>
+                            </label>
+
+                            <input type="file" id="photos" accept="image/*" multiple class="d-none">
+
+                            <div id="photosPreview" class="d-flex flex-wrap gap-3 mt-3"></div>
+                        </div>
                     </div>
-                @endif
+                </div>
 
-                {{-- error message --}}
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <strong>Ada kesalahan pada input:</strong>
-                        <ul class="mt-2 mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>• {{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
-                <form id="updateForm" action="{{ route('admin.galeri.update', $album->album_id) }}" method="POST"
-                    enctype="multipart/form-data">
-                    @csrf
-
-                    {{-- Judul Album --}}
-                    <div class="mb-3">
-                        <label class="form-label">Judul Album <span class="text-danger">*</span></label>
-                        <input type="text" name="album_name" class="form-control" required maxlength="100"
-                            value="{{ old('album_name', $album->album_name) }}" placeholder="Masukkan judul album">
-                    </div>
-
-                    <div class="row g-3">
+                <div class="col-lg-4">
+                    {{-- Cover & Save --}}
+                    <div class="card bg-white border-0 rounded-3 p-4 mb-4">
+                        <h5 class="fw-semibold mb-3">Cover Album</h5>
 
                         {{-- COVER SECTION --}}
                         <div class="mb-4">
-                            <label class="form-label">Foto Cover Album</label>
+                            <label class="form-label fw-semibold">Foto Cover</label>
 
                             <div id="coverContainer" class="mb-2">
-
                                 @if ($album->cover)
-                                    <div class="position-relative d-inline-block me-2" id="oldCoverBox">
+                                    <div class="position-relative d-block mb-3" id="oldCoverBox">
+                                        <img src="{{ asset('storage/' . $album->cover->image_url) }}"
+                                            class="w-100 rounded-3 border" style="object-fit: cover; max-height: 250px;">
 
-                                        <img src="{{ asset('storage/' . $album->cover->image_url) }}" class="img-thumbnail"
-                                            style="max-width:150px; height:auto;">
-
-                                        <span class="btn btn-danger btn-sm position-absolute top-0 end-0"
-                                            onclick="deleteCover()" style="cursor:pointer; border-radius:50%;">
-                                            ×
-                                        </span>
-
+                                        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0"
+                                            onclick="deleteCover()"
+                                            style="margin: 10px; border-radius: 50%; width: 32px; height: 32px;">
+                                            &times;
+                                        </button>
                                     </div>
                                 @endif
                             </div>
@@ -70,63 +141,63 @@
                             <input type="hidden" name="delete_cover" id="delete_cover" value="0">
 
                             {{-- Input cover baru --}}
-                            <input type="file" name="cover_photo" id="cover_photo" class="form-control mt-2"
-                                accept="image/*">
+                            <label for="cover_photo" class="file-uploader" id="cover-uploader"
+                                style="{{ $album->cover ? 'display:none !important' : '' }}">
+                                <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
+                                <div class="fw-semibold">Ganti Cover</div>
+                                <div class="small text-muted">Drag & drop atau klik</div>
+                            </label>
+
+                            <input type="file" name="cover_photo" id="cover_photo" accept="image/*" class="d-none">
 
                             {{-- Preview cover baru --}}
                             <div id="newCoverPreview" class="mt-3"></div>
-
                         </div>
 
-                        {{-- ISI ALBUM --}}
-                        <div class="mb-3">
-                            <label class="form-label">Foto Isi Album</label>
-
-                            <div class="d-flex flex-wrap gap-2 mb-2">
-                                @foreach ($album->photos->where('caption', '!=', 'Cover Album') as $photo)
-                                    <div class="position-relative d-inline-block" id="photoBox{{ $photo->photo_id }}">
-                                        <img src="{{ asset('storage/' . $photo->image_url) }}" class="img-thumbnail"
-                                            style="max-width:120px; height:auto;">
-
-                                        <input type="text" name="old_captions[{{ $photo->photo_id }}]"
-                                            value="{{ old('old_captions.' . $photo->photo_id, $photo->caption ?? '') }}"
-                                            class="form-control form-control-sm mt-1" placeholder="Caption foto">
-
-                                        <span class="btn btn-danger btn-sm position-absolute top-0 end-0"
-                                            onclick="deletePhoto({{ $photo->photo_id }})"
-                                            style="cursor:pointer; border-radius:50%;">
-                                            ×
-                                        </span>
-                                    </div>
-                                @endforeach
-                            </div>
-
-                            <input type="hidden" name="delete_photos" id="delete_photos">
-
-                            <input type="file" id="photos" accept="image/*" multiple class="form-control">
-
-                            <div id="photosPreview" class="d-flex flex-wrap gap-2 mt-2"></div>
-                        </div>
-
-                        <div class="mt-4 d-flex gap-2">
-                            <button class="btn btn-primary">
-                                <i class="fas fa-save me-1"></i> Simpan Perubahan
-                            </button>
-
-                            <a href="{{ route('galeri.index') }}" class="btn btn-outline-secondary">Batal</a>
-                        </div>
-
-                </form>
-
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-save me-1"></i> Simpan Perubahan
+                        </button>
+                    </div>
+                </div>
             </div>
-        </div>
+            <div id="photosContainer" style="display:none;"></div>
+        </form>
 
-    </div>
+    </section>
+
+
+
 @endsection
-
 
 @push('scripts')
     <script>
+        document.addEventListener("DOMContentLoaded",
+            function() {
+
+                uploaders.forEach(obj => {
+                    const uploader = document.getElementById(obj.id);
+                    const input = document.getElementById(obj.input);
+
+                    if (uploader && input) {
+                        uploader.addEventListener("dragover", e => {
+                            e.preventDefault();
+                            uploader.classList.add("on-drag");
+                        });
+                        uploader.addEventListener("dragleave", () => {
+                            uploader.classList.remove("on-drag");
+                        });
+                        uploader.addEventListener("drop", e => {
+                            e.preventDefault();
+                            uploader.classList.remove("on-drag");
+                            input.files = e.dataTransfer.files;
+                            // Trigger change event manually
+                            const event = new Event('change');
+                            input.dispatchEvent(event);
+                        });
+                    }
+                });
+            });
+
         let deletePhotos = [];
         let selectedFiles = []; // array File
         let newCoverFile = null;
@@ -136,7 +207,9 @@
             document.getElementById('delete_cover').value = 1;
             document.getElementById('oldCoverBox')?.remove();
             document.getElementById('newCoverPreview').innerHTML = "";
-            // Kosongkan input file cover supaya formData tidak mengirim file lama
+            // Show uploader
+            document.getElementById('cover-uploader').style.setProperty('display', 'block', 'important');
+            // Kosongkan input file cover
             const coverInput = document.getElementById('cover_photo');
             if (coverInput) coverInput.value = "";
             newCoverFile = null;
@@ -145,23 +218,24 @@
         // PREVIEW COVER BARU
         document.getElementById("cover_photo").addEventListener("change", function(e) {
             // jika ada file baru, hapus preview/oldCover
-            deleteCover();
+            if (document.getElementById('oldCoverBox')) deleteCover();
 
             const file = e.target.files && e.target.files[0];
             if (!file) return;
 
             newCoverFile = file;
+            document.getElementById('cover-uploader').style.setProperty('display', 'none', 'important');
 
             const reader = new FileReader();
             reader.onload = function(evt) {
                 const html = `
-            <div class="position-relative d-inline-block" id="newCoverBox">
-                <img src="${evt.target.result}" class="img-thumbnail"
-                     style="max-width:150px; height:auto;">
-                <span class="btn btn-danger btn-sm position-absolute top-0 end-0"
-                      onclick="removeNewCover()" style="border-radius:50%;">×</span>
-            </div>
-        `;
+        <div class="position-relative d-block" id="newCoverBox">
+            <img src="${evt.target.result}" class="w-100 rounded-3 border"
+                 style="object-fit:cover; max-height:250px;">
+            <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0"
+                  onclick="removeNewCover()" style="margin:10px; border-radius:50%; width:32px; height:32px;">&times;</button>
+        </div>
+    `;
                 document.getElementById('newCoverPreview').innerHTML = html;
             };
             reader.readAsDataURL(file);
@@ -171,6 +245,7 @@
             newCoverFile = null;
             document.getElementById('cover_photo').value = "";
             document.getElementById('newCoverPreview').innerHTML = "";
+            document.getElementById('cover-uploader').style.setProperty('display', 'block', 'important');
         }
 
         // HAPUS FOTO LAMA ISI ALBUM
@@ -189,6 +264,7 @@
 
             renderPreview();
 
+            // Reset value input trigger agar bisa select file yang sama berulang kali jika perlu
             this.value = "";
         });
 
@@ -204,20 +280,26 @@
                 reader.onload = function(ev) {
                     // Preview card
                     const card = document.createElement('div');
-                    card.className = 'position-relative d-inline-block me-2';
-                    card.style.width = '130px';
+                    card.className = 'position-relative d-inline-block';
+                    card.style.width = '140px';
 
                     const img = document.createElement('img');
                     img.src = ev.target.result;
-                    img.className = 'img-thumbnail';
-                    img.style.maxWidth = '120px';
+                    img.className = 'img-thumbnail rounded-3 w-100';
+                    img.style.height = '140px';
+                    img.style.objectFit = 'cover';
                     img.alt = file.name;
 
-                    const removeBtn = document.createElement('span');
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
                     removeBtn.className = 'btn btn-danger btn-sm position-absolute top-0 end-0';
                     removeBtn.style.borderRadius = '50%';
-                    removeBtn.style.cursor = 'pointer';
-                    removeBtn.innerText = '×';
+                    removeBtn.style.width = '24px';
+                    removeBtn.style.height = '24px';
+                    removeBtn.style.padding = '0';
+                    removeBtn.style.lineHeight = '24px';
+                    removeBtn.style.margin = '5px';
+                    removeBtn.innerHTML = '&times;';
                     removeBtn.onclick = () => {
                         removeNewPhoto(index);
                     };
@@ -226,7 +308,7 @@
                     const captionInput = document.createElement('input');
                     captionInput.type = 'text';
                     captionInput.name = `new_captions[${index}]`;
-                    captionInput.className = 'form-control form-control-sm mt-1';
+                    captionInput.className = 'form-control form-control-sm mt-2';
                     captionInput.placeholder = 'Caption foto baru';
 
                     card.appendChild(img);
@@ -237,7 +319,7 @@
                 };
                 reader.readAsDataURL(file);
 
-                // Hidden input untuk file
+                // Hidden input untuk file (name="photos[]" ada di sini)
                 const dt = new DataTransfer();
                 dt.items.add(file);
 
@@ -266,7 +348,4 @@
             }
         });
     </script>
-
-    {{-- Hidden container untuk file inputs --}}
-    <div id="photosContainer" style="display:none;"></div>
 @endpush

@@ -22,7 +22,7 @@
 
             <!-- Kalender Sidebar -->
             <div class="col-lg-4 mb-4" data-aos="fade-right" data-aos-duration="700">
-                <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+                <div class="card shadow rounded-4 overflow-hidden h-100" style="border: 1px solid #e2e8f0;">
                     <div class="card-body p-4">
                         <h5 class="fw-bold mb-4 text-center" style="color: #175C9E;">
                             <i class="fas fa-calendar-alt me-2"></i>Kalender Kegiatan
@@ -34,21 +34,23 @@
 
             <!-- Kegiatan Hari Ini -->
             <div class="col-lg-8 mb-4">
-                <div class="d-flex align-items-center mb-3">
-                    <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3"
-                        style="width: 45px; height: 45px; min-width: 45px;">
-                        <i class="fas fa-star text-primary"></i>
+                <div class="d-flex flex-column h-100">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3"
+                            style="width: 45px; height: 45px; min-width: 45px;">
+                            <i class="fas fa-star text-primary"></i>
+                        </div>
+                        <h4 class="fw-bold mb-0" id="event-title" style="color:#175C9E;">
+                            Kegiatan Hari Ini
+                        </h4>
                     </div>
-                    <h4 class="fw-bold mb-0" id="event-title" style="color:#175C9E;">
-                        Kegiatan Hari Ini
-                    </h4>
-                </div>
 
-                <div id="event-detail-container">
-                    @include('client.jadwalKegiatan.today', [
-                        'event' => $todayEvent,
-                        'selectedDate' => date('Y-m-d'),
-                    ])
+                    <div id="event-detail-container" class="flex-grow-1">
+                        @include('client.jadwalKegiatan.today', [
+                            'event' => $todayEvent,
+                            'selectedDate' => date('Y-m-d'),
+                        ])
+                    </div>
                 </div>
             </div>
 
@@ -67,8 +69,8 @@
                     </div>
 
                     @forelse ($events as $index => $event)
-                        <div class="card border-0 shadow-sm rounded-4 mb-3 hover-lift" data-aos="fade-up"
-                            data-aos-duration="700" data-aos-delay="{{ $index * 100 }}">
+                        <div class="card shadow rounded-4 mb-3 hover-lift" data-aos="fade-up"
+                            data-aos-duration="700" data-aos-delay="{{ $index * 100 }}" style="border: 1px solid #e2e8f0;">
                             <div class="card-body p-4">
                                 <div class="row align-items-center">
                                     <!-- Poster -->
@@ -78,7 +80,7 @@
                                                 style="height: 140px; border-radius: 0.5rem;">
                                                 <img src="{{ asset('storage/' . $event->poster) }}"
                                                     class="img-fluid w-100 h-100" style="object-fit: cover;"
-                                                    alt="{{ $event->event_name }}">
+                                                    alt="{{ $event->event_name }}" loading="lazy">
                                                 <i class="fas fa-image fallback-icon"></i>
                                                 <div class="position-absolute top-0 end-0 m-2">
                                                     <span class="badge bg-primary rounded-pill">
@@ -147,6 +149,13 @@
                             </div>
                         </div>
                     @endforelse
+
+                    <!-- Pagination -->
+                    @if($events->hasPages())
+                        <div class="d-flex justify-content-center mt-4">
+                            {{ $events->links() }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -458,6 +467,45 @@
 
         .card {
             animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Pagination Styling */
+        .pagination {
+            gap: 0.5rem;
+        }
+
+        .pagination .page-link {
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            color: #175C9E;
+            padding: 0.5rem 0.75rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #e3f2fd;
+            border-color: #175C9E;
+            color: #175C9E;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #175C9E;
+            border-color: #175C9E;
+            color: white;
+            font-weight: 600;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+            color: #6c757d;
+        }
+
+        .pagination .page-link:focus {
+            box-shadow: 0 0 0 3px rgba(23, 92, 158, 0.1);
         }
     </style>
 @endpush

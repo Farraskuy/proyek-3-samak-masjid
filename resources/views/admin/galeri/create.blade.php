@@ -2,170 +2,181 @@
 
 @section('title', 'Tambah Album')
 
-@section('content')
+@push('styles') <style> .file-uploader { padding: 2rem; border-radius: 1rem; border: 2px dashed #dee2e6; background: #fafafa; text-align: center; cursor: pointer; color: #666; transition: .2s ease-in-out; display: block !important; }
 
-    <div class="container-fluid p-3">
+    .file-uploader.on-drag {
+        background: #f3f3f3;
+        border-color: #CE9138 !important;
+    }
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
+    /* Image Preview Styles */
+    #coverPreviewWrapper {
+        position: relative;
+    }
 
-            <h4 class="mb-0">Tambah Album</h4>
+    #coverPreview {
+        width: 100%;
+        border-radius: 1rem;
+        border: 1px solid #ddd;
+        object-fit: contain;
+        height: 200px;
+        background: #eee;
+    }
 
-            <a href="{{ route('galeri.index') }}" class="btn btn-outline-secondary btn-sm">Kembali ke Daftar Album</a>
+    /* Photos Preview Grid */
+    #photosPreview .position-relative {
+        display: inline-block;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
 
+    #photosPreview img {
+        border-radius: 0.5rem;
+        height: 120px;
+        width: 120px;
+        object-fit: cover;
+    }
+</style>
+
+@endpush
+
+@section('content') <section class="p-3 container">
+
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger mb-4">
+            <strong>Ada masalah:</strong>
+            <ul class="mb-0 mt-2">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <form action="{{ route('admin.galeri.store') }}" method="POST" enctype="multipart/form-data" id="form-album">
+        @csrf
+
+        {{-- Header --}}
+        <div class="d-flex align-items-center gap-2 mb-4">
+            <a href="{{ route('admin.galeri.index') }}" class="btn btn-light btn-sm rounded-4">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h4 class="fw-semibold mb-0">Tambah Album Baru</h4>
         </div>
 
-
-
-        <div class="card shadow-sm mb-4">
-
-            <div class="card-body">
-
-
-
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-
-                        {{ session('success') }}
-
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-
-                    </div>
-                @endif
-
-
-
-                @if ($errors->any())
-
-                    <div class="alert alert-danger">
-
-                        <strong>Ada masalah:</strong>
-
-                        <ul class="mb-0 mt-2">
-
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-
-                        </ul>
-
-                    </div>
-
-                @endif
-
-
-
-                <form action="{{ route('galeri.store') }}" method="POST" enctype="multipart/form-data">
-
-                    @csrf
-
-
+        <div class="row g-4">
+            <div class="col-lg-8">
+                {{-- Detail Album --}}
+                <div class="card bg-white border-0 rounded-3 p-4 mb-4">
+                    <h5 class="fw-semibold mb-3">Informasi Album</h5>
 
                     {{-- Judul Album --}}
-
                     <div class="mb-3">
-
-                        <label class="form-label">Judul Album <span class="text-danger">*</span></label>
-
-                        <input type="text" name="album_name" class="form-control" required maxlength="100"
+                        <label class="form-label fw-semibold">Judul Album <span class="text-danger">*</span></label>
+                        <input type="text" name="album_name" class="form-control input-lg" required maxlength="100"
                             value="{{ old('album_name') }}" placeholder="Masukkan judul album">
-
                     </div>
 
+                    {{-- Foto Isi Album --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Foto Isi Album (Opsional)</label>
 
+                        <label for="photos" class="file-uploader" id="photos-uploader">
+                            <i class="fas fa-images fa-2x mb-2"></i>
+                            <div class="fw-semibold">Upload Foto Album</div>
+                            <div class="small text-muted">Bisa pilih banyak gambar (Maks 4MB/foto)</div>
+                        </label>
 
-                    {{-- Cover Album --}}
+                        <input id="photos" type="file" accept="image/*" multiple class="d-none">
 
-                    <div class="row g-3">
+                        <div id="photosPreview" class="d-flex flex-wrap gap-2 mt-3"></div>
 
-                        <div class="col-md-6">
-
-                            <label class="form-label">Foto Cover Album <span class="text-danger">*</span></label>
-
-                            <input type="file" id="cover_photo" name="cover_photo" accept="image/*" class="form-control">
-
-                            <small class="text-muted">Format: jpg, jpeg, png. Maks 2MB.</small>
-
-
-
-                            <div id="coverPreviewWrapper" class="mt-2" style="display:none;">
-                                <label class="form-label small">Preview Cover</label>
-                                <div class="position-relative d-inline-block">
-                                    <img id="coverPreview" class="img-thumbnail" style="max-width:240px; display:block;">
-                                    <!-- Add remove button for cover photo -->
-                                </div>
-                            </div>
-                        </div>
-
-
-
-                        {{-- Foto Isi Album --}}
-
-                        <div class="col-md-6">
-
-                            <label class="form-label">Foto Isi Album (opsional)</label>
-
-                            <input id="photos" type="file" accept="image/*" multiple class="form-control">
-
-                            <small class="text-muted d-block mb-2">Bisa pilih banyak gambar. Maks 4MB per foto.</small>
-
-
-
-                            <!-- Preview Foto -->
-
-                            <div id="photosPreview" class="d-flex flex-wrap gap-2 mt-2"></div>
-
-
-
-                            <!-- Hidden container to inject photo inputs -->
-
-                            <div id="photosContainer"></div>
-
-                        </div>
-
+                        <div id="photosContainer"></div>
                     </div>
-
-
-
-                    <div class="mt-4 d-flex gap-2">
-
-                        <button type="submit" class="btn btn-primary">
-
-                            <i class="fas fa-cloud-upload me-1"></i> Simpan & Upload Album
-
-                        </button>
-
-                        <a href="{{ route('galeri.index') }}" class="btn btn-outline-secondary">Batal</a>
-
-                    </div>
-
-
-
-                </form>
-
+                </div>
             </div>
 
+            <div class="col-lg-4">
+                {{-- Cover Album --}}
+                <div class="card bg-white border-0 rounded-3 p-4 mb-4">
+                    <h5 class="fw-semibold mb-3">Cover Album</h5>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Foto Cover <span class="text-danger">*</span></label>
+
+                        <label for="cover_photo" class="file-uploader" id="cover-uploader">
+                            <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
+                            <div class="fw-semibold">Upload Cover</div>
+                            <div class="small text-muted">Format: jpg, jpeg, png. Maks 2MB.</div>
+                        </label>
+
+                        <input type="file" id="cover_photo" name="cover_photo" accept="image/*" class="d-none">
+
+                        <div id="coverPreviewWrapper" class="mt-3" style="display:none;">
+                            <div class="position-relative">
+                                <img id="coverPreview" src="#" alt="Preview Cover">
+                                {{-- Tombol remove akan di-inject via JS --}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100 mt-3">
+                        <i class="fas fa-cloud-upload-alt me-1"></i> Simpan & Upload
+                    </button>
+                </div>
+            </div>
         </div>
+    </form>
 
-    </div>
-
-
+</section>
 
 @endsection
 
+@push('scripts') <script> document.addEventListener("DOMContentLoaded", function() { /* ======================== DRAG & DROP STYLING =========================*/ const uploaders = [{ id: 'cover-uploader', input: 'cover_photo' }, { id: 'photos-uploader', input: 'photos' }];
 
+        uploaders.forEach(obj => {
+            const uploader = document.getElementById(obj.id);
+            const input = document.getElementById(obj.input);
 
-@push('scripts')
-    <script>
+            if (uploader && input) {
+                uploader.addEventListener("dragover", e => {
+                    e.preventDefault();
+                    uploader.classList.add("on-drag");
+                });
+                uploader.addEventListener("dragleave", () => {
+                    uploader.classList.remove("on-drag");
+                });
+                uploader.addEventListener("drop", e => {
+                    e.preventDefault();
+                    uploader.classList.remove("on-drag");
+                    input.files = e.dataTransfer.files;
+                    const event = new Event('change');
+                    input.dispatchEvent(event);
+                });
+            }
+        });
+
+        /* ========================  LOGIC ORIGINAL =========================*/
+
         // PREVIEW COVER ALBUM
         const coverInput = document.getElementById('cover_photo');
         const coverPreview = document.getElementById('coverPreview');
         const coverWrapper = document.getElementById('coverPreviewWrapper');
+        const coverUploaderLabel = document.getElementById('cover-uploader');
 
         coverInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
 
             if (!file) {
                 coverWrapper.style.display = 'none';
+                coverUploaderLabel.style.display = 'block';
                 return;
             }
 
@@ -173,6 +184,7 @@
             reader.onload = e => {
                 coverPreview.src = e.target.result;
                 coverWrapper.style.display = 'block';
+                coverUploaderLabel.style.setProperty('display', 'none', 'important');
 
                 // ambil container yang bener (yang position-relative)
                 const imgContainer = coverWrapper.querySelector('.position-relative');
@@ -182,18 +194,21 @@
                 if (removeBtn) removeBtn.remove();
 
                 // buat tombol baru
-                removeBtn = document.createElement("span");
+                removeBtn = document.createElement("button");
+                removeBtn.type = "button";
                 removeBtn.id = "removeCoverBtn";
-                removeBtn.className = "btn btn-danger btn-sm position-absolute top-0 end-0";
+                removeBtn.className = "btn btn-dark btn-sm position-absolute top-0 end-0 m-2";
                 removeBtn.style.borderRadius = "50%";
                 removeBtn.style.cursor = "pointer";
-                removeBtn.style.zIndex = "20";
-                removeBtn.innerText = "×";
+                removeBtn.style.width = "32px";
+                removeBtn.style.height = "32px";
+                removeBtn.innerHTML = "&times;";
 
                 removeBtn.onclick = function() {
                     coverInput.value = "";
-                    coverPreview.src = "";
+                    coverPreview.src = "#";
                     coverWrapper.style.display = "none";
+                    coverUploaderLabel.style.setProperty('display', 'block', 'important');
                 };
 
                 imgContainer.appendChild(removeBtn);
@@ -231,19 +246,21 @@
                 reader.onload = function(ev) {
                     // preview gambar
                     const wrapper = document.createElement("div");
-                    wrapper.style.position = "relative";
+                    wrapper.className = "position-relative";
+                    wrapper.style.width = "120px";
 
                     const img = document.createElement("img");
                     img.src = ev.target.result;
-                    img.className = "img-thumbnail";
-                    img.style.maxWidth = "120px";
+                    img.className = "img-thumbnail w-100";
+                    img.style.height = "120px";
+                    img.style.objectFit = "cover";
 
                     // caption foto
                     const captionInput = document.createElement("input");
                     captionInput.type = "text";
                     captionInput.name = `captions[${index}]`;
                     captionInput.className = "form-control form-control-sm mt-1";
-                    captionInput.placeholder = "Caption foto (opsional)";
+                    captionInput.placeholder = "Caption";
 
                     // Restore caption value if it exists
                     if (captions[file.name]) {
@@ -256,11 +273,15 @@
                     });
 
                     // tombol hapus
-                    const removeBtn = document.createElement("span");
+                    const removeBtn = document.createElement("button");
+                    removeBtn.type = "button";
                     removeBtn.className = "btn btn-danger btn-sm position-absolute top-0 end-0";
                     removeBtn.style.borderRadius = "50%";
-                    removeBtn.style.cursor = "pointer";
-                    removeBtn.innerText = "×";
+                    removeBtn.style.padding = "0";
+                    removeBtn.style.width = "24px";
+                    removeBtn.style.height = "24px";
+                    removeBtn.style.margin = "5px";
+                    removeBtn.innerHTML = "&times;";
 
                     removeBtn.onclick = function() {
                         // Tambahkan efek transisi sebelum menghapus
@@ -297,39 +318,7 @@
                 photosContainer.appendChild(hiddenInput);
             });
         }
+    });
+</script>
 
-        // Extra safeguard: normalize/removeCoverBtn placement and behavior
-        document.addEventListener('DOMContentLoaded', function() {
-            function normalizeCoverButton() {
-                const relative = coverWrapper.querySelector('.position-relative') || coverWrapper;
-                const btn = document.getElementById('removeCoverBtn');
-                if (!btn) return;
-                // move button into relative container if not already
-                if (btn.parentNode !== relative) {
-                    btn.remove();
-                    relative.appendChild(btn);
-                }
-                // ensure visible positioning and aria attributes
-                btn.style.top = btn.style.top || '8px';
-                btn.style.right = btn.style.right || '8px';
-                btn.setAttribute('aria-label', 'Hapus cover');
-                // (re)bind click to reliably clear the input and remove preview
-                btn.onclick = function() {
-                    coverInput.value = '';
-                    coverPreview.src = '';
-                    coverWrapper.style.display = 'none';
-                    btn.remove();
-                };
-            }
-
-            // run once now in case button was created by earlier script
-            normalizeCoverButton();
-
-            // also run after every change to the input to ensure correct placement
-            coverInput.addEventListener('change', function() {
-                // small delay to allow other handlers to finish creating elements
-                setTimeout(normalizeCoverButton, 50);
-            });
-        });
-    </script>
 @endpush

@@ -1,6 +1,6 @@
 @extends('client.layout')
 
-@section('title', 'Laporan Keuangan Masjid - Transparansi Umat')
+@section('title', 'Laporan Keuangan')
 
 @push('styles')
     <style>

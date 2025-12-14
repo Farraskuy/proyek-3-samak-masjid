@@ -23,11 +23,13 @@ class WebsiteInformation extends Model
         'footer_phone',
         'footer_email',
         'footer_social_links',
+        'zakat_settings',
     ];
 
     protected $casts = [
         'created_at' => 'datetime',
         'footer_social_links' => 'array',
+        'zakat_settings' => 'array',
     ];
 
     public function updatedByAdmin()
