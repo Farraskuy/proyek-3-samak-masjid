@@ -62,6 +62,11 @@ class PostinganController extends Controller
 
         $post = Postingan::where('slug', $slug_from_view)->firstOrFail();
 
+
+        if ($post->status !== 'published') {
+                abort(404); 
+        }
+
         $kontent_html_tag = $post->content;
 
         // Wrap to avoid merging
