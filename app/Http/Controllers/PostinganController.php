@@ -170,7 +170,7 @@ class PostinganController extends Controller
                 $fileName = uniqid() . '.' . $extension;
                 $path = 'news/quill/' . $fileName;
 
-                Storage::put($path, $data);
+                Storage::disk('public')->put($path, $data);
 
                 $img->setAttribute('src', $path);
             }
