@@ -95,7 +95,7 @@
                                 <th class="p-3">Keterangan</th>
                                 <th class="p-3">Jenis</th>
                                 <th class="p-3">Nominal</th>
-                                <th class="p-3 text-center">Gambar</th>
+                                <th class="p-3 text-center">Bukti</th>
                                 <th class="p-3 text-center" style="width: 100px;">Aksi</th>
                             </tr>
                         </thead>

@@ -301,8 +301,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     //Keuangan
     Route::middleware('permission:view_finance')->group(function () {
         Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan');
-        Route::post('/keuangan', [KeuanganController::class, 'store'])->name('keuangan.store')->middleware('permission:manage_income'); // Or manage_expense
-        Route::delete('/keuangan/{id}', [KeuanganController::class, 'destroy'])->name('keuangan.destroy')->middleware('permission:manage_income');
+        Route::post('/keuangan', [KeuanganController::class, 'store'])->name('keuangan.store')->middleware('permission:manage_income|manage_expense'); // Or manage_expense
+        Route::delete('/keuangan/{id}', [KeuanganController::class, 'destroy'])->name('keuangan.destroy')->middleware('permission:manage_income|manage_expense');
 
         // Kotak Amal (Pendataan Kotak Amal)
         Route::resource('kotak-amal', App\Http\Controllers\Admin\KotakAmalController::class);

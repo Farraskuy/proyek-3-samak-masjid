@@ -77,58 +77,7 @@
 
             @include('components.navbar-admin')
 
-            {{-- Logout Modal - New Style --}}
-            <div class="modal fade" id="logout" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content border-0 shadow rounded-4">
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <div class="modal-body p-4">
-                                <div class="mb-3">
-                                    <i class="fas fa-sign-out-alt fa-2x text-warning"></i>
-                                </div>
-                                <h5 class="fw-bold mb-2">Konfirmasi Logout</h5>
-                                <p class="text-muted mb-4">Apakah Anda yakin ingin keluar dari sistem?</p>
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-warning rounded-pill px-4 text-white">
-                                        <i class="fas fa-sign-out-alt me-2"></i>Ya, Keluar
-                                    </button>
-                                    <button type="button" class="btn btn-light rounded-pill px-4"
-                                        data-bs-dismiss="modal">Batal</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
 
-            {{-- Reusable Confirmation Modal - New Style --}}
-            <div class="modal fade" id="confirmActionModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content border-0 shadow rounded-4">
-                        <form id="confirmActionForm" method="POST">
-                            @csrf
-                            <input type="hidden" id="confirmActionMethod" name="_method" value="POST">
-                            <div class="modal-body p-4">
-                                <div class="mb-3">
-                                    <i id="confirmModalIcon" class="fas fa-question-circle fa-2x text-primary"></i>
-                                </div>
-                                <h5 class="fw-bold mb-2" id="confirmModalTitle">Konfirmasi</h5>
-                                <p class="text-muted mb-4" id="confirmModalMessage">Apakah Anda yakin?</p>
-                                <div class="d-flex gap-2">
-                                    <button type="submit" id="confirmModalBtn"
-                                        class="btn btn-primary rounded-pill px-4">
-                                        <i id="confirmModalBtnIcon" class="fas fa-check me-2"></i>
-                                        <span id="confirmModalBtnText">Ya</span>
-                                    </button>
-                                    <button type="button" class="btn btn-light rounded-pill px-4"
-                                        data-bs-dismiss="modal">Batal</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
 
             @yield('content')
         </main>
@@ -308,6 +257,58 @@
             });
         });
     </script>
+
+    {{-- Logout Modal - New Style --}}
+    <div class="modal fade" id="logout" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-4">
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-sign-out-alt fa-2x text-warning"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Konfirmasi Logout</h5>
+                        <p class="text-muted mb-4">Apakah Anda yakin ingin keluar dari sistem?</p>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-warning rounded-pill px-4 text-white">
+                                <i class="fas fa-sign-out-alt me-2"></i>Ya, Keluar
+                            </button>
+                            <button type="button" class="btn btn-light rounded-pill px-4"
+                                data-bs-dismiss="modal">Batal</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Reusable Confirmation Modal - New Style --}}
+    <div class="modal fade" id="confirmActionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow rounded-4">
+                <form id="confirmActionForm" method="POST">
+                    @csrf
+                    <input type="hidden" id="confirmActionMethod" name="_method" value="POST">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <i id="confirmModalIcon" class="fas fa-question-circle fa-2x text-primary"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2" id="confirmModalTitle">Konfirmasi</h5>
+                        <p class="text-muted mb-4" id="confirmModalMessage">Apakah Anda yakin?</p>
+                        <div class="d-flex gap-2">
+                            <button type="submit" id="confirmModalBtn" class="btn btn-primary rounded-pill px-4">
+                                <i id="confirmModalBtnIcon" class="fas fa-check me-2"></i>
+                                <span id="confirmModalBtnText">Ya</span>
+                            </button>
+                            <button type="button" class="btn btn-light rounded-pill px-4"
+                                data-bs-dismiss="modal">Batal</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     @stack('scripts')
 </body>
