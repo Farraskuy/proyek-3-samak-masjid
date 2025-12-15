@@ -108,6 +108,12 @@
 
 @push('styles')
 <style>
+/* Dot Pattern Background */
+.bg-pattern {
+    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+    background-size: 25px 25px;
+}
+
 /* Grid Foto */
 .gallery-item img {
     transition: 0.3s ease;

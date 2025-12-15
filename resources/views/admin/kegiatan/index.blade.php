@@ -45,8 +45,13 @@
 
                 <div class="bg-white position-sticky pt-3 pb-2" style="top: 61px; z-index: 1">
                     <div class="d-flex gap-2 justify-content-end mb-2">
-                        <input type="text" class="form-control" placeholder="Cari"
-                            value="{{ request()->query('keyword', '') }}" name="keyword">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Cari kegiatan..."
+                                value="{{ request()->query('keyword', '') }}" name="keyword" id="searchInput">
+                            <button class="btn btn-outline-secondary" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
 
                         <select class="form-select fs-14px h-100 w-auto" name="sorted_by">
                             <option value="">Urutkan berdasarkan</option>
@@ -145,6 +150,37 @@
             </form>
         </div>
     </section>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form method="POST" id="confirmDeleteForm" class="modal-content">
+                @csrf
+                @method('DELETE')
+                <div class="modal-header">
+                    <h5 class="modal-title fw-semibold">Konfirmasi Hapus Kegiatan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">
+                        Apakah Anda yakin ingin menghapus kegiatan ini?
+                    </p>
+                    <p class="text-muted small mt-2">
+                        <i class="fas fa-exclamation-triangle text-warning"></i>
+                        Semua data terkait akan dihapus secara permanen.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary fw-semibold" data-bs-dismiss="modal">
+                        Batal
+                    </button>
+                    <button type="submit" class="btn btn-danger fw-semibold">
+                        <i class="fas fa-trash"></i> Hapus
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     @push('scripts')
         <script>

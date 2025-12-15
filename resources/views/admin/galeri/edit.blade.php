@@ -13,7 +13,7 @@
             cursor: pointer;
             color: #666;
             transition: .2s ease-in-out;
-            display: block !important;
+            display: block;
         }
 
         .file-uploader.on-drag {
@@ -79,7 +79,22 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold mb-3">Foto Isi Album</label>
 
-                            <div class="d-flex flex-wrap gap-3 mb-4">
+                            <input type="hidden" name="delete_photos" id="delete_photos">
+
+                            <label for="photos" class="file-uploader" id="photos-uploader">
+                                <i class="fas fa-images fa-2x mb-2"></i>
+                                <div class="fw-semibold">Tambah Foto Baru</div>
+                                <div class="small text-muted">Drag & drop atau klik untuk pilih banyak</div>
+                                <div class="small text-muted mt-2">
+                                    <i class="fas fa-info-circle me-1"></i>Maks. 4 MB/foto | JPG, JPEG, PNG, WEBP
+                                </div>
+                            </label>
+
+                            <input type="file" id="photos" accept="image/*" multiple class="d-none">
+
+                            <div class="d-flex flex-wrap gap-3 mt-3">
+                                <div id="photosPreview" class="d-flex flex-wrap gap-3"></div>
+                                
                                 @foreach ($album->photos->where('caption', '!=', 'Cover Album') as $photo)
                                     <div class="position-relative d-inline-block" id="photoBox{{ $photo->photo_id }}"
                                         style="width: 140px;">
@@ -98,18 +113,6 @@
                                     </div>
                                 @endforeach
                             </div>
-
-                            <input type="hidden" name="delete_photos" id="delete_photos">
-
-                            <label for="photos" class="file-uploader" id="photos-uploader">
-                                <i class="fas fa-images fa-2x mb-2"></i>
-                                <div class="fw-semibold">Tambah Foto Baru</div>
-                                <div class="small text-muted">Klik atau drag & drop banyak foto</div>
-                            </label>
-
-                            <input type="file" id="photos" accept="image/*" multiple class="d-none">
-
-                            <div id="photosPreview" class="d-flex flex-wrap gap-3 mt-3"></div>
                         </div>
                     </div>
                 </div>
@@ -127,11 +130,11 @@
                                 @if ($album->cover)
                                     <div class="position-relative d-block mb-3" id="oldCoverBox">
                                         <img src="{{ asset('storage/' . $album->cover->image_url) }}"
-                                            class="w-100 rounded-3 border" style="object-fit: cover; max-height: 250px;">
+                                            class="w-100 rounded-3 border">
 
-                                        <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0"
+                                        <button type="button" class="btn btn-dark btn-sm position-absolute top-0 end-0 m-2"
                                             onclick="deleteCover()"
-                                            style="margin: 10px; border-radius: 50%; width: 32px; height: 32px;">
+                                            style="border-radius: 50%; width: 32px; height: 32px; cursor: pointer;">
                                             &times;
                                         </button>
                                     </div>
@@ -141,11 +144,13 @@
                             <input type="hidden" name="delete_cover" id="delete_cover" value="0">
 
                             {{-- Input cover baru --}}
-                            <label for="cover_photo" class="file-uploader" id="cover-uploader"
-                                style="{{ $album->cover ? 'display:none !important' : '' }}">
+                            <label for="cover_photo" class="file-uploader {{ $album->cover ? 'd-none' : '' }}" id="cover-uploader">
                                 <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
                                 <div class="fw-semibold">Ganti Cover</div>
                                 <div class="small text-muted">Drag & drop atau klik</div>
+                                <div class="small text-muted mt-2">
+                                    <i class="fas fa-info-circle me-1"></i>Maks. 2 MB | JPG, JPEG, PNG, WEBP
+                                </div>
                             </label>
 
                             <input type="file" name="cover_photo" id="cover_photo" accept="image/*" class="d-none">
@@ -154,8 +159,8 @@
                             <div id="newCoverPreview" class="mt-3"></div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-save me-1"></i> Simpan Perubahan
+                        <button type="submit" class="btn btn-success w-100 mt-3">
+                            <i class="fas fa-cloud-upload-alt me-1"></i> Simpan & Upload
                         </button>
                     </div>
                 </div>
@@ -171,36 +176,47 @@
 
 @push('scripts')
     <script>
-        document.addEventListener("DOMContentLoaded",
-            function() {
+        const uploaders = [
+            { id: 'cover-uploader', input: 'cover_photo' },
+            { id: 'photos-uploader', input: 'photos' }
+        ];
 
-                uploaders.forEach(obj => {
-                    const uploader = document.getElementById(obj.id);
-                    const input = document.getElementById(obj.input);
+        document.addEventListener("DOMContentLoaded", function() {
+            uploaders.forEach(obj => {
+                const uploader = document.getElementById(obj.id);
+                const input = document.getElementById(obj.input);
 
-                    if (uploader && input) {
-                        uploader.addEventListener("dragover", e => {
-                            e.preventDefault();
-                            uploader.classList.add("on-drag");
-                        });
-                        uploader.addEventListener("dragleave", () => {
-                            uploader.classList.remove("on-drag");
-                        });
-                        uploader.addEventListener("drop", e => {
-                            e.preventDefault();
-                            uploader.classList.remove("on-drag");
+                if (uploader && input) {
+                    uploader.addEventListener("dragover", e => {
+                        e.preventDefault();
+                        uploader.classList.add("on-drag");
+                    });
+                    uploader.addEventListener("dragleave", () => {
+                        uploader.classList.remove("on-drag");
+                    });
+                    uploader.addEventListener("drop", e => {
+                        e.preventDefault();
+                        uploader.classList.remove("on-drag");
+                        
+                        try {
+                            const dt = new DataTransfer();
+                            Array.from(e.dataTransfer.files).forEach(file => dt.items.add(file));
+                            input.files = dt.files;
+                        } catch (err) {
                             input.files = e.dataTransfer.files;
-                            // Trigger change event manually
-                            const event = new Event('change');
-                            input.dispatchEvent(event);
-                        });
-                    }
-                });
+                        }
+                        
+                        const event = new Event('change');
+                        input.dispatchEvent(event);
+                    });
+                }
             });
+        });
 
         let deletePhotos = [];
         let selectedFiles = []; // array File
         let newCoverFile = null;
+        let captions = {}; // Store captions by file name
 
         // HAPUS COVER LAMA
         function deleteCover() {
@@ -208,7 +224,7 @@
             document.getElementById('oldCoverBox')?.remove();
             document.getElementById('newCoverPreview').innerHTML = "";
             // Show uploader
-            document.getElementById('cover-uploader').style.setProperty('display', 'block', 'important');
+            document.getElementById('cover-uploader').classList.remove('d-none');
             // Kosongkan input file cover
             const coverInput = document.getElementById('cover_photo');
             if (coverInput) coverInput.value = "";
@@ -224,16 +240,15 @@
             if (!file) return;
 
             newCoverFile = file;
-            document.getElementById('cover-uploader').style.setProperty('display', 'none', 'important');
+            document.getElementById('cover-uploader').classList.add('d-none');
 
             const reader = new FileReader();
             reader.onload = function(evt) {
                 const html = `
         <div class="position-relative d-block" id="newCoverBox">
-            <img src="${evt.target.result}" class="w-100 rounded-3 border"
-                 style="object-fit:cover; max-height:250px;">
-            <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0"
-                  onclick="removeNewCover()" style="margin:10px; border-radius:50%; width:32px; height:32px;">&times;</button>
+            <img src="${evt.target.result}" class="w-100 rounded-3 border">
+            <button type="button" class="btn btn-dark btn-sm position-absolute top-0 end-0 m-2"
+                  onclick="removeNewCover()" style="border-radius:50%; width:32px; height:32px; cursor:pointer;">&times;</button>
         </div>
     `;
                 document.getElementById('newCoverPreview').innerHTML = html;
@@ -245,7 +260,7 @@
             newCoverFile = null;
             document.getElementById('cover_photo').value = "";
             document.getElementById('newCoverPreview').innerHTML = "";
-            document.getElementById('cover-uploader').style.setProperty('display', 'block', 'important');
+            document.getElementById('cover-uploader').classList.remove('d-none');
         }
 
         // HAPUS FOTO LAMA ISI ALBUM
@@ -282,6 +297,7 @@
                     const card = document.createElement('div');
                     card.className = 'position-relative d-inline-block';
                     card.style.width = '140px';
+                    card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
 
                     const img = document.createElement('img');
                     img.src = ev.target.result;
@@ -301,7 +317,7 @@
                     removeBtn.style.margin = '5px';
                     removeBtn.innerHTML = '&times;';
                     removeBtn.onclick = () => {
-                        removeNewPhoto(index);
+                        removeNewPhoto(index, card);
                     };
 
                     // caption input untuk foto baru
@@ -310,6 +326,16 @@
                     captionInput.name = `new_captions[${index}]`;
                     captionInput.className = 'form-control form-control-sm mt-2';
                     captionInput.placeholder = 'Caption foto baru';
+                    
+                    // Restore caption value if exists
+                    if (captions[file.name]) {
+                        captionInput.value = captions[file.name];
+                    }
+                    
+                    // Save caption on input change
+                    captionInput.addEventListener('input', function() {
+                        captions[file.name] = captionInput.value;
+                    });
 
                     card.appendChild(img);
                     card.appendChild(removeBtn);
@@ -333,9 +359,18 @@
             });
         }
 
-        function removeNewPhoto(i) {
-            selectedFiles.splice(i, 1);
-            renderPreview();
+        function removeNewPhoto(i, cardElement) {
+            // Smooth animation
+            cardElement.style.opacity = '0';
+            cardElement.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                // Remove file and caption after animation
+                const fileName = selectedFiles[i].name;
+                delete captions[fileName];
+                selectedFiles.splice(i, 1);
+                renderPreview();
+            }, 300);
         }
 
         // SUBMIT FORM

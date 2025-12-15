@@ -13,7 +13,7 @@
             cursor: pointer;
             color: #666;
             transition: .2s ease-in-out;
-            display: block !important;
+            display: block;
         }
 
         .file-uploader.on-drag {
@@ -164,6 +164,9 @@
                             <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
                             <div class="fw-semibold">Drag & drop gambar</div>
                             <div class="small text-muted">atau klik untuk memilih</div>
+                            <div class="small text-muted mt-2">
+                                <i class="fas fa-info-circle me-1"></i>Maks. 2 MB | JPG, JPEG, PNG, WEBP
+                            </div>
                         </label>
 
                         <input type="file" name="poster" id="file-input" accept="image/*" class="d-none">
@@ -258,12 +261,13 @@
             toggleTamu();
 
             document.getElementById('btnTambahTamu').addEventListener('click', function() {
-                counter++;
+                // Count existing inputs dynamically
+                const currentCount = document.querySelectorAll('[name="daftar_tamu[]"]').length;
                 const div = document.createElement('div');
                 div.className = 'input-group mb-2';
                 div.innerHTML = `
                     <span class="input-group-text bg-light"><i class="fas fa-user text-muted"></i></span>
-                    <input type="text" name="daftar_tamu[]" class="form-control" placeholder="Nama pembicara ${counter}">
+                    <input type="text" name="daftar_tamu[]" class="form-control" placeholder="Nama pembicara ${currentCount + 1}">
                     <button type="button" class="btn btn-outline-danger" onclick="this.parentElement.remove()">
                         <i class="fas fa-times"></i>
                     </button>`;
@@ -291,6 +295,7 @@
             const preview = document.getElementById("image-preview");
             const container = document.getElementById("image-preview-container");
             const removeBtn = document.getElementById("remove-image-btn");
+            let droppedFile = null;
 
             uploader.addEventListener("dragover", e => {
                 e.preventDefault();
@@ -304,18 +309,32 @@
             uploader.addEventListener("drop", e => {
                 e.preventDefault();
                 uploader.classList.remove("on-drag");
-                input.files = e.dataTransfer.files;
-                showPreview(e.dataTransfer.files[0]);
+                droppedFile = e.dataTransfer.files[0];
+                
+                // Use DataTransfer API to properly set files
+                try {
+                    const dt = new DataTransfer();
+                    dt.items.add(droppedFile);
+                    input.files = dt.files;
+                } catch (err) {
+                    console.log('DataTransfer not supported, using fallback');
+                }
+                
+                showPreview(droppedFile);
             });
 
             input.addEventListener("change", () => {
-                if (input.files[0]) showPreview(input.files[0]);
+                if (input.files[0]) {
+                    droppedFile = null; // Clear dropped file when using file picker
+                    showPreview(input.files[0]);
+                }
             });
 
             removeBtn.addEventListener("click", () => {
                 input.value = "";
+                droppedFile = null;
                 container.style.display = "none";
-                uploader.style.display = "block";
+                uploader.classList.remove('d-none');
             });
 
             function showPreview(file) {
@@ -323,13 +342,25 @@
                 reader.onload = e => {
                     preview.src = e.target.result;
                     container.style.display = "block";
-                    uploader.style.display = "none";
+                    uploader.classList.add('d-none');
                 };
                 reader.readAsDataURL(file);
             }
 
-            // --- Validation ---
+            // --- Validation & File Upload ---
             document.getElementById('formKegiatan').addEventListener('submit', function(e) {
+                // Ensure dropped file is included in submission
+                if (droppedFile && !input.files.length) {
+                    try {
+                        const dt = new DataTransfer();
+                        dt.items.add(droppedFile);
+                        input.files = dt.files;
+                    } catch (err) {
+                        console.error('Cannot add file:', err);
+                    }
+                }
+                
+                // Date validation
                 const start = new Date(document.querySelector('[name="start_time"]').value);
                 const end = new Date(document.querySelector('[name="end_time"]').value);
                 if (start >= end) {

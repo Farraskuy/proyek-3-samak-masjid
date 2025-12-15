@@ -2,7 +2,19 @@
 
 @section('title', 'Tambah Album')
 
-@push('styles') <style> .file-uploader { padding: 2rem; border-radius: 1rem; border: 2px dashed #dee2e6; background: #fafafa; text-align: center; cursor: pointer; color: #666; transition: .2s ease-in-out; display: block !important; }
+@push('styles')
+<style>
+    .file-uploader {
+        padding: 2rem;
+        border-radius: 1rem;
+        border: 2px dashed #dee2e6;
+        background: #fafafa;
+        text-align: center;
+        cursor: pointer;
+        color: #666;
+        transition: .2s ease-in-out;
+        display: block;
+    }
 
     .file-uploader.on-drag {
         background: #f3f3f3;
@@ -18,9 +30,6 @@
         width: 100%;
         border-radius: 1rem;
         border: 1px solid #ddd;
-        object-fit: contain;
-        height: 200px;
-        background: #eee;
     }
 
     /* Photos Preview Grid */
@@ -91,7 +100,10 @@
                         <label for="photos" class="file-uploader" id="photos-uploader">
                             <i class="fas fa-images fa-2x mb-2"></i>
                             <div class="fw-semibold">Upload Foto Album</div>
-                            <div class="small text-muted">Bisa pilih banyak gambar (Maks 4MB/foto)</div>
+                            <div class="small text-muted">Drag & drop atau klik untuk pilih banyak</div>
+                            <div class="small text-muted mt-2">
+                                <i class="fas fa-info-circle me-1"></i>Maks. 4 MB/foto | JPG, JPEG, PNG, WEBP
+                            </div>
                         </label>
 
                         <input id="photos" type="file" accept="image/*" multiple class="d-none">
@@ -114,7 +126,10 @@
                         <label for="cover_photo" class="file-uploader" id="cover-uploader">
                             <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
                             <div class="fw-semibold">Upload Cover</div>
-                            <div class="small text-muted">Format: jpg, jpeg, png. Maks 2MB.</div>
+                            <div class="small text-muted">Drag & drop atau klik</div>
+                            <div class="small text-muted mt-2">
+                                <i class="fas fa-info-circle me-1"></i>Maks. 2 MB | JPG, JPEG, PNG, WEBP
+                            </div>
                         </label>
 
                         <input type="file" id="cover_photo" name="cover_photo" accept="image/*" class="d-none">
@@ -176,7 +191,7 @@
 
             if (!file) {
                 coverWrapper.style.display = 'none';
-                coverUploaderLabel.style.display = 'block';
+                coverUploaderLabel.classList.remove('d-none');
                 return;
             }
 
@@ -184,7 +199,7 @@
             reader.onload = e => {
                 coverPreview.src = e.target.result;
                 coverWrapper.style.display = 'block';
-                coverUploaderLabel.style.setProperty('display', 'none', 'important');
+                coverUploaderLabel.classList.add('d-none');
 
                 // ambil container yang bener (yang position-relative)
                 const imgContainer = coverWrapper.querySelector('.position-relative');
@@ -208,7 +223,7 @@
                     coverInput.value = "";
                     coverPreview.src = "#";
                     coverWrapper.style.display = "none";
-                    coverUploaderLabel.style.setProperty('display', 'block', 'important');
+                    coverUploaderLabel.classList.remove('d-none');
                 };
 
                 imgContainer.appendChild(removeBtn);

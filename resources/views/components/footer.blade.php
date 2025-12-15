@@ -1,29 +1,29 @@
 @php
-$footerInfo = \App\Models\WebsiteInformation::first();
-$rawSocials = $footerInfo ? $footerInfo->footer_social_links : [];
-$socials = [];
+    $footerInfo = \App\Models\WebsiteInformation::first();
+    $rawSocials = $footerInfo ? $footerInfo->footer_social_links : [];
+    $socials = [];
 
-// Logika pembersih data
-if (!empty($rawSocials)) {
-// Cek jika data masih string JSON, decode dulu
-if (is_string($rawSocials)) {
-$rawSocials = json_decode($rawSocials, true);
-}
+    // Logika pembersih data
+    if (!empty($rawSocials)) {
+        // Cek jika data masih string JSON, decode dulu
+        if (is_string($rawSocials)) {
+            $rawSocials = json_decode($rawSocials, true);
+        }
 
-if (is_array($rawSocials)) {
-foreach ($rawSocials as $item) {
-$platform = is_array($item) ? ($item['platform'] ?? '') : ($item->platform ?? '');
-$url = is_array($item) ? ($item['url'] ?? '') : ($item->url ?? '');
+        if (is_array($rawSocials)) {
+            foreach ($rawSocials as $item) {
+                $platform = is_array($item) ? $item['platform'] ?? '' : $item->platform ?? '';
+                $url = is_array($item) ? $item['url'] ?? '' : $item->url ?? '';
 
-if (!empty($platform) && !empty($url)) {
-$socials[] = [
-'platform' => strtolower($platform),
-'url' => $url
-];
-}
-}
-}
-}
+                if (!empty($platform) && !empty($url)) {
+                    $socials[] = [
+                        'platform' => strtolower($platform),
+                        'url' => $url,
+                    ];
+                }
+            }
+        }
+    }
 @endphp
 
 <footer class="text-white pt-5" style="background-color: #175C9E">
@@ -34,9 +34,12 @@ $socials[] = [
             <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
                 <h6 class="text-uppercase fw-bold mb-4 d-flex align-items-center">
                     {{-- Icon Masjid (SVG) --}}
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-building me-2 text-warning" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M14.763.075A.5.5 0 0 1 15 .5v15a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V14h-1v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V10a.5.5 0 0 1 .342-.474L6 7.64V4.5a.5.5 0 0 1 .276-.447l8-4a.5.5 0 0 1 .487.022zM6 8.694 1 10.36V15h5V8.694zM7 15h2v-1.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V15h2V1.309l-7 3.5V15z" />
-                        <path d="M2 11h1v1H2v-1zm2 0h1v1H4v-1zm-2 2h1v1H2v-1zm2 0h1v1H4v-1zm4-4h1v1H8V9zm2 0h1v1h-1V9zm-2 2h1v1H8v-1zm2 0h1v1h-1v-1zm2-2h1v1h-1V9zm0 2h1v1h-1v-1zM8 7h1v1H8V7zm2 0h1v1h-1V7zm2 0h1v1h-1V7zM8 5h1v1H8V5zm2 0h1v1h-1V5zm2 0h1v1h-1V5zm0-2h1v1h-1V3z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                        class="bi bi-building me-2 text-warning" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                            d="M14.763.075A.5.5 0 0 1 15 .5v15a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V14h-1v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V10a.5.5 0 0 1 .342-.474L6 7.64V4.5a.5.5 0 0 1 .276-.447l8-4a.5.5 0 0 1 .487.022zM6 8.694 1 10.36V15h5V8.694zM7 15h2v-1.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5V15h2V1.309l-7 3.5V15z" />
+                        <path
+                            d="M2 11h1v1H2v-1zm2 0h1v1H4v-1zm-2 2h1v1H2v-1zm2 0h1v1H4v-1zm4-4h1v1H8V9zm2 0h1v1h-1V9zm-2 2h1v1H8v-1zm2 0h1v1h-1v-1zm2-2h1v1h-1V9zm0 2h1v1h-1v-1zM8 7h1v1H8V7zm2 0h1v1h-1V7zm2 0h1v1h-1V7zM8 5h1v1H8V5zm2 0h1v1h-1V5zm2 0h1v1h-1V5zm0-2h1v1h-1V3z" />
                     </svg>
                     SAMAK-Masjid
                 </h6>
@@ -49,10 +52,14 @@ $socials[] = [
             <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
                 <h6 class="text-uppercase fw-bold mb-4 text-warning">Quick Links</h6>
                 <ul class="list-unstyled mb-0">
-                    <li class="mb-2"><a href="/" class="footer-link text-white text-decoration-none">Beranda</a></li>
-                    <li class="mb-2"><a href="/jadwal-kegiatan" class="footer-link text-white text-decoration-none">Jadwal Kegiatan</a></li>
-                    <li class="mb-2"><a href="/donasi" class="footer-link text-white text-decoration-none">Donasi</a></li>
-                    <li class="mb-2"><a href="/laporan-keuangan" class="footer-link text-white text-decoration-none">Transparansi Keuangan</a></li>
+                    <li class="mb-2"><a href="/" class="footer-link text-white text-decoration-none">Beranda</a>
+                    </li>
+                    <li class="mb-2"><a href="/jadwal-kegiatan"
+                            class="footer-link text-white text-decoration-none">Jadwal Kegiatan</a></li>
+                    <li class="mb-2"><a href="/donasi" class="footer-link text-white text-decoration-none">Donasi</a>
+                    </li>
+                    <li class="mb-2"><a href="/laporan-keuangan"
+                            class="footer-link text-white text-decoration-none">Transparansi Keuangan</a></li>
                 </ul>
             </div>
 
@@ -62,22 +69,28 @@ $socials[] = [
                 <ul class="list-unstyled text-white-50">
                     <li class="mb-2 d-flex">
                         {{-- Icon Map (SVG) --}}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill me-2 mt-1" viewBox="0 0 16 16">
-                            <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-geo-alt-fill me-2 mt-1" viewBox="0 0 16 16">
+                            <path
+                                d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" />
                         </svg>
                         <span>{{ $footerInfo->footer_address ?? 'Jl. Masjid Raya No. 123, Kota' }}</span>
                     </li>
                     <li class="mb-2 d-flex">
                         {{-- Icon Phone (SVG) --}}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telephone-fill me-2 mt-1" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-telephone-fill me-2 mt-1" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z" />
                         </svg>
                         <span>{{ $footerInfo->footer_phone ?? '+62 812-3456-7890' }}</span>
                     </li>
                     <li class="mb-2 d-flex">
                         {{-- Icon Email (SVG) --}}
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-fill me-2 mt-1" viewBox="0 0 16 16">
-                            <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-envelope-fill me-2 mt-1" viewBox="0 0 16 16">
+                            <path
+                                d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558L0 4.697ZM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z" />
                         </svg>
                         <span>{{ $footerInfo->footer_email ?? 'info@samak-Masjid.ac.id' }}</span>
                     </li>
@@ -88,10 +101,11 @@ $socials[] = [
             <div class="col-lg-3 col-md-6">
                 <h6 class="text-uppercase fw-bold mb-4 text-warning">Ikuti Kami</h6>
                 <p class="text-white-50">Dapatkan update terbaru dari kami.</p>
-                <div class="d-flex gap-2">
-                    @foreach ($socials as $social)
-                    <a href="{{ $social['url'] }}" class="text-white text-decoration-none me-3" target="_blank"
-                        title="{{ ucfirst($social['platform']) }}">
+                @if (count($socials) > 0)
+                    <div class="d-flex gap-2">
+                        @foreach ($socials as $social)
+                            <a href="{{ $social['url'] }}" class="text-white text-decoration-none me-3" target="_blank"
+                                title="{{ ucfirst($social['platform']) }}">
 
                         {{-- FACEBOOK SVG --}}
                         @if ($social['platform'] == 'facebook')

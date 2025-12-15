@@ -176,7 +176,7 @@
                                 <!-- Footer - Same style as Postingan -->
                                 <div class="mt-auto pt-3">
                                     <p class="text-muted">
-                                        <span class="fas fa-calendar me-1"></span> {{ $album->created_at->format('d M Y') }}
+                                        <span class="fas fa-calendar me-1"></span> {{ $album->created_at->locale('id')->translatedFormat('d M Y') }}
                                     </p>
                                     <span class="fw-semibold" style="color:#175C9E;">
                                         Lihat Album <i class="fas fa-arrow-right ms-1"></i>
