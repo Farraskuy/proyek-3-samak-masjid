@@ -163,7 +163,7 @@
 
                 {{-- CARD 4 --}}
                 <div class="col-12 col-md-6 col-lg-3" data-aos="zoom-in" data-aos-delay="400" data-aos-duration="900">
-                    <a href="/layanan/lost-and-found" class="text-decoration-none">
+                    <a href="/layanan/barang-hilang" class="text-decoration-none">
                         <div class="card h-100 feature-card rounded-4 shadow-sm border-0">
                             <div class="card-body p-4">
                                 <div class="feature-icon d-flex align-items-center justify-content-center rounded-3 mb-4"
