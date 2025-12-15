@@ -25,7 +25,8 @@ class DonationConfirmationController extends Controller
                     ->orWhere('guest_name', 'like', "%$keyword%")
                     ->orWhereHas('user', function ($u) use ($keyword) {
                         $u->where('name', 'like', "%$keyword%");
-                    });
+                    })
+                    ->orWhere('confirmation_id', 'like', "%$keyword%");
             });
         }
 
@@ -67,7 +68,12 @@ class DonationConfirmationController extends Controller
     public function approve($id)
     {
         DB::transaction(function () use ($id) {
-            $donation = DonationConfirmation::with('destinationAccount')->findOrFail($id);
+
+            $donation = DonationConfirmation::lockForUpdate()->findOrFail($id);
+
+            if ($donation->status !== 'Pending') {
+                abort(409, 'Donasi sudah diproses.');
+            }
 
             $donation->update([
                 'status' => 'Verified',
@@ -101,13 +107,20 @@ class DonationConfirmationController extends Controller
 
     public function reject($id)
     {
-        $donasi = DonationConfirmation::findOrFail($id);
+        DB::transaction(function () use ($id) {
 
-        $donasi->update([
-            'status' => 'Rejected',
-            'verified_by' => Auth::id(),
-            'verified_at' => now(),
-        ]);
+            $donation = DonationConfirmation::lockForUpdate()->findOrFail($id);
+
+            if ($donation->status !== 'Pending') {
+                abort(409, 'Donasi sudah diproses.');
+            }
+
+            $donation->update([
+                'status' => 'Rejected',
+                'verified_by' => Auth::id(),
+                'verified_at' => now(),
+            ]);
+        });
 
         return redirect()->back()->with('warning', 'Donasi telah ditolak.');
     }

@@ -8,9 +8,16 @@ use Illuminate\Http\Request;
 
 class KotakAmalController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $collections = KotakAmal::latest()->paginate(10);
+        $query = KotakAmal::latest();
+
+        if ($request->has('keyword') && $request->keyword != '') {
+            $keyword = $request->keyword;
+            $query->where('box_name', 'like', "%$keyword%");
+        }
+
+        $collections = $query->paginate(10)->withQueryString();
         return view('admin.kotak_amal.index', compact('collections'));
     }
 

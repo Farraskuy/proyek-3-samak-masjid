@@ -16,7 +16,7 @@
                 </div>
                 <div class="d-flex gap-2">
                     <a href="{{ route('admin.kotak-amal.index') }}" class="btn btn-light border">Batal</a>
-                    <button type="submit" class="btn btn-primary" id="btn-save" disabled>
+                    <button type="submit" class="btn btn-success fw-bold" id="btn-save" disabled>
                         <i class="fas fa-save me-1"></i> Simpan Data
                     </button>
                 </div>
@@ -166,7 +166,11 @@
                 const qtyInput = row.querySelector('.money-qty');
                 const subtotalEl = row.querySelector('.row-subtotal');
 
-                const qty = parseInt(qtyInput.value) || 0;
+                let qty = parseInt(qtyInput.value) || 0;
+                if (qty < 0) {
+                    qty = 0;
+                    qtyInput.value = 0;
+                }
                 const subtotal = qty * denom;
 
                 subtotalEl.innerText = formatRupiah(subtotal);
@@ -189,9 +193,9 @@
                 const lockInput = row.querySelector('.lock-status');
                 const icon = btn.querySelector('i');
 
-                if (input.disabled) {
+                // Check readOnly instead of disabled because we use readOnly for the 'locked' state
+                if (input.readOnly) {
                     // Unlock
-                    input.disabled = false;
                     input.readOnly = false;
                     lockInput.value = "0";
                     btn.classList.remove('btn-success');
@@ -200,13 +204,7 @@
                     icon.classList.add('fa-lock-open');
                 } else {
                     // Lock
-                    input.disabled = false; // Keep enabled for form submission? No, disabled inputs aren't submitted.
-                    // Wait, if I disable it, it won't be submitted.
-                    // I should use 'readonly' instead of 'disabled' for submission, OR enable them right before submit.
-                    // But user wants "locked".
-                    // I'll use 'readonly'.
                     input.readOnly = true;
-                    // input.classList.add('bg-light');
                     lockInput.value = "1";
                     btn.classList.remove('btn-outline-secondary');
                     btn.classList.add('btn-success');

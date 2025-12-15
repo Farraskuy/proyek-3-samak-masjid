@@ -63,9 +63,10 @@
                         <tbody>
                             @foreach ($collection->details as $detail)
                                 <tr>
-                                    <td class="text-end">Rp {{ number_format($detail->nominal, 0, ',', '.') }}</td>
-                                    <td class="text-center">{{ $detail->quantity }}</td>
-                                    <td class="text-end fw-bold">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
+                                    <td class="text-end">Rp {{ number_format($detail['nominal'], 0, ',', '.') }}</td>
+                                    <td class="text-center">{{ $detail['quantity'] }}</td>
+                                    <td class="text-end fw-bold">Rp {{ number_format($detail['subtotal'], 0, ',', '.') }}
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -87,18 +88,18 @@
                                 style="min-height: 150px;">
                                 <div class="mb-3">
                                     <small class="text-muted d-block mb-2">Tanda Tangan</small>
-                                    @if ($officer->signature)
+                                    @if ($officer['signature'])
                                         <div class="fst-italic text-muted"
                                             style="font-family: 'Courier New', Courier, monospace;">
-                                            "{{ $officer->signature }}"
+                                            "{{ $officer['signature'] }}"
                                         </div>
                                     @else
                                         <div class="text-muted opacity-25">Belum ada TTD</div>
                                     @endif
                                 </div>
                                 <div>
-                                    <div class="fw-bold border-top pt-2 d-inline-block px-3">{{ $officer->name }}</div>
-                                    <div class="small text-muted">{{ $officer->phone ?? '-' }}</div>
+                                    <div class="fw-bold border-top pt-2 d-inline-block px-3">{{ $officer['name'] }}</div>
+                                    <div class="small text-muted">{{ $officer['phone'] ?? '-' }}</div>
                                 </div>
                             </div>
                         </div>
