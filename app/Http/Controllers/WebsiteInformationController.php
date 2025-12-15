@@ -92,8 +92,8 @@ class WebsiteInformationController extends Controller
         // 2. Proses Featured Image (Gambar Utama)
         if ($request->hasFile('featured_image_url')) {
             // Hapus gambar lama jika ada
-            if ($page->featured_image_url && Storage::exists($page->featured_image_url)) {
-                Storage::delete($page->featured_image_url);
+            if ($page->featured_image_url && Storage::disk('public')->exists($page->featured_image_url)) {
+                Storage::disk('public')->delete($page->featured_image_url);
             }
 
             // Simpan gambar baru
@@ -239,7 +239,7 @@ class WebsiteInformationController extends Controller
 
             // Hapus gambar featured jika DB gagal simpan agar tidak jadi sampah
             if (isset($validated['featured_image_url'])) {
-                Storage::delete($validated['featured_image_url']);
+                Storage::disk('public')->delete($validated['featured_image_url']);
             }
 
             return redirect()->back()
@@ -279,7 +279,7 @@ class WebsiteInformationController extends Controller
                 $fileName = uniqid() . '.' . $extension;
                 $path = 'website-information/content/' . $fileName;
 
-                Storage::put($path, $data);
+                Storage::disk('public')->put($path, $data);
 
                 $img->setAttribute('src', $path);
             }
@@ -317,8 +317,8 @@ class WebsiteInformationController extends Controller
 
         // 4. Hapus file fisik di storage
         foreach ($deletedImages as $img) {
-            if (Storage::exists($img)) {
-                Storage::delete($img);
+            if (Storage::disk('public')->exists($img)) {
+                Storage::disk('public')->delete($img);
             }
         }
     }

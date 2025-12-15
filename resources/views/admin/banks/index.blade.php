@@ -4,7 +4,7 @@
     <section class="p-3">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="fw-semibold mb-0">Kelola Rekening Bank</h4>
-            
+
             @can('create_banks')
                 <a href="{{ route('admin.banks.create') }}" class="btn btn-success fw-semibold">
                     <i class="fas fa-plus me-1"></i> Tambah Rekening
@@ -48,18 +48,19 @@
                         </select>
 
                         <div class="sort-toggle">
-                            <input type="radio" name="ordered_by" value="asc" id="ordered_by_asc"
-                                {{ request('ordered_by') == 'asc' ? 'checked' : '' }} onchange="this.form.submit()" hidden>
-                            <label for="ordered_by_asc" class="btn btn-outline-secondary" title="Urutkan A-Z">
-                                <i class="fas fa-sort-alpha-down"></i>
-                            </label>
-
-                            <input type="radio" name="ordered_by" value="desc" id="ordered_by_desc"
-                                {{ request('ordered_by', 'desc') == 'desc' ? 'checked' : '' }}
-                                onchange="this.form.submit()" hidden>
-                            <label for="ordered_by_desc" class="btn btn-outline-secondary" title="Urutkan Z-A">
-                                <i class="fas fa-sort-alpha-up"></i>
-                            </label>
+                            @if (request('ordered_by', 'desc') == 'desc')
+                                <input type="radio" name="ordered_by" value="asc" id="ordered_by_asc"
+                                    onchange="this.form.submit()" hidden>
+                                <label for="ordered_by_asc" class="btn btn-outline-secondary" title="Urutkan A-Z">
+                                    <i class="fas fa-sort-alpha-down"></i>
+                                </label>
+                            @else
+                                <input type="radio" name="ordered_by" value="desc" id="ordered_by_desc"
+                                    onchange="this.form.submit()" hidden>
+                                <label for="ordered_by_desc" class="btn btn-outline-secondary" title="Urutkan Z-A">
+                                    <i class="fas fa-sort-alpha-up"></i>
+                                </label>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -74,7 +75,7 @@
                                 <th class="p-3 fw-semibold">Saldo</th>
                                 <th class="p-3 fw-semibold">Kategori</th>
                                 <th class="p-3 fw-semibold">Status</th>
-                                
+
                                 @canany(['edit_banks', 'delete_banks'])
                                     <th class="p-3 fw-semibold">Aksi</th>
                                 @endcanany
@@ -101,23 +102,23 @@
                                             <span class="badge rounded-pill text-bg-danger">Non-Aktif</span>
                                         @endif
                                     </td>
-                                    
+
                                     {{-- KOLOM AKSI --}}
                                     @canany(['edit_banks', 'delete_banks'])
-                                    <td class="p-3 align-middle">
-                                        @can('edit_banks')
-                                            <a href="{{ route('admin.banks.edit', $bank->account_id) }}"
-                                                class="btn btn-sm btn-light border"><i class="fas fa-pen text-muted"></i></a>
-                                        @endcan
+                                        <td class="p-3 align-middle">
+                                            @can('edit_banks')
+                                                <a href="{{ route('admin.banks.edit', $bank->account_id) }}"
+                                                    class="btn btn-sm btn-light border"><i class="fas fa-pen text-muted"></i></a>
+                                            @endcan
 
-                                        @can('delete_banks')
-                                            <button type="button"
-                                                class="btn btn-sm btn-light border text-danger btn-delete-article"
-                                                data-action="{{ route('admin.banks.destroy', $bank->account_id) }}">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        @endcan
-                                    </td>
+                                            @can('delete_banks')
+                                                <button type="button"
+                                                    class="btn btn-sm btn-light border text-danger btn-delete-article"
+                                                    data-action="{{ route('admin.banks.destroy', $bank->account_id) }}">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            @endcan
+                                        </td>
                                     @endcanany
                                 </tr>
                             @endforeach

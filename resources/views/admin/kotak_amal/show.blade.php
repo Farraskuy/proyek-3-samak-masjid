@@ -88,11 +88,16 @@
                                 style="min-height: 150px;">
                                 <div class="mb-3">
                                     <small class="text-muted d-block mb-2">Tanda Tangan</small>
-                                    @if ($officer['signature'])
-                                        <div class="fst-italic text-muted"
-                                            style="font-family: 'Courier New', Courier, monospace;">
-                                            "{{ $officer['signature'] }}"
-                                        </div>
+                                    @if (!empty($officer['signature'] ?? null))
+                                        @if (Str::startsWith($officer['signature'], 'signatures/'))
+                                            <img src="{{ Storage::url($officer['signature']) }}" alt="Tanda Tangan"
+                                                style="max-height: 80px;">
+                                        @else
+                                            <div class="fst-italic text-muted"
+                                                style="font-family: 'Courier New', Courier, monospace;">
+                                                "{{ $officer['signature'] }}"
+                                            </div>
+                                        @endif
                                     @else
                                         <div class="text-muted opacity-25">Belum ada TTD</div>
                                     @endif

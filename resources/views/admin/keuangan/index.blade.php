@@ -9,16 +9,14 @@
             <h4 class="fw-semibold mb-0">Manajemen Transaksi Keuangan</h4>
             <div class="d-flex gap-2">
                 @if (auth()->user()->hasPermission('manage_expense'))
-                    <button class="btn btn-danger fw-semibold" data-bs-toggle="modal" data-bs-target="#modalTambah"
-                        onclick="setJenisTransaksi('pengeluaran')">
+                    <a href="{{ route('admin.keuangan.pengeluaran') }}" class="btn btn-danger fw-semibold">
                         <i class="fas fa-minus me-1"></i> Pengeluaran
-                    </button>
+                    </a>
                 @endif
                 @if (auth()->user()->hasPermission('manage_income'))
-                    <button class="btn btn-success fw-semibold" data-bs-toggle="modal" data-bs-target="#modalTambah"
-                        onclick="setJenisTransaksi('pemasukan')">
+                    <a href="{{ route('admin.keuangan.pemasukan') }}" class="btn btn-success fw-semibold">
                         <i class="fas fa-plus me-1"></i> Pemasukan
-                    </button>
+                    </a>
                 @endif
             </div>
         </div>
@@ -62,9 +60,6 @@
                                 </option>
                             @endforeach
                         </select>
-
-                        <input type="text" class="form-control" placeholder="Cari Transaksi..."
-                            value="{{ request('keyword') }}" name="keyword">
 
                         {{-- Sort Toggle --}}
                         <div class="sort-toggle">

@@ -118,11 +118,17 @@
                     </div>
 
                     <!-- Contact Info -->
+                    @php
+                        $websiteInfo = \App\Models\WebsiteInformation::first();
+                        $contactPhone = $websiteInfo->footer_phone ?? '+62 812-xxxx-xxxx';
+                        $waNumber = preg_replace('/[^0-9]/', '', $contactPhone);
+                    @endphp
                     <div class="text-center mt-5">
                         <p class="text-muted small mb-0">
                             Ada pertanyaan? Hubungi kami di WhatsApp<br>
-                            <a href="#" class="fw-bold text-decoration-none" style="color: #175C9E;">
-                                <i class="fas fa-whatsapp me-1"></i>+62 812-xxxx-xxxx
+                            <a href="https://wa.me/{{ $waNumber }}" target="_blank" class="fw-bold text-decoration-none"
+                                style="color: #175C9E;">
+                                <i class="fab fa-whatsapp me-1"></i>{{ $contactPhone }}
                             </a>
                         </p>
                     </div>

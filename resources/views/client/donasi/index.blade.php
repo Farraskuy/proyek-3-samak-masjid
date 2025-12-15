@@ -295,11 +295,12 @@
                                     <div class="result-text" id="infaq-result">Rp 0</div>
                                 </div>
 
-                                <div id="rekening-container-infaq" style="display: none;" class="mt-4">
-                                    <div class="alert alert-info border-0 bg-light text-dark">
-                                        <i class="fas fa-info-circle me-2"></i> Pilih rekening tujuan infaq:
+                                {{-- Bank auto-assigned from infaq program --}}
+                                <div id="infaq-bank-info" style="display: none;" class="mt-4">
+                                    <div class="alert alert-success border-0">
+                                        <i class="fas fa-check-circle me-2"></i>
+                                        <span>Rekening tujuan akan otomatis sesuai program yang dipilih.</span>
                                     </div>
-                                    <div id="rekening-list-infaq"></div>
                                 </div>
 
                                 <div class="text-center mt-4">
@@ -396,9 +397,14 @@
             const container = document.getElementById('zakat-form-container');
             const typeConfig = ZAKAT_TYPES[type];
 
-            // Update description
+            // Update description with gold price for maal
             document.getElementById('zakat-type-name').innerText = typeConfig.name;
-            document.getElementById('zakat-type-desc').innerText = typeConfig.description;
+            let desc = typeConfig.description;
+            if (type === 'maal') {
+                desc +=
+                    ` Harga emas saat ini: ${formatRupiah(HARGA_EMAS)}/gram. Nisab = 85 gram x ${formatRupiah(HARGA_EMAS)} = ${formatRupiah(NISHAB_MAAL)}.`;
+            }
+            document.getElementById('zakat-type-desc').innerText = desc;
 
             let html = '';
             for (const [key, input] of Object.entries(typeConfig.inputs)) {
@@ -575,42 +581,14 @@
             document.getElementById('infaq-result').innerText = formatRupiah(val);
 
             if (val >= 10000) {
-                showInfaqBanks();
+                // Auto-assign bank from selected program
+                updateInfaqBank();
+                document.getElementById('infaq-bank-info').style.display = 'block';
+                document.getElementById('btn-lanjut-infaq').disabled = false;
             } else {
-                document.getElementById('rekening-container-infaq').style.display = 'none';
+                document.getElementById('infaq-bank-info').style.display = 'none';
                 document.getElementById('btn-lanjut-infaq').disabled = true;
             }
-        }
-
-        function showInfaqBanks() {
-            const container = document.getElementById('rekening-list-infaq');
-            const wrapper = document.getElementById('rekening-container-infaq');
-
-            let html = '';
-            INFAQ_BANKS.forEach((acc, index) => {
-                html += `
-                <label class="d-block mb-3" style="cursor:pointer">
-                    <input type="radio" name="bank_id" value="${acc.account_id}" 
-                           class="hidden-checkbox" onchange="selectInfaqBank(${acc.account_id})">
-                    <div class="bank-card custom-checkbox-label">
-                        ${acc.logo_url ? `<img src="${acc.logo_url}" alt="${acc.bank_name}" class="bank-logo">` : ''}
-                        <div class="flex-grow-1">
-                            <h6 class="mb-0 fw-bold">${acc.bank_name}</h6>
-                            <div class="d-flex align-items-center">
-                                <span class="me-2 fs-5">${acc.account_number || '-'}</span>
-                            </div>
-                            <small class="text-muted">a.n ${acc.account_holder_name}</small>
-                        </div>
-                    </div>
-                </label>`;
-            });
-            container.innerHTML = html;
-            wrapper.style.display = 'block';
-        }
-
-        function selectInfaqBank(bankId) {
-            selectedInfaqBank = bankId;
-            document.getElementById('btn-lanjut-infaq').disabled = false;
         }
 
         function updateInfaqBank() {
@@ -622,7 +600,7 @@
             }
         }
 
-        // Prevent double submission
+        // Prevent double submission and clean money inputs
         document.querySelectorAll('form').forEach(form => {
             form.addEventListener('submit', function(e) {
                 const btn = form.querySelector('button[type="submit"]');
@@ -630,6 +608,12 @@
                     e.preventDefault();
                     return;
                 }
+
+                // Clean money inputs - convert formatted strings to numeric
+                form.querySelectorAll('.money-input').forEach(input => {
+                    input.value = parseInput(input.value);
+                });
+
                 btn.disabled = true;
                 btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memproses...';
             });

@@ -28,14 +28,15 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-md-6 col-lg-3">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <p class="text-muted mb-1 small">Pemasukan</p>
-                                <h5 class="fw-bold mb-0 text-success">Rp {{ number_format($pemasukanBulanIni, 0, ',', '.') }}</h5>
+                                <h5 class="fw-bold mb-0 text-success">Rp
+                                    {{ number_format($pemasukanBulanIni, 0, ',', '.') }}</h5>
                             </div>
                             <div class="rounded-circle bg-success bg-opacity-10 p-3">
                                 <i class="fa-solid fa-arrow-up text-success"></i>
@@ -45,14 +46,15 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-md-6 col-lg-3">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <p class="text-muted mb-1 small">Pengeluaran</p>
-                                <h5 class="fw-bold mb-0 text-danger">Rp {{ number_format($pengeluaranBulanIni, 0, ',', '.') }}</h5>
+                                <h5 class="fw-bold mb-0 text-danger">Rp
+                                    {{ number_format($pengeluaranBulanIni, 0, ',', '.') }}</h5>
                             </div>
                             <div class="rounded-circle bg-danger bg-opacity-10 p-3">
                                 <i class="fa-solid fa-arrow-down text-danger"></i>
@@ -62,7 +64,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-md-6 col-lg-3">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body">
@@ -118,8 +120,9 @@
                                     <p class="mb-0">{{ Str::limit($tx->description ?? 'Transaksi', 25) }}</p>
                                     <small class="text-muted">{{ $tx->created_at->format('d M Y') }}</small>
                                 </div>
-                                <span class="fw-bold {{ $tx->type == 'income' ? 'text-success' : 'text-danger' }}">
-                                    {{ $tx->type == 'income' ? '+' : '-' }}Rp {{ number_format($tx->amount, 0, ',', '.') }}
+                                <span class="fw-bold {{ $tx->type == 'pemasukan' ? 'text-success' : 'text-danger' }}">
+                                    {{ $tx->type == 'pemasukan' ? '+' : '-' }}Rp
+                                    {{ number_format($tx->amount, 0, ',', '.') }}
                                 </span>
                             </div>
                         @empty

@@ -18,13 +18,13 @@ class FinanceDashboardController extends Controller
         $totalBanks = BankAccount::where('is_active', true)->count();
         
         // Pemasukan bulan ini
-        $pemasukanBulanIni = FinancialTransaction::where('type', 'income')
+        $pemasukanBulanIni = FinancialTransaction::where('type', 'pemasukan')
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->sum('amount');
         
         // Pengeluaran bulan ini
-        $pengeluaranBulanIni = FinancialTransaction::where('type', 'expense')
+        $pengeluaranBulanIni = FinancialTransaction::where('type', 'pengeluaran')
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->sum('amount');

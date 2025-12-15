@@ -56,8 +56,6 @@
 
                 <div class="bg-white position-sticky pt-3 pb-2" style="top: 61px; z-index: 10">
                     <div class="d-flex gap-2 justify-content-end mb-2 align-items-center">
-                        <input type="text" class="form-control" placeholder="Cari Nama / Bank..."
-                            value="{{ request()->query('keyword', '') }}" name="keyword">
 
                         <select name="donation_type" class="form-select fs-14px h-100 w-auto" style="line-height: 1.7"
                             onchange="this.form.submit()">
@@ -174,8 +172,7 @@
                     <div class="d-flex justify-content-between showing-wrapper-bawah">
                         <div class="d-flex fs-14px align-items-center gap-1">
                             Menampilkan
-                            <select class="form-select form-select-sm w-auto" name="showing"
-                                onchange="this.form.submit()">
+                            <select class="form-select form-select-sm w-auto" name="showing" onchange="this.form.submit()">
                                 <option value="10" {{ request('showing') == 10 ? 'selected' : '' }}>10</option>
                                 <option value="20" {{ request('showing') == 20 ? 'selected' : '' }}>20</option>
                                 <option value="50" {{ request('showing') == 50 ? 'selected' : '' }}>50</option>

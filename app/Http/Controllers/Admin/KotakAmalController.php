@@ -54,12 +54,38 @@ class KotakAmalController extends Controller
             ];
         }
 
+        // Process officers and save signatures to storage
+        $officers = [];
+        foreach ($request->officers as $officer) {
+            $signaturePath = null;
+            
+            if (!empty($officer['signature']) && str_starts_with($officer['signature'], 'data:image')) {
+                // Extract base64 data
+                $imageData = explode(',', $officer['signature'])[1] ?? null;
+                if ($imageData) {
+                    $imageContent = base64_decode($imageData);
+                    $filename = 'signatures/' . uniqid('sig_') . '.png';
+                    \Storage::disk('public')->put($filename, $imageContent);
+                    $signaturePath = $filename;
+                }
+            } else {
+                // Keep as text if not base64
+                $signaturePath = $officer['signature'] ?? null;
+            }
+            
+            $officers[] = [
+                'name' => $officer['name'],
+                'phone' => $officer['phone'] ?? null,
+                'signature' => $signaturePath,
+            ];
+        }
+
         KotakAmal::create([
             'box_name' => $request->box_name,
             'collection_date' => $request->collection_date,
             'total_amount' => $totalAmount,
             'status' => 'finalized',
-            'officers' => $request->officers,
+            'officers' => $officers,
             'details' => $details,
         ]);
 

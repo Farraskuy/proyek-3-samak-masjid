@@ -184,10 +184,21 @@ class AuthController extends Controller
      */
     public function sendOtp(Request $request)
     {
-        $data = $request->validate([
+        // Captcha is optional for authenticated users (profile email verification)
+        $rules = [
             'destination' => 'required',
-            'g-recaptcha-response' => 'required',
-        ]);
+        ];
+        
+        if (!Auth::check()) {
+            $rules['g-recaptcha-response'] = 'required';
+        }
+        
+        $data = $request->validate($rules);
+
+        // Validate captcha for non-authenticated users
+        if (!Auth::check() && !$this->validateCaptcha($request['g-recaptcha-response'], $request->ip())) {
+            return back()->withErrors(['error' => 'Verifikasi reCAPTCHA gagal.'])->withInput();
+        }
 
         $destination = $data['destination'];
 
@@ -201,7 +212,7 @@ class AuthController extends Controller
 
         Otp::create([
             'destination' => $destination,
-            'user_id' => null,
+            'user_id' => Auth::id(),
             'type' => 'email',
             'code' => Hash::make($code),
             'attempts' => 0,

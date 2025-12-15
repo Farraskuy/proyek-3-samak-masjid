@@ -123,11 +123,22 @@
 
                         <hr class="my-4">
 
-                        {{-- Bank Selection --}}
-                        <h5 class="fw-bold mb-3">Rekening Tujuan / Kas</h5>
-                        <div id="bank-selection-container">
-                            {{-- Banks will be rendered here via JS --}}
+                        {{-- Bank Selection (only for zakat) --}}
+                        <div id="zakat-bank-section">
+                            <h5 class="fw-bold mb-3">Rekening Tujuan / Kas</h5>
+                            <div id="bank-selection-container">
+                                {{-- Banks will be rendered here via JS --}}
+                            </div>
                         </div>
+
+                        {{-- Bank Selection for infaq --}}
+                        <div id="infaq-bank-section" style="display:none;">
+                            <h5 class="fw-bold mb-3">Rekening Tujuan</h5>
+                            <div id="infaq-bank-options" class="row g-3">
+                                {{-- Will be rendered by JS --}}
+                            </div>
+                        </div>
+
                         <input type="hidden" name="bank_id" id="selected_bank_id" required>
 
                         <button type="submit" class="btn btn-primary w-100 btn-lg mt-4" id="btn-submit" disabled>
@@ -205,13 +216,18 @@
             if (cat === 'zakat') {
                 document.getElementById('infaq-type').name = 'donation_type_infaq'; // disable infaq type
                 document.getElementById('zakat-type').name = 'donation_type'; // enable zakat type
+                document.getElementById('zakat-bank-section').style.display = 'block';
+                document.getElementById('infaq-bank-section').style.display = 'none';
                 renderZakatForm();
+                renderBanks();
             } else {
                 document.getElementById('zakat-type').name = 'donation_type_zakat'; // disable zakat type
                 document.getElementById('infaq-type').name = 'donation_type'; // enable infaq type
+                document.getElementById('zakat-bank-section').style.display = 'none';
+                document.getElementById('infaq-bank-section').style.display = 'block';
+                renderInfaqBanks(); // Render bank options
                 calculateInfaq();
             }
-            renderBanks();
         }
 
         // Format money input
@@ -330,7 +346,7 @@
                 const isKas = bank.type === 'kas';
                 const badgeHtml = isKas ? '<span class="badge bg-success ms-2">Kas</span>' : '';
                 const accountDisplay = bank.account_number || (isKas ? 'Tunai / Kas Masjid' : '-');
-                
+
                 html += `
                 <div class="col-md-6">
                     <label class="card h-100 border-0 shadow-sm p-3 cursor-pointer ${isKas ? 'border-success border-2' : ''}">
@@ -356,19 +372,75 @@
             else calculateInfaq();
         }
 
-        function updateInfaqBank() {
+        function renderInfaqBanks() {
             const select = document.getElementById('infaq-type');
             const option = select.options[select.selectedIndex];
-            const bankId = option.dataset.bankId;
-            if (bankId) {
-                // Auto select bank if program has specific bank
-                // But we need to find the radio button
-                const radio = document.querySelector(`input[name="bank_selection"][value="${bankId}"]`);
-                if (radio) {
-                    radio.checked = true;
-                    selectBank(bankId);
+            const programBankId = option.dataset.bankId;
+            const programName = option.textContent.trim();
+            const container = document.getElementById('infaq-bank-options');
+
+            let banks = [];
+
+            // Always show Kas Masjid option
+            if (KAS_BANKS.length > 0) {
+                banks.push({
+                    ...KAS_BANKS[0],
+                    isKas: true,
+                    label: 'Kas Masjid'
+                });
+            }
+
+            // If program has specific bank, show that too
+            if (programBankId) {
+                // Find the program's bank from INFAQ_BANKS
+                const programBank = INFAQ_BANKS.find(b => b.account_id == programBankId);
+                if (programBank) {
+                    banks.push({
+                        ...programBank,
+                        isKas: false,
+                        label: `Rekening ${programName}`
+                    });
                 }
             }
+
+            let html = '';
+            banks.forEach((bank, idx) => {
+                const isChecked = idx === 0 ? 'checked' : '';
+                const badgeHtml = bank.isKas ? '<span class="badge bg-success ms-2">Kas</span>' :
+                    '<span class="badge bg-primary ms-2">Program</span>';
+                const accountDisplay = bank.account_number || (bank.isKas ? 'Tunai / Kas Masjid' : '-');
+
+                html += `
+                <div class="col-md-6">
+                    <label class="card h-100 border-0 shadow-sm p-3 cursor-pointer">
+                        <div class="d-flex align-items-center gap-3">
+                            <input type="radio" name="infaq_bank_selection" value="${bank.account_id}" 
+                                   class="form-check-input" onchange="selectInfaqBank(${bank.account_id})" ${isChecked}>
+                            <div>
+                                <div class="fw-bold">${bank.bank_name}${badgeHtml}</div>
+                                <div class="small text-muted">${accountDisplay}</div>
+                            </div>
+                        </div>
+                    </label>
+                </div>`;
+            });
+
+            container.innerHTML = html;
+
+            // Auto-select first option
+            if (banks.length > 0) {
+                document.getElementById('selected_bank_id').value = banks[0].account_id;
+            }
+        }
+
+        function selectInfaqBank(bankId) {
+            document.getElementById('selected_bank_id').value = bankId;
+            calculateInfaq();
+        }
+
+        function updateInfaqBank() {
+            // Re-render banks when infaq program changes
+            renderInfaqBanks();
         }
 
         function checkSubmitValidity(amount) {

@@ -71,7 +71,7 @@ class ZISController extends Controller
         $request->validate([
             'donation_category' => 'required|in:zakat,infaq',
             'donation_type' => 'required|string',
-            'bank_id' => 'required|exists:bank_accounts,account_id',
+            'bank_id' => 'nullable|exists:bank_accounts,account_id',
         ]);
 
         $category = $request->donation_category;
@@ -96,6 +96,14 @@ class ZISController extends Controller
             } catch (\InvalidArgumentException $e) {
                 return back()->withErrors(['error' => $e->getMessage()]);
             }
+
+            // Auto-assign zakat bank if not provided
+            if (!$bankId) {
+                $zakatBank = BankAccount::where('is_active', true)
+                    ->where('category', 'zakat')
+                    ->first();
+                $bankId = $zakatBank?->account_id;
+            }
         } else {
             // Infaq - just get the amount from input
             $request->validate([
@@ -107,6 +115,28 @@ class ZISController extends Controller
                 'type_name' => 'Infaq ' . ucfirst($type),
                 'amount' => $calculatedAmount,
             ];
+
+            // Auto-assign infaq bank from program OR first active infaq bank
+            if (!$bankId) {
+                if ($type !== 'umum') {
+                    // Get bank from infaq program
+                    $program = \App\Models\Infaq::find($type);
+                    $bankId = $program?->bank_account_id;
+                }
+                
+                // Fallback to first active infaq bank
+                if (!$bankId) {
+                    $infaqBank = BankAccount::where('is_active', true)
+                        ->where('category', 'infaq')
+                        ->first();
+                    $bankId = $infaqBank?->account_id;
+                }
+            }
+        }
+
+        // Validate that we have a bank
+        if (!$bankId) {
+            return back()->withErrors(['bank_id' => 'Tidak ada rekening tujuan yang tersedia.']);
         }
 
         // Get bank details

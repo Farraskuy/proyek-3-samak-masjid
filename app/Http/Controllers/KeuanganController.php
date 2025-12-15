@@ -143,6 +143,36 @@ class KeuanganController extends Controller
         return redirect()->back()->with('success', 'Transaksi dihapus.');
     }
 
+    public function createPemasukan()
+    {
+        $banks = BankAccount::where('is_active', true)->get()->map(function($bank) {
+            $masuk = FinancialTransaction::where('bank_name', $bank->bank_name)->where('type', 'pemasukan')->sum('amount');
+            $keluar = FinancialTransaction::where('bank_name', $bank->bank_name)->where('type', 'pengeluaran')->sum('amount');
+            $bank->saldo_saat_ini = $masuk - $keluar;
+            return $bank;
+        });
+        
+        return view('admin.keuangan.pemasukan', compact('banks'));
+    }
+
+    public function createPengeluaran()
+    {
+        $banks = BankAccount::where('is_active', true)->get()->map(function($bank) {
+            $masuk = FinancialTransaction::where('bank_name', $bank->bank_name)->where('type', 'pemasukan')->sum('amount');
+            $keluar = FinancialTransaction::where('bank_name', $bank->bank_name)->where('type', 'pengeluaran')->sum('amount');
+            $bank->saldo_saat_ini = $masuk - $keluar;
+            return $bank;
+        });
+        
+        return view('admin.keuangan.pengeluaran', compact('banks'));
+    }
+
+    public function print($id)
+    {
+        $transaction = FinancialTransaction::findOrFail($id);
+        return view('admin.keuangan.print', compact('transaction'));
+    }
+
     public function clientIndex(Request $request)
     {
         $banks = BankAccount::all()->map(function($bank) {
