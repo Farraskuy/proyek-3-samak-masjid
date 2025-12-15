@@ -83,12 +83,35 @@
             font-size: 1.1rem;
             line-height: 1.75;
             color: #222;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            max-width: 100%;
+            overflow-x: auto;
         }
 
-        .article-content img {
+        .article-content img,
+        .article-content video,
+        .article-content iframe,
+        .article-content embed,
+        .article-content object,
+        .article-content figure {
             max-width: 100%;
+            height: auto;
             border-radius: 10px;
             margin: 18px 0;
+        }
+
+        .article-content table {
+            max-width: 100%;
+            overflow-x: auto;
+            display: block;
+        }
+
+        .article-content pre {
+            max-width: 100%;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
 
         /* SIDEBAR */

@@ -268,14 +268,21 @@
                                     <label class="form-label">Pilih Program Infaq</label>
                                     <select class="form-select mb-3" id="infaq-type" name="donation_type"
                                         onchange="updateInfaqBank()">
-                                        <option value="umum">Infaq Umum</option>
                                         @foreach ($infaqPrograms as $program)
-                                            <option value="{{ $program->id }}"
-                                                data-bank-id="{{ $program->bank_account_id }}">
-                                                {{ $program->name }}
-                                            </option>
+                                            @if ($program->bank_account_id)
+                                                <option value="{{ $program->id }}"
+                                                    data-bank-id="{{ $program->bank_account_id }}">
+                                                    {{ $program->name }}
+                                                </option>
+                                            @endif
                                         @endforeach
                                     </select>
+                                    @if ($infaqPrograms->filter(fn($p) => $p->bank_account_id)->isEmpty())
+                                        <div class="alert alert-warning">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            Belum ada program infaq yang tersedia untuk donasi online.
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <div class="mb-4">

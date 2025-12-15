@@ -72,6 +72,19 @@ class OfflineDonationController extends Controller
             'notes' => 'nullable|string|max:255',
         ]);
 
+        // Check if destination is Kas Masjid (type = 'kas') or regular bank
+        $destinationBank = BankAccount::find($request->bank_id);
+        $isKasType = $destinationBank && $destinationBank->type === 'kas';
+        
+        // If NOT kas type (regular bank), proof image is required
+        if (!$isKasType) {
+            $request->validate([
+                'proof_image' => 'required|image|mimes:jpeg,png,jpg|max:5120',
+            ], [
+                'proof_image.required' => 'Bukti transaksi wajib diupload untuk transfer ke rekening bank.',
+            ]);
+        }
+
         $category = $request->donation_category;
         $type = $request->donation_type;
         $amount = 0;
@@ -97,22 +110,28 @@ class OfflineDonationController extends Controller
             }
         } else {
             $request->validate([
-                'infaq_amount' => 'required|numeric|min:1000',
+                'infaq_amount' => 'required|numeric|min:0',
             ]);
             $amount = (float) $request->infaq_amount;
         }
 
-        DB::transaction(function () use ($request, $category, $type, $amount) {
+        DB::transaction(function () use ($request, $category, $type, $amount, $isKasType) {
+            // Handle optional proof image upload
+            $proofPath = null;
+            if ($request->hasFile('proof_image')) {
+                $proofPath = $request->file('proof_image')->store('donation_proofs', 'public');
+            }
+            
             // Create Donation Record (Verified)
             $donation = DonationConfirmation::create([
-                'user_id' => Auth::id(), // Admin as creator/user? Or null? Let's use Admin ID to track who input it.
+                'user_id' => Auth::id(),
                 'guest_name' => $request->donor_name,
                 'donation_type' => $category . '_' . $type,
                 'amount' => $amount,
                 'transfer_date' => now(),
                 'destination_account_id' => $request->bank_id,
-                'source_bank' => 'OFFLINE / TUNAI', // Marker for offline
-                'proof_image_url' => 'offline_entry',
+                'source_bank' => $isKasType ? 'TUNAI / KAS' : 'OFFLINE / TRANSFER',
+                'proof_image_url' => $proofPath ?? 'offline_entry',
                 'notes' => $request->notes . ' (No. HP: ' . $request->phone . ')',
                 'status' => 'Verified',
                 'verified_by' => Auth::id(),
@@ -133,11 +152,11 @@ class OfflineDonationController extends Controller
                 'category' => 'Donasi Offline',
                 'description' => 'Donasi Offline dari ' . $request->donor_name . ' (' . ucfirst($category) . ')',
                 'transaction_date' => now(),
-                'proof_image_url' => null,
+                'proof_image_url' => $proofPath ?? 'offline_entry',
                 'user_id' => Auth::id(),
             ]);
         });
 
-        return redirect()->route('admin.donasi.index')->with('success', 'Donasi offline berhasil dicatat.');
+        return redirect()->route('admin.keuangan')->with('success', 'Donasi offline berhasil dicatat.');
     }
 }

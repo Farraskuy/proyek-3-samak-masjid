@@ -16,7 +16,8 @@
             <div class="col-lg-8">
                 <div class="card border-0 shadow-sm rounded-4 p-4">
 
-                    <form action="{{ route('admin.donasi.store_offline') }}" method="POST" id="offline-form">
+                    <form action="{{ route('admin.donasi.store_offline') }}" method="POST" id="offline-form"
+                        enctype="multipart/form-data">
                         @csrf
                         <input type="hidden" name="donation_category" id="donation_category" value="zakat">
 
@@ -140,6 +141,30 @@
                         </div>
 
                         <input type="hidden" name="bank_id" id="selected_bank_id" required>
+
+                        {{-- Optional Proof Image --}}
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Bukti Transaksi (Opsional)</label>
+                            <div class="upload-area border-2 border-dashed rounded-3 p-4 text-center bg-light position-relative"
+                                onclick="document.getElementById('proofImageInput').click()"
+                                style="cursor: pointer; border-style: dashed !important;">
+                                <div id="uploadPlaceholder">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-2"></i>
+                                    <p class="mb-1 text-muted">Klik atau seret gambar ke sini</p>
+                                    <small class="text-muted">JPG, PNG. Maks 5MB. Boleh dikosongkan.</small>
+                                </div>
+                                <div id="proofImagePreview" style="display: none;">
+                                    <img id="previewProofImg" src="" alt="Preview" class="img-fluid rounded"
+                                        style="max-height: 200px;">
+                                    <button type="button" class="btn btn-sm btn-danger mt-2"
+                                        onclick="event.stopPropagation(); clearProofImage();">
+                                        <i class="fas fa-times me-1"></i>Hapus
+                                    </button>
+                                </div>
+                            </div>
+                            <input type="file" name="proof_image" class="d-none" id="proofImageInput"
+                                accept="image/jpeg,image/png,image/jpg" onchange="previewProofImage(this)">
+                        </div>
 
                         <button type="submit" class="btn btn-primary w-100 btn-lg mt-4" id="btn-submit" disabled>
                             <i class="fas fa-save me-2"></i> Simpan Donasi
@@ -441,6 +466,37 @@
         function updateInfaqBank() {
             // Re-render banks when infaq program changes
             renderInfaqBanks();
+        }
+
+        function previewProofImage(input) {
+            const preview = document.getElementById('proofImagePreview');
+            const previewImg = document.getElementById('previewProofImg');
+
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImg.src = e.target.result;
+                        preview.style.display = 'block';
+                        document.getElementById('uploadPlaceholder').style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.style.display = 'none';
+                    document.getElementById('uploadPlaceholder').style.display = 'block';
+                }
+            } else {
+                preview.style.display = 'none';
+                document.getElementById('uploadPlaceholder').style.display = 'block';
+            }
+        }
+
+        function clearProofImage() {
+            document.getElementById('proofImageInput').value = '';
+            document.getElementById('proofImagePreview').style.display = 'none';
+            document.getElementById('uploadPlaceholder').style.display = 'block';
         }
 
         function checkSubmitValidity(amount) {

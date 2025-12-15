@@ -2,6 +2,42 @@
 
 @section('title', 'Detail Approval Postingan')
 
+@push('styles')
+    <style>
+        .content-preview {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        .content-preview img,
+        .content-preview video,
+        .content-preview iframe,
+        .content-preview embed,
+        .content-preview object,
+        .content-preview figure {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 12px 0;
+        }
+
+        .content-preview table {
+            max-width: 100%;
+            overflow-x: auto;
+            display: block;
+        }
+
+        .content-preview pre {
+            max-width: 100%;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+@endpush
+
 @section('content')
     <section class="p-3 container">
 
@@ -63,21 +99,22 @@
 
             {{-- Kolom Kanan: Form Approval --}}
             <div class="col-md-4">
-                @php 
-                    $currentStatus = strtolower($post->status); 
+                @php
+                    $currentStatus = strtolower($post->status);
                     // Cek apakah form harus di-hide (jika draft atau revisi)
                     $isLocked = in_array($currentStatus, ['draft', 'revisi']);
                 @endphp
 
-                @if($isLocked)
+                @if ($isLocked)
                     {{-- TAMPILAN JIKA STATUS DRAFT / REVISI (Form Hide) --}}
                     <div class="card bg-warning-subtle border-warning rounded-3 p-4 mb-4">
                         <h5 class="fw-semibold text-warning-emphasis">
                             <i class="fas fa-lock me-2"></i>Aksi Terkunci
                         </h5>
                         <p class="mb-0 text-muted">
-                            Postingan ini sedang dalam status <strong>{{ ucfirst($currentStatus) }}</strong>. 
-                            Admin tidak dapat melakukan approval atau perubahan status sampai Penulis mengajukan postingan ini kembali.
+                            Postingan ini sedang dalam status <strong>{{ ucfirst($currentStatus) }}</strong>.
+                            Admin tidak dapat melakukan approval atau perubahan status sampai Penulis mengajukan postingan
+                            ini kembali.
                         </p>
                     </div>
                 @else
@@ -91,25 +128,26 @@
 
                             <div class="mb-3">
                                 <label for="decision_select" class="form-label">Keputusan</label>
-                                
-                                <select name="decision" id="decision_select" class="form-select form-control form-control-lg">
+
+                                <select name="decision" id="decision_select"
+                                    class="form-select form-control form-control-lg">
                                     <option value="" selected hidden>Pilih Aksi...</option>
 
                                     {{-- ATURAN BISNIS DROP DOWN --}}
-                                    
+
                                     {{-- 1. Jika PENDING -> Bisa Publish atau Revisi --}}
-                                    @if($currentStatus === 'pending')
+                                    @if ($currentStatus === 'pending')
                                         <option value="published">Setujui & Terbitkan</option>
                                         <option value="revisi">Kembalikan untuk Revisi</option>
                                     @endif
 
                                     {{-- 2. Jika PUBLISHED -> Hanya bisa Arsip --}}
-                                    @if($currentStatus === 'published')
+                                    @if ($currentStatus === 'published')
                                         <option value="arsip">Arsipkan Postingan</option>
                                     @endif
 
                                     {{-- 3. Jika ARSIP -> Hanya bisa Draft --}}
-                                    @if($currentStatus === 'arsip')
+                                    @if ($currentStatus === 'arsip')
                                         <option value="published">Kembalikan ke Published (Tayang)</option>
                                     @endif
                                 </select>
@@ -131,7 +169,7 @@
 
                 <div class="card bg-white border-0 rounded-3 p-4">
                     <h6 class="fw-semibold">Informasi</h6>
-                    <p class="mb-1"><strong>Status Saat Ini:</strong> 
+                    <p class="mb-1"><strong>Status Saat Ini:</strong>
                         <span class="badge bg-secondary">{{ ucfirst($post->status) }}</span>
                     </p>
                     <p class="mb-1"><strong>Penulis:</strong> {{ optional($post->creator)->full_name ?? 'N/A' }}</p>
@@ -151,7 +189,7 @@
                 const noteField = document.getElementById('note_field');
 
                 // Cek null safety (karena elemen ini tidak ada jika status draft/revisi)
-                if(decisionSelect) {
+                if (decisionSelect) {
                     function updateState() {
                         const val = decisionSelect.value;
                         if (val === 'revisi') {
@@ -164,7 +202,7 @@
                     }
 
                     decisionSelect.addEventListener('change', updateState);
-                    updateState(); 
+                    updateState();
 
                     const form = document.getElementById('approvalForm');
                     const submitBtn = form.querySelector("button[type='submit']");

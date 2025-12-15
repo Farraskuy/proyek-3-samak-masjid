@@ -17,6 +17,10 @@
             font-size: 1.1rem;
             line-height: 1.75;
             color: #333;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            max-width: 100%;
+            overflow-x: auto;
         }
 
         .prose h1,
@@ -35,11 +39,29 @@
             margin-bottom: 1em;
         }
 
-        .prose img {
+        .prose img,
+        .prose video,
+        .prose iframe,
+        .prose embed,
+        .prose object,
+        .prose figure {
             max-width: 100%;
             height: auto;
             border-radius: 0.5rem;
             margin: 1.5em 0;
+        }
+
+        .prose table {
+            max-width: 100%;
+            overflow-x: auto;
+            display: block;
+        }
+
+        .prose pre {
+            max-width: 100%;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
 
         .prose ul,
