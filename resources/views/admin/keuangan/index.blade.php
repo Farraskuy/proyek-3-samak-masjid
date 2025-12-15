@@ -29,14 +29,18 @@
                 class="btn btn-sm {{ request('type', 'all') == 'all' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
                 Semua
             </a>
-            <a href="{{ route('admin.keuangan', array_merge(request()->query(), ['type' => 'pemasukan'])) }}"
-                class="btn btn-sm {{ request('type') == 'pemasukan' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                Pemasukan
-            </a>
-            <a href="{{ route('admin.keuangan', array_merge(request()->query(), ['type' => 'pengeluaran'])) }}"
-                class="btn btn-sm {{ request('type') == 'pengeluaran' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
-                Pengeluaran
-            </a>
+            @if (auth()->user()->hasPermission('manage_income'))
+                <a href="{{ route('admin.keuangan', array_merge(request()->query(), ['type' => 'pemasukan'])) }}"
+                    class="btn btn-sm {{ request('type') == 'pemasukan' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                    Pemasukan
+                </a>
+            @endif
+            @if (auth()->user()->hasPermission('manage_expense'))
+                <a href="{{ route('admin.keuangan', array_merge(request()->query(), ['type' => 'pengeluaran'])) }}"
+                    class="btn btn-sm {{ request('type') == 'pengeluaran' ? 'btn-dark' : 'btn-light text-secondary' }} rounded-pill px-4 fw-semibold">
+                    Pengeluaran
+                </a>
+            @endif
         </div>
 
         <div class="row g-0 gap-3">
