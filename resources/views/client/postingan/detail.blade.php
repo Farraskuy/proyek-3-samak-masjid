@@ -273,8 +273,6 @@
                     @endphp
                     @if ($recommendations->count() == 0)
                         <div class="no-data-box">
-                            <img src="https://www.svgrepo.com/show/448255/empty-box.svg" width="120" class="mb-3"
-                                alt="No recommendations">
                             <p>Tidak ada rekomendasi tersedia.</p>
                         </div>
                     @endif
