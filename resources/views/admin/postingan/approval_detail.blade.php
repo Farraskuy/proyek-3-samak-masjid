@@ -137,6 +137,7 @@
                     <p class="mb-1"><strong>Penulis:</strong> {{ optional($post->creator)->full_name ?? 'N/A' }}</p>
                     <p class="mb-1"><strong>Kategori:</strong> {{ $post->kategori }}</p>
                     <p class="mb-1"><strong>Dibuat:</strong> {{ $post->created_at->format('d M Y, H:i') }}</p>
+                    <p class="mb-1"><strong>updated at:</strong> {{ $post->updated_at->format('d M Y, H:i') }}</p>
                 </div>
             </div>
         </div>

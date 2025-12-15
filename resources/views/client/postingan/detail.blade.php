@@ -251,6 +251,7 @@
                         <p><strong>Penulis:</strong> {{ optional($post->creator)->full_name ?? 'N/A' }}</p>
                         <p><strong>Kategori:</strong> {{ $post->kategori }}</p>
                         <p><strong>Tanggal Dibuat:</strong> {{ $post->created_at->format('d M Y') }}</p>
+                        <p><strong>Tanggal diupdate:</strong> {{ $post->updated_at->format('d M Y') }}</p>
                         @if ($post->published_at)
                             <p><strong>Tanggal Dipublish:</strong> {{ $post->published_at->format('d M Y') }}</p>
                         @endif

@@ -44,7 +44,7 @@ class PostinganController extends Controller
         }
 
         $cacheKey = 'postingan.index:' . md5($request->fullUrl());
-        $data_posts = Cache::remember($cacheKey, now()->addMinutes(1), function () use ($query) {
+        $data_posts = Cache::remember($cacheKey, now()->addMinutes(0), function () use ($query) {
             return $query->orderBy('created_at', 'desc')->paginate(9);
         });
 
@@ -94,7 +94,7 @@ class PostinganController extends Controller
 
         // cache detail by slug to speed up repeated views
         $cacheKey = 'postingan.show:' . $post->slug;
-        $cachedHtml = Cache::remember($cacheKey, now()->addMinutes(60), function () use ($updated_html) {
+        $cachedHtml = Cache::remember($cacheKey, now()->addMinutes(0), function () use ($updated_html) {
             return $updated_html;
         });
 
