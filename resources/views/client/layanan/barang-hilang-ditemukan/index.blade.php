@@ -153,23 +153,6 @@
 <section class="py-5" style="padding-bottom:120px !important;">
     <div class="container">
 
-        {{-- Search Bar --}}
-        <div class="d-flex justify-content-center mb-4">
-            <form method="GET" class="search-container">
-                <input type="hidden" name="tab" value="{{ request('tab', 'lost') }}">
-                @if(request('category'))
-                <input type="hidden" name="category" value="{{ request('category') }}">
-                @endif
-
-                <input type="text" name="search" class="form-control border-0 shadow-none bg-transparent"
-                    placeholder="Cari nama barang, ciri-ciri, atau lokasi..."
-                    value="{{ request('search') }}">
-                <button type="submit" class="btn btn-link text-success">
-                    <i class="fas fa-search fs-5"></i>
-                </button>
-            </form>
-        </div>
-
         {{-- Main Tabs (Lost / Found) --}}
         <div class="mb-4 text-center">
             <div class="d-flex justify-content-center gap-2 flex-wrap">
@@ -188,6 +171,7 @@
             </div>
         </div>
 
+        
         @if (!request()->filled('tab') || request('tab') == 'lost')
 
         {{-- Category Filters for Lost Items --}}
