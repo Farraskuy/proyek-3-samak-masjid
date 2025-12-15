@@ -90,7 +90,7 @@
         <section class="py-5 bg-pattern" style="background-color: #175C9E; height: 320px; display:flex; align-items:center;">
             <div class="container text-center">
                 <h1 class="display-5 fw-bold text-white mb-3" data-aos="fade-up" data-aos-duration="900">
-                    Tentang <span style="color: #F6C948;">Kami</span>
+                    {{ $page->title }}
                 </h1>
                 @if ($page->description)
                     <p class="text-white-50 lead mb-0 col-lg-8 mx-auto" data-aos="fade-up" data-aos-duration="1100"
