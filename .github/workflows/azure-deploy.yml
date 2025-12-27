@@ -104,7 +104,7 @@ jobs:
             # Set container configuration
             az webapp config container set \
               --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group samak-masjid-rg \
+              --resource-group samakmasjid \
               --container-image-name ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_APP }}:latest \
               --container-registry-url https://${{ env.REGISTRY }}
 
