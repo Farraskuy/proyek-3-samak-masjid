@@ -1,0 +1,60 @@
+# Dockerfile for Laravel Reverb (Sidecar Container)
+# Runs: Laravel Reverb WebSocket Server
+
+FROM php:8.2-cli
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libzip-dev \
+    libpng-dev \
+    libpq-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    git \
+    curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_pgsql pgsql bcmath zip mbstring xml pcntl
+
+# Install Redis extension
+RUN pecl install redis && docker-php-ext-enable redis
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Copy application files
+COPY . .
+
+# Install PHP dependencies (only production)
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+
+# Clear bootstrap cache
+RUN rm -f bootstrap/cache/*.php
+
+# Copy entrypoint for reverb
+COPY docker/azure/entrypoint-reverb.sh /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/entrypoint
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Create required directories
+RUN mkdir -p /var/www/html/storage/framework/cache/data \
+    && mkdir -p /var/www/html/storage/framework/sessions \
+    && mkdir -p /var/www/html/storage/framework/views
+
+# Expose port 6001 for Reverb WebSocket
+EXPOSE 6001
+
+# Start Reverb
+ENTRYPOINT ["/usr/local/bin/entrypoint"]
+CMD ["php", "artisan", "reverb:start", "--host=0.0.0.0", "--port=6001"]
