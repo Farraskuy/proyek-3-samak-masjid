@@ -195,9 +195,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
         Route::post('/posts', [PostinganController::class, 'store'])->name('store')->middleware('permission:create_posts');
         Route::delete('/delete/{id}', [PostinganController::class, 'deleteArtikel'])->name('delete')->middleware('permission:delete_posts');
 
+
         Route::get('/edit/{id}', [PostinganController::class, 'edit'])->name('edit')->middleware('permission:edit_posts');
         Route::put('/update/{id}', [PostinganController::class, 'update'])->name('update')->middleware('permission:edit_posts');
-        Route::post('/store', [PostinganController::class, 'store'])->name('store')->middleware('permission:create_posts');
 
         Route::middleware(['permission:approve_posts'])->group(function () {
             Route::get('/approval', [PostinganController::class, 'approvalIndex'])->name('approval.index');
