@@ -111,13 +111,13 @@ jobs:
             # Enable container logging
             az webapp log config \
               --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group samak-masjid-rg \
+              --resource-group samakmasjid \
               --docker-container-logging filesystem
 
             # Restart to apply changes
             az webapp restart \
               --name ${{ env.AZURE_WEBAPP_NAME }} \
-              --resource-group samak-masjid-rg
+              --resource-group samakmasjid
 
       - name: Output deployment info
         run: |
