@@ -48,6 +48,8 @@ RUN npm ci && npm run build
 
 # Copy Nginx config
 COPY docker/nginx/default.conf /etc/nginx/sites-available/default
+RUN rm -f /etc/nginx/sites-enabled/default && \
+    ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
 # Copy Supervisor config for app (without reverb)
 COPY docker/azure/supervisord-app.conf /etc/supervisor/conf.d/supervisord.conf
